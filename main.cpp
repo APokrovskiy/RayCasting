@@ -1,41 +1,54 @@
 #include <iostream>
+#include <vector>
 #include <string>
 #include <set>
 
 typedef int distance;
-typedef int Point;
-typedef std::set<Point> World_Map;
+typedef std::pair<int, int> Coords;
+typedef std::set< Coords > World_Map;
 
 enum class Direction
 {
     RIGHT,
-    LEFT
+    LEFT,
+    UP,
+    DOWN
 };
 
-std::string text_map = "000000000001000";
+std::vector<std::string> text_map = 
+{
+    "000000000000000",
+    "100000000000000",
+    "100000010000000",
+    "000000000000000",
+    "000000000000000",
+    "100000000000000",
+    "000000000000000",
+    "000000000000000"
+};
 const int TILE = 100;
 
-World_Map init_world_map(std::string text_map)
+World_Map init_world_map(std::vector<std::string>& text_map)
 {
     World_Map res;
-
-    for (int x = 0; x < text_map.size(); x++)
-    {
-        if (text_map[x] == '1')
+    for (int y = 0; y < text_map.size(); y++)
+        for (int x = 0; x < text_map[y].size(); x++)
         {
-            res.emplace(x);
+            if (text_map[y][x] == '1')
+            {
+                res.emplace(x, y);
+            }
         }
-    }
 
     return res;
 }
 
-distance raycasting(World_Map world_map, Point pl, Direction dir, distance vis_range)
+distance raycast(World_Map world_map, Coords pl, Direction dir, distance vis_range)
 {
-    distance res = (pl / TILE + 1) * TILE - pl;
+    distance res = (pl.first / TILE + 1) * TILE - pl.first;
     if (dir == Direction::RIGHT)
     {       
-        while ( (res < vis_range) && !(world_map.find((pl + res) / TILE) != world_map.end()) )
+        while ( (res < vis_range) && !(world_map.find(Coords{(pl.first + res) / TILE, pl.second / TILE}) != world_map.end()) )
         {
             res += TILE;
         }
@@ -48,7 +61,36 @@ distance raycasting(World_Map world_map, Point pl, Direction dir, distance vis_r
     else if (dir == Direction::LEFT)
     {
         res = TILE - res;
-        while ( (res < vis_range) && !(world_map.find((pl - res) / TILE) != world_map.end()) )
+        while ( (res < vis_range) && !(world_map.find(Coords{(pl.first - res) / TILE, pl.second / TILE}) != world_map.end()) )
+        {
+            res += TILE;
+        }
+        if ( res >= vis_range )
+        {
+            return -1;
+        }
+        return res - TILE;
+    }
+    else if (dir == Direction::DOWN)
+    {
+        res = (pl.second / TILE + 1) * TILE - pl.second;
+        while ( (res < vis_range) && !(world_map.find(Coords{pl.first / TILE, (pl.second + res) / TILE}) != world_map.end()) )
+        {
+            std::cout << "RAY-COORDS: (" << pl.first / TILE << ";" << (pl.second + res) / TILE << ")\n";
+            res += TILE;
+        }
+        if ( res >= vis_range )
+        {
+            std::cout << "res =  " << res << '\n'; 
+            return -1;
+        }
+        return res;
+    }
+    else if (dir == Direction::UP)
+    {
+        res = (pl.second / TILE + 1) * TILE - pl.second;
+        res = TILE - res;
+        while ( (res < vis_range) && !(world_map.find(Coords{pl.first / TILE, (pl.second - res) / TILE}) != world_map.end()) )
         {
             res += TILE;
         }
@@ -63,9 +105,13 @@ distance raycasting(World_Map world_map, Point pl, Direction dir, distance vis_r
 
 int main()
 {
-    Point player = 97;
+    Coords player = {250, 250};
     World_Map wm = init_world_map(text_map);
-    distance d = raycasting(wm, player, Direction::RIGHT, 200000);
+    for (Coords crd: wm)
+    {
+        std::cout << "WALL: (" << crd.first << ";" << crd.second << ")\n";
+    }
+    distance d = raycast(wm, player, Direction::LEFT, 200000);
     std::cout << d;
     std::cin.get();
     return 0;
