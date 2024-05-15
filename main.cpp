@@ -1,27 +1,21 @@
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include <vector>
 #include <string>
 #include <set>
+#include <cmath>
 
 typedef int distance;
 typedef std::pair<int, int> Coords;
 typedef std::set< Coords > World_Map;
 
-enum class Direction
-{
-    RIGHT,
-    LEFT,
-    UP,
-    DOWN
-};
-
 std::vector<std::string> text_map = 
 {
-    "000000000000000",
+    "001000000000000",
     "100000000000000",
     "100000010000000",
     "000000000000000",
-    "000000000000000",
+    "001000000000000",
     "100000000000000",
     "000000000000000",
     "000000000000000"
@@ -43,10 +37,26 @@ World_Map init_world_map(std::vector<std::string>& text_map)
     return res;
 }
 
-distance raycast(World_Map world_map, Coords pl, Direction dir, distance vis_range)
+double radians_normalise(double angle_in_radians)
+{
+    while(angle_in_radians >= 2 * M_PI)
+    {
+        angle_in_radians -= 2 * M_PI;
+    }
+    while (angle_in_radians < 0)
+    {
+        angle_in_radians += 2 * M_PI;
+    }
+
+    return angle_in_radians;
+}
+
+distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_range)
 {
     distance res = (pl.first / TILE + 1) * TILE - pl.first;
-    if (dir == Direction::RIGHT)
+    rot_angle = radians_normalise(rot_angle);
+
+    if (rot_angle == 0) /* RIGHT */
     {       
         while ( (res < vis_range) && !(world_map.find(Coords{(pl.first + res) / TILE, pl.second / TILE}) != world_map.end()) )
         {
@@ -58,7 +68,7 @@ distance raycast(World_Map world_map, Coords pl, Direction dir, distance vis_ran
         }
         return res;
     }
-    else if (dir == Direction::LEFT)
+    else if (rot_angle == M_PI) /* LEFT */
     {
         res = TILE - res;
         while ( (res < vis_range) && !(world_map.find(Coords{(pl.first - res) / TILE, pl.second / TILE}) != world_map.end()) )
@@ -71,7 +81,7 @@ distance raycast(World_Map world_map, Coords pl, Direction dir, distance vis_ran
         }
         return res - TILE;
     }
-    else if (dir == Direction::DOWN)
+    else if (rot_angle == 3 * M_PI / 2) /* DOWN */
     {
         res = (pl.second / TILE + 1) * TILE - pl.second;
         while ( (res < vis_range) && !(world_map.find(Coords{pl.first / TILE, (pl.second + res) / TILE}) != world_map.end()) )
@@ -86,7 +96,7 @@ distance raycast(World_Map world_map, Coords pl, Direction dir, distance vis_ran
         }
         return res;
     }
-    else if (dir == Direction::UP)
+    else if (rot_angle == M_PI / 2) /* UP */
     {
         res = (pl.second / TILE + 1) * TILE - pl.second;
         res = TILE - res;
@@ -111,7 +121,7 @@ int main()
     {
         std::cout << "WALL: (" << crd.first << ";" << crd.second << ")\n";
     }
-    distance d = raycast(wm, player, Direction::LEFT, 200000);
+    distance d = raycast(wm, player, M_PI * 3 / 2 , 200000);
     std::cout << d;
     std::cin.get();
     return 0;
