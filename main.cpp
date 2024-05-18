@@ -11,14 +11,12 @@ typedef std::set< Coords > World_Map;
 
 std::vector<std::string> text_map = 
 {
-    "001000000000000",
-    "100000000000000",
-    "100000010000000",
-    "000000000000000",
-    "001000000000000",
-    "100000000000000",
-    "000000000000000",
-    "000000000000000"
+    "0000100000",
+    "0000000000",
+    "0000000000",
+    "0100000001",
+    "0000000000",
+    "0000100000"
 };
 const int TILE = 100;
 
@@ -53,76 +51,109 @@ double radians_normalise(double angle_in_radians)
 
 distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_range)
 {
-    distance res = (pl.first / TILE + 1) * TILE - pl.first;
-    rot_angle = radians_normalise(rot_angle);
+    distance res; // Возвращаемое функцией расстояние
+    Coords intersection; // Потенциальная точка пересечения
+    int *var_coord = nullptr /* Изменяющееся значение */, sign;
 
-    if (rot_angle == 0) /* RIGHT */
-    {       
-        while ( (res < vis_range) && !(world_map.find(Coords{(pl.first + res) / TILE, pl.second / TILE}) != world_map.end()) )
-        {
-            res += TILE;
-        }
-        if ( res >= vis_range )
-        {
-            return -1;
-        }
-        return res;
-    }
-    else if (rot_angle == M_PI) /* LEFT */
+    rot_angle = radians_normalise(rot_angle); //  0 <= rot_angle < 2 * PI
+
+    // Определение первоначальных значений intersection, var_coord, res
+    //////////////////////////////////////////////////////////////////////////////////////
+    sign = 1; // Предположим мы двигаемся по направлению оси
+    if (rot_angle == 0 || rot_angle == M_PI) /* Оcь X */
     {
-        res = TILE - res;
-        while ( (res < vis_range) && !(world_map.find(Coords{(pl.first - res) / TILE, pl.second / TILE}) != world_map.end()) )
+        /* Предположим rot_angle == RIGHT */
+        res = (pl.first / TILE + 1) * TILE - pl.first;
+        if (rot_angle == M_PI) /* Если же это не так (LEFT) */
         {
-            res += TILE;
+            res = TILE  - res;
+            sign = -1; // Значит двигаемся против оси x
         }
-        if ( res >= vis_range )
-        {
-            return -1;
-        }
-        return res - TILE;
+
+        // Потенциальная точка пересечения
+        intersection = {(pl.first + sign * res) / TILE, pl.second / TILE};
+
+        // Изменяющееся значение
+        var_coord = &intersection.first;
     }
-    else if (rot_angle == 3 * M_PI / 2) /* DOWN */
+    else if (rot_angle == M_PI / 2 || rot_angle == 3 * M_PI / 2) /*Ось y*/
     {
+        /* Предположим rot_angle == DOWN */
         res = (pl.second / TILE + 1) * TILE - pl.second;
-        while ( (res < vis_range) && !(world_map.find(Coords{pl.first / TILE, (pl.second + res) / TILE}) != world_map.end()) )
+        if (rot_angle == M_PI / 2) /* Если же это не так (UP) */
         {
-            std::cout << "RAY-COORDS: (" << pl.first / TILE << ";" << (pl.second + res) / TILE << ")\n";
-            res += TILE;
+            res = TILE - res; 
+            sign = -1; // Значит движемся против оси y
         }
-        if ( res >= vis_range )
-        {
-            std::cout << "res =  " << res << '\n'; 
-            return -1;
-        }
-        return res;
+        // Потенциальная точка пересечения
+        intersection = {pl.first / TILE, (pl.second + sign * res) / TILE};
+
+        // Изменяющееся значение
+        var_coord = &intersection.second;
     }
-    else if (rot_angle == M_PI / 2) /* UP */
-    {
-        res = (pl.second / TILE + 1) * TILE - pl.second;
-        res = TILE - res;
-        while ( (res < vis_range) && !(world_map.find(Coords{pl.first / TILE, (pl.second - res) / TILE}) != world_map.end()) )
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    /*
+    std::cout << "sign = " << sign
+             << "\nres = " << res
+             << "\nintersection.x = " << intersection.first
+             << "\n&intersection.x = " << &intersection.first
+             << "\nintersection.y = " << intersection.second
+             << "\n&intersection.y = " << &intersection.second
+             << "\n*var_coord = " << *var_coord 
+            << "\nvar_coord = " << var_coord << std::endl; 
+    */
+
+    // Бросание луча
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    while ( (res < vis_range) && !(world_map.find(intersection) != world_map.end()) )
         {
+            // Прибавляем к расстоянию размер плитки
             res += TILE;
+
+            // Изменяем точку пересечения вследствии изменения res
+            if (var_coord == &intersection.second)
+                *var_coord = (pl.second + sign * res) / TILE;
+            else if (var_coord == &intersection.first)
+                *var_coord = (pl.first + sign * res) / TILE;
+            /*
+            std::cout << "res = " << res 
+                << "\nintersection.x = " << intersection.first
+                << "\n&intersection.x = " << &intersection.first
+                << "\nintersection.y = " << intersection.second
+                << "\n&intersection.y = " << &intersection.second << std::endl;
+            */
         }
-        if ( res >= vis_range )
+        if ( res >= vis_range ) // Луч не достиг объекта
         {
             return -1;
         }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Возврат результата
+    if (sign == -1)
         return res - TILE;
-    }
+    return res;
 }
 
 
 int main()
 {
-    Coords player = {250, 250};
+    std::cout << "Start Game...\n";
+    Coords player = {460, 330};
+    std::cout << "Player init.\nPlayer Coords: (" << player.first << ';' << player.second << ")\nPlayer's TILE: (" <<  player.first / TILE << ';' << player.second / TILE << ")\n";
     World_Map wm = init_world_map(text_map);
+    std::cout << "Map init.\n";
     for (Coords crd: wm)
     {
         std::cout << "WALL: (" << crd.first << ";" << crd.second << ")\n";
     }
-    distance d = raycast(wm, player, M_PI * 3 / 2 , 200000);
-    std::cout << d;
+    std::cout 
+        <<"RIGHT: " << raycast(wm, player, 0 , 8 * 100) << '\n'
+        <<"UP: " <<  raycast(wm, player, M_PI / 2 , 8 * 100) << '\n'
+        <<"LEFT: " <<  raycast(wm, player, M_PI , 8 * 100) << '\n'
+        <<"DOWN: " <<  raycast(wm, player, 3 * M_PI / 2 , 8 * 100) << std::endl;
+
     std::cin.get();
     return 0;
 }
