@@ -1,4 +1,5 @@
 #define _USE_MATH_DEFINES
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -9,13 +10,15 @@ typedef int distance;
 typedef std::pair<int, int> Coords;
 typedef std::set< Coords > World_Map;
 
+#define dbgvar(VAR_NAME) #VAR_NAME " = " << VAR_NAME
+
 std::vector<std::string> text_map = 
 {
     "0000100000",
     "0000000000",
     "0000000000",
     "0100000001",
-    "0000000000",
+    "0000001000",
     "0000100000"
 };
 const int TILE = 100;
@@ -91,6 +94,119 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
         // Изменяющееся значение
         var_coord = &intersection.second;
     }
+    else if (rot_angle > 3 * M_PI / 2)
+    {
+        int va, vb, ha, hb; // Катеты треугольников для поиска горизонтальных и вертикальных пересечений
+        double vangle, hangle; // Углы для треугольников
+        Coords vintersection, hintersection;
+
+        // Вычесление начальных переменных для вертикальных линий
+        vangle = M_PI / 2 - (rot_angle - 3 * M_PI / 2);
+        va = (pl.first / TILE + 1) * TILE - pl.first;
+        vb = va * tan(vangle);
+
+        // Вычесление начальных переменных для горизонтальных линий
+        hangle = rot_angle - 3 * M_PI / 2;
+        ha = (pl.second / TILE + 1) * TILE - pl.second;
+        hb = ha * tan(hangle);
+
+        // Сначала будем проверять точку на вертикальной линии
+        vintersection = {(pl.first + va) / TILE, (pl.second + vb) / TILE};
+        
+        hintersection = {(pl.first + hb) / TILE, (pl.second + ha) / TILE};
+        /*
+        std::cout << "-----------------------------\nStart val\n";
+        std::cout << dbgvar(va) << '\n'
+                    << dbgvar(vb) << '\n'
+                    << dbgvar(vangle) << '\n'
+                    << dbgvar(ha) << '\n'
+                    << dbgvar(hb) << '\n'
+                    << dbgvar(hangle) << '\n'
+                    << dbgvar(vintersection.first) << '\n'
+                    << dbgvar(vintersection.second) << '\n'
+                    << dbgvar(hintersection.first) << '\n'
+                    << dbgvar(hintersection.second) << '\n';
+        */
+        while (true)
+        {
+            if ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(vintersection) != world_map.end()) )
+            {
+                va += TILE;
+                vb += TILE;
+                vintersection = {(pl.first + va) / TILE, (pl.second + vb) / TILE};
+            }
+            else if (sqrt(va * va + vb * vb) >= vis_range)
+                return vis_range;
+            else if (world_map.find(vintersection) != world_map.end())
+                return sqrt(va * va + vb * vb);
+            
+            if ((sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(hintersection) != world_map.end()))
+            {
+                ha += TILE;
+                hb += TILE;
+                hintersection = {(pl.first + hb) / TILE, (pl.second + ha) / TILE};
+            }
+            else if (sqrt(ha * ha + hb * hb) >= vis_range)
+                return vis_range;
+            else if (world_map.find(hintersection) != world_map.end())
+                return sqrt(ha * ha + hb * hb);
+            /*
+            std::cout << dbgvar(va) << '\n'
+                    << dbgvar(vb) << '\n'
+                    << dbgvar(vangle) << '\n'
+                    << dbgvar(ha) << '\n'
+                    << dbgvar(hb) << '\n'
+                    << dbgvar(hangle) << '\n'
+                    << dbgvar(vintersection.first) << '\n'
+                    << dbgvar(vintersection.second) << '\n'
+                    << dbgvar(hintersection.first) << '\n'
+                    << dbgvar(hintersection.second) << '\n';
+            */
+
+        }
+
+        while ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(intersection) != world_map.end()) )
+        {
+            va += TILE;
+            vb += TILE;
+            intersection = {(pl.first + hb) / TILE, (pl.second + ha) / TILE};
+            /*
+            std::cout << "-----------------------------\n";
+                        std::cout << dbgvar(va) << '\n'
+                    << dbgvar(vb) << '\n'
+                    << dbgvar(vangle) << '\n'
+                    << dbgvar(ha) << '\n'
+                    << dbgvar(hb) << '\n'
+                    << dbgvar(hangle) << '\n'
+                    << dbgvar(vintersection.first) << '\n'
+                    << dbgvar(vintersection.second) << '\n'
+                    << dbgvar(hintersection.first) << '\n'
+                    << dbgvar(hintersection.second) << '\n';
+            */
+            if ((sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(intersection) != world_map.end()))
+                return sqrt(ha * ha + hb * hb);
+            ha += TILE;
+            hb += TILE;
+            intersection = {(pl.first + va) / TILE, (pl.second + vb) / TILE};
+            /*
+            std::cout << "-----------------------------\n";
+            std::cout << dbgvar(va) << '\n'
+                    << dbgvar(vb) << '\n'
+                    << dbgvar(vangle) << '\n'
+                    << dbgvar(ha) << '\n'
+                    << dbgvar(hb) << '\n'
+                    << dbgvar(hangle) << '\n'
+                    << dbgvar(vintersection.first) << '\n'
+                    << dbgvar(vintersection.second) << '\n'
+                    << dbgvar(hintersection.first) << '\n'
+                    << dbgvar(hintersection.second) << '\n';
+            */
+        }
+        if (sqrt(va * va + vb * vb) >= vis_range)
+            return vis_range;
+        return sqrt(va * va + vb * vb);
+
+    }
     //////////////////////////////////////////////////////////////////////////////////////
 
     /*
@@ -137,22 +253,78 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
 }
 
 
+// Функции для отрисовки объектов
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+void draw_world_map(sf::RenderWindow& w, World_Map& m)
+{
+    for (Coords crd: m)
+    {
+        sf::RectangleShape r{{TILE, TILE}};
+        r.setPosition({crd.first * TILE,crd.second * TILE});
+        w.draw(r);
+    }
+}
+void draw_player(sf::RenderWindow& w,Coords& pl)
+{
+    sf::CircleShape c{15};
+    c.setPosition({pl.first - 15,pl.second - 15});
+    c.setFillColor(sf::Color::Blue);
+    w.draw(c);
+}
+void draw_line(sf::RenderWindow& w,Coords pl, distance dist, double rot_angle)
+{
+    rot_angle = radians_normalise(rot_angle);
+    sf::VertexArray line{ sf::Lines, 2 };
+    line[0] = sf::Vector2f{pl.first, pl.second};
+    line[1] = sf::Vector2f{pl.first + dist * cos(rot_angle), pl.second - dist * sin(rot_angle) };
+    line[0].color = sf::Color::Red;
+    line[1].color = sf::Color::Red;
+    w.draw(line);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 int main()
 {
+    sf::RenderWindow window{sf::VideoMode{1920, 1080},"Ray"};
     std::cout << "Start Game...\n";
+    std::cout << "-----------------------------\n";
     Coords player = {460, 330};
     std::cout << "Player init.\nPlayer Coords: (" << player.first << ';' << player.second << ")\nPlayer's TILE: (" <<  player.first / TILE << ';' << player.second / TILE << ")\n";
+    std::cout << "-----------------------------\n";
     World_Map wm = init_world_map(text_map);
     std::cout << "Map init.\n";
     for (Coords crd: wm)
     {
         std::cout << "WALL: (" << crd.first << ";" << crd.second << ")\n";
     }
-    std::cout 
-        <<"RIGHT: " << raycast(wm, player, 0 , 8 * 100) << '\n'
-        <<"UP: " <<  raycast(wm, player, M_PI / 2 , 8 * 100) << '\n'
-        <<"LEFT: " <<  raycast(wm, player, M_PI , 8 * 100) << '\n'
-        <<"DOWN: " <<  raycast(wm, player, 3 * M_PI / 2 , 8 * 100) << std::endl;
+
+
+    double angle = 3 * M_PI / 2 + M_PI / 4;
+
+
+
+    distance d = raycast(wm,player, angle,5000);
+
+    std::cout << "distance = " << d << '\n';
+    draw_world_map(window, wm);
+    draw_player(window,player);
+    draw_line(window,player, d, angle);
+    window.display();
+
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+    }
+
+
+    
 
     std::cin.get();
     return 0;
