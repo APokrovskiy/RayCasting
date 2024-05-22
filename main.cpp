@@ -97,115 +97,45 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
     else if (rot_angle > 3 * M_PI / 2)
     {
         int va, vb, ha, hb; // Катеты треугольников для поиска горизонтальных и вертикальных пересечений
-        double vangle, hangle; // Углы для треугольников
-        Coords vintersection, hintersection;
+        double angle;
+        Coords intersection; // Потенциальные точки пересечения
 
         // Вычесление начальных переменных для вертикальных линий
-        vangle = M_PI / 2 - (rot_angle - 3 * M_PI / 2);
+        angle = M_PI / 2 - (rot_angle - 3 * M_PI / 2);
         va = (pl.first / TILE + 1) * TILE - pl.first;
-        vb = va * tan(vangle);
+        vb = va * tan(angle);
 
         // Вычесление начальных переменных для горизонтальных линий
-        hangle = rot_angle - 3 * M_PI / 2;
+        angle = rot_angle - 3 * M_PI / 2;
         ha = (pl.second / TILE + 1) * TILE - pl.second;
-        hb = ha * tan(hangle);
+        hb = ha * tan(angle);
 
-        // Сначала будем проверять точку на вертикальной линии
-        vintersection = {(pl.first + va) / TILE, (pl.second + vb) / TILE};
-        
-        hintersection = {(pl.first + hb) / TILE, (pl.second + ha) / TILE};
-        /*
-        std::cout << "-----------------------------\nStart val\n";
-        std::cout << dbgvar(va) << '\n'
-                    << dbgvar(vb) << '\n'
-                    << dbgvar(vangle) << '\n'
-                    << dbgvar(ha) << '\n'
-                    << dbgvar(hb) << '\n'
-                    << dbgvar(hangle) << '\n'
-                    << dbgvar(vintersection.first) << '\n'
-                    << dbgvar(vintersection.second) << '\n'
-                    << dbgvar(hintersection.first) << '\n'
-                    << dbgvar(hintersection.second) << '\n';
-        */
         while (true)
         {
-            if ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(vintersection) != world_map.end()) )
+            intersection = {(pl.first + va) / TILE, (pl.second + vb) / TILE};
+
+            if ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(intersection) != world_map.end()) )
             {
                 va += TILE;
                 vb += TILE;
-                vintersection = {(pl.first + va) / TILE, (pl.second + vb) / TILE};
             }
             else if (sqrt(va * va + vb * vb) >= vis_range)
                 return vis_range;
-            else if (world_map.find(vintersection) != world_map.end())
+            else if (world_map.find(intersection) != world_map.end())
                 return sqrt(va * va + vb * vb);
             
-            if ((sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(hintersection) != world_map.end()))
+            intersection = {(pl.first + hb) / TILE, (pl.second + ha) / TILE};
+
+            if ((sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(intersection) != world_map.end()))
             {
                 ha += TILE;
                 hb += TILE;
-                hintersection = {(pl.first + hb) / TILE, (pl.second + ha) / TILE};
             }
             else if (sqrt(ha * ha + hb * hb) >= vis_range)
                 return vis_range;
-            else if (world_map.find(hintersection) != world_map.end())
+            else if (world_map.find(intersection) != world_map.end())
                 return sqrt(ha * ha + hb * hb);
-            /*
-            std::cout << dbgvar(va) << '\n'
-                    << dbgvar(vb) << '\n'
-                    << dbgvar(vangle) << '\n'
-                    << dbgvar(ha) << '\n'
-                    << dbgvar(hb) << '\n'
-                    << dbgvar(hangle) << '\n'
-                    << dbgvar(vintersection.first) << '\n'
-                    << dbgvar(vintersection.second) << '\n'
-                    << dbgvar(hintersection.first) << '\n'
-                    << dbgvar(hintersection.second) << '\n';
-            */
-
         }
-
-        while ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(intersection) != world_map.end()) )
-        {
-            va += TILE;
-            vb += TILE;
-            intersection = {(pl.first + hb) / TILE, (pl.second + ha) / TILE};
-            /*
-            std::cout << "-----------------------------\n";
-                        std::cout << dbgvar(va) << '\n'
-                    << dbgvar(vb) << '\n'
-                    << dbgvar(vangle) << '\n'
-                    << dbgvar(ha) << '\n'
-                    << dbgvar(hb) << '\n'
-                    << dbgvar(hangle) << '\n'
-                    << dbgvar(vintersection.first) << '\n'
-                    << dbgvar(vintersection.second) << '\n'
-                    << dbgvar(hintersection.first) << '\n'
-                    << dbgvar(hintersection.second) << '\n';
-            */
-            if ((sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(intersection) != world_map.end()))
-                return sqrt(ha * ha + hb * hb);
-            ha += TILE;
-            hb += TILE;
-            intersection = {(pl.first + va) / TILE, (pl.second + vb) / TILE};
-            /*
-            std::cout << "-----------------------------\n";
-            std::cout << dbgvar(va) << '\n'
-                    << dbgvar(vb) << '\n'
-                    << dbgvar(vangle) << '\n'
-                    << dbgvar(ha) << '\n'
-                    << dbgvar(hb) << '\n'
-                    << dbgvar(hangle) << '\n'
-                    << dbgvar(vintersection.first) << '\n'
-                    << dbgvar(vintersection.second) << '\n'
-                    << dbgvar(hintersection.first) << '\n'
-                    << dbgvar(hintersection.second) << '\n';
-            */
-        }
-        if (sqrt(va * va + vb * vb) >= vis_range)
-            return vis_range;
-        return sqrt(va * va + vb * vb);
-
     }
     //////////////////////////////////////////////////////////////////////////////////////
 
