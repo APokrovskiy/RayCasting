@@ -5,6 +5,7 @@
 #include <string>
 #include <set>
 #include <cmath>
+#include <windows.h>
 
 typedef int distance;
 typedef std::pair<int, int> Coords;
@@ -15,11 +16,12 @@ typedef std::set< Coords > World_Map;
 std::vector<std::string> text_map = 
 {
     "0000100000",
-    "0000000000",
-    "0000000000",
-    "0100000001",
-    "0000001000",
-    "0000100000"
+    "0001010001",
+    "0110001000",
+    "0100000100",
+    "0010001000",
+    "1001010000",
+    "0000100100"
 };
 const int TILE = 100;
 
@@ -52,134 +54,197 @@ double radians_normalise(double angle_in_radians)
     return angle_in_radians;
 }
 
+
+// TODO Поменять структуру карты на обычный массив строк
 distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_range)
-{
-    distance res; // Возвращаемое функцией расстояние
-    Coords intersection; // Потенциальная точка пересечения
-    int *var_coord = nullptr /* Изменяющееся значение */, sign;
-
-    rot_angle = radians_normalise(rot_angle); //  0 <= rot_angle < 2 * PI
-
-    // Определение первоначальных значений intersection, var_coord, res
-    //////////////////////////////////////////////////////////////////////////////////////
-    sign = 1; // Предположим мы двигаемся по направлению оси
-    if (rot_angle == 0 || rot_angle == M_PI) /* Оcь X */
+{   
+    rot_angle = radians_normalise(rot_angle);
+    if (rot_angle == 0)
     {
-        /* Предположим rot_angle == RIGHT */
-        res = (pl.first / TILE + 1) * TILE - pl.first;
-        if (rot_angle == M_PI) /* Если же это не так (LEFT) */
-        {
-            res = TILE  - res;
-            sign = -1; // Значит двигаемся против оси x
-        }
-
-        // Потенциальная точка пересечения
-        intersection = {(pl.first + sign * res) / TILE, pl.second / TILE};
-
-        // Изменяющееся значение
-        var_coord = &intersection.first;
+        std::cout << "rot_angle == 0\n";
+        int A = (pl.first/TILE + 1) * TILE - pl.first;
+        while(A < vis_range && !(world_map.find({(pl.first + A)/TILE, pl.second/TILE}) != world_map.end()))
+            A += TILE;
+        if (A >= vis_range)
+            return vis_range;
+        else if ((world_map.find({(pl.first + A)/TILE, pl.second/TILE}) != world_map.end()))
+            return A;
+        
     }
-    else if (rot_angle == M_PI / 2 || rot_angle == 3 * M_PI / 2) /*Ось y*/
-    {
-        /* Предположим rot_angle == DOWN */
-        res = (pl.second / TILE + 1) * TILE - pl.second;
-        if (rot_angle == M_PI / 2) /* Если же это не так (UP) */
-        {
-            res = TILE - res; 
-            sign = -1; // Значит движемся против оси y
-        }
-        // Потенциальная точка пересечения
-        intersection = {pl.first / TILE, (pl.second + sign * res) / TILE};
-
-        // Изменяющееся значение
-        var_coord = &intersection.second;
+    else if (rot_angle == M_PI)
+    {std::cout << "rot_angle == M_PI\n";
+        int A = TILE - ((pl.first/TILE + 1) * TILE - pl.first);
+        while(A < vis_range && !(world_map.find({(pl.first - A)/TILE - 1, pl.second/TILE}) != world_map.end()))
+            A += TILE;
+        if (A >= vis_range)
+            return vis_range;
+        else if ((world_map.find({(pl.first - A)/TILE - 1, pl.second/TILE}) != world_map.end()))
+            return A;
     }
-    else if (rot_angle > 3 * M_PI / 2)
-    {
-        int va, vb, ha, hb; // Катеты треугольников для поиска горизонтальных и вертикальных пересечений
-        double angle;
-        Coords intersection; // Потенциальные точки пересечения
+    else if (rot_angle == M_PI_2)
+    {   
+        metka:
+        std::cout << "rot_angle == M_PI_2\n";
+        int A = (pl.second/TILE + 1) * TILE - pl.second;
+        while(A < vis_range && !(world_map.find({pl.first/TILE, (pl.second - A)/TILE - 1}) != world_map.end()))
+            A += TILE;
+        if (A >= vis_range)
+            return vis_range;
+        else if ((world_map.find({pl.first/TILE, (pl.second - A)/TILE - 1}) != world_map.end()))
+            return A;
+    }
+    else if (rot_angle > 0 && rot_angle < M_PI_2)
+    {std::cout << "rot_angle > 0 && rot_angle < M_PI_2\n";
+        int va, vb, ha, hb;
+        double BAC, EAD;
 
-        // Вычесление начальных переменных для вертикальных линий
-        angle = M_PI / 2 - (rot_angle - 3 * M_PI / 2);
-        va = (pl.first / TILE + 1) * TILE - pl.first;
-        vb = va * tan(angle);
+        va = (pl.first/TILE + 1) * TILE - pl.first;
+        BAC = rot_angle;
+        vb = va * tan(BAC);
 
-        // Вычесление начальных переменных для горизонтальных линий
-        angle = rot_angle - 3 * M_PI / 2;
-        ha = (pl.second / TILE + 1) * TILE - pl.second;
-        hb = ha * tan(angle);
+        ha = (pl.second /TILE + 1)* TILE - pl.second;
+        EAD = M_PI_2 - rot_angle;
+        hb = ha * tan(EAD);
 
-        while (true)
+        while(true)
         {
-            intersection = {(pl.first + va) / TILE, (pl.second + vb) / TILE};
-
-            if ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(intersection) != world_map.end()) )
+            if ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end()) )
             {
                 va += TILE;
-                vb += TILE;
+                vb = va * tan(BAC);
             }
             else if (sqrt(va * va + vb * vb) >= vis_range)
                 return vis_range;
-            else if (world_map.find(intersection) != world_map.end())
+            else if (world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end())
                 return sqrt(va * va + vb * vb);
-            
-            intersection = {(pl.first + hb) / TILE, (pl.second + ha) / TILE};
 
-            if ((sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(intersection) != world_map.end()))
+            if ( (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
             {
                 ha += TILE;
-                hb += TILE;
+                hb = ha * tan(EAD);
             }
             else if (sqrt(ha * ha + hb * hb) >= vis_range)
                 return vis_range;
-            else if (world_map.find(intersection) != world_map.end())
+            else if (world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
+                return sqrt(ha * ha + hb * hb);
+
+        }
+    }
+    else if ( rot_angle > M_PI_2 && rot_angle < M_PI)
+    {std::cout << "rot_angle > M_PI_2 && rot_angle < M_PI\n";
+        int va, vb, ha, hb;
+        double BAC, EAD;
+
+        va = TILE - ((pl.first/TILE + 1) * TILE - pl.first);
+        BAC = M_PI - rot_angle;
+        vb = va * tan(BAC);
+
+        ha = (pl.second/TILE + 1) * TILE - pl.second;
+        EAD = M_PI_2 - BAC;
+        hb = ha * tan(EAD);
+
+        while(true)
+        {
+            if ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end()) )
+            {
+                va += TILE;
+                vb = va * tan(BAC);
+            }
+            else if (sqrt(va * va + vb * vb) >= vis_range)
+                return vis_range;
+            else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end())
+                return sqrt(va * va + vb * vb);
+
+            if ( (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
+            {
+                ha += TILE;
+                hb = ha * tan(EAD);
+            }
+            else if (sqrt(ha * ha + hb * hb) >= vis_range)
+                return vis_range;
+            else if (world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
                 return sqrt(ha * ha + hb * hb);
         }
     }
-    //////////////////////////////////////////////////////////////////////////////////////
+    else if (rot_angle > M_PI && rot_angle < 3 * M_PI / 2)
+    {std::cout << "rot_angle > M_PI && rot_angle < 3 * M_PI_2\n";
+        
+        int va, vb, ha, hb;
+        double BAC, EAD;
 
-    /*
-    std::cout << "sign = " << sign
-             << "\nres = " << res
-             << "\nintersection.x = " << intersection.first
-             << "\n&intersection.x = " << &intersection.first
-             << "\nintersection.y = " << intersection.second
-             << "\n&intersection.y = " << &intersection.second
-             << "\n*var_coord = " << *var_coord 
-            << "\nvar_coord = " << var_coord << std::endl; 
-    */
+        va =  TILE - ( (pl.first / TILE + 1) * TILE - pl.first );
+        BAC = rot_angle - M_PI;
+        vb = va * tan(BAC);
 
-    // Бросание луча
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    while ( (res < vis_range) && !(world_map.find(intersection) != world_map.end()) )
+        ha = TILE - ( (pl.second / TILE + 1) * TILE - pl.second );
+        EAD = 3* M_PI / 2 - rot_angle;
+        hb = ha * tan(EAD);
+        
+        if (hb == 0 || vb == 0) // Неправильное вычисление вещественных чисел компьютером 
+            goto metka;
+
+        while(true)
         {
-            // Прибавляем к расстоянию размер плитки
-            res += TILE;
+            
+            if ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end()) )
+            {
+                va += TILE;
+                vb = va * tan(BAC);
+            }
+            else if (sqrt(va * va + vb * vb) >= vis_range)
+                return vis_range;
+            else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end())
+                return sqrt(va * va + vb * vb);
 
-            // Изменяем точку пересечения вследствии изменения res
-            if (var_coord == &intersection.second)
-                *var_coord = (pl.second + sign * res) / TILE;
-            else if (var_coord == &intersection.first)
-                *var_coord = (pl.first + sign * res) / TILE;
-            /*
-            std::cout << "res = " << res 
-                << "\nintersection.x = " << intersection.first
-                << "\n&intersection.x = " << &intersection.first
-                << "\nintersection.y = " << intersection.second
-                << "\n&intersection.y = " << &intersection.second << std::endl;
-            */
+            if ( (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
+            {
+                ha += TILE;
+                hb = ha * tan(EAD);
+            }
+            else if (sqrt(ha * ha + hb * hb) >= vis_range)
+                return vis_range;
+            else if (world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end())
+                return sqrt(ha * ha + hb * hb);
         }
-        if ( res >= vis_range ) // Луч не достиг объекта
+    }
+    else if (rot_angle > 3 * M_PI_2 )
+    { std::cout << "rot_angle > 3 * M_PI_2 \n";
+        int va, vb, ha, hb;
+        double BAC, EAD;
+        
+        va = (pl.first/TILE + 1) * TILE - pl.first;
+        BAC = 2 * M_PI - rot_angle;
+        vb = va * tan(BAC);
+
+        ha =  TILE - ( (pl.second / TILE + 1) * TILE - pl.second );
+        EAD = M_PI_2 - (2 * M_PI - rot_angle);
+        hb = ha * tan(EAD);
+
+        while(true)
         {
-            return -1;
-        }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            if ( (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end()) )
+            {
+                va += TILE;
+                vb = va * tan(BAC);
+            }
+            else if (sqrt(va * va + vb * vb) >= vis_range)
+                return vis_range;
+            else if (world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end())
+                return sqrt(va * va + vb * vb);
 
-    // Возврат результата
-    if (sign == -1)
-        return res - TILE;
-    return res;
+            if ( (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
+            {
+                ha += TILE;
+                hb = ha * tan(EAD);
+            }
+            else if (sqrt(ha * ha + hb * hb) >= vis_range)
+                return vis_range;
+            else if (world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end())
+                return sqrt(ha * ha + hb * hb);
+        }
+    }
+    
+
 }
 
 
@@ -219,7 +284,7 @@ int main()
     sf::RenderWindow window{sf::VideoMode{1920, 1080},"Ray"};
     std::cout << "Start Game...\n";
     std::cout << "-----------------------------\n";
-    Coords player = {460, 330};
+    Coords player = {450, 350};
     std::cout << "Player init.\nPlayer Coords: (" << player.first << ';' << player.second << ")\nPlayer's TILE: (" <<  player.first / TILE << ';' << player.second / TILE << ")\n";
     std::cout << "-----------------------------\n";
     World_Map wm = init_world_map(text_map);
@@ -230,17 +295,11 @@ int main()
     }
 
 
-    double angle = 3 * M_PI / 2 + M_PI / 4;
+    double angle = 0;
 
 
 
-    distance d = raycast(wm,player, angle,5000);
-
-    std::cout << "distance = " << d << '\n';
-    draw_world_map(window, wm);
-    draw_player(window,player);
-    draw_line(window,player, d, angle);
-    window.display();
+    
 
 
     while (window.isOpen())
@@ -250,7 +309,22 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            angle += 0.0001;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) 
+            angle -= 0.0001;
+
+        window.clear();
+
+        distance d = raycast(wm,player, angle,5000);
+        
+        draw_world_map(window, wm);
+        draw_player(window,player);
+        draw_line(window,player, d, angle);
+        
+        window.display();
     }
 
 
