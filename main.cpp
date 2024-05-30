@@ -15,13 +15,13 @@ typedef std::set< Coords > World_Map;
 
 std::vector<std::string> text_map = 
 {
-    "0000100000",
-    "0001010001",
-    "0010001000",
-    "0100000100",
-    "0010001000",
-    "1001010000",
-    "0000100100"
+    "1111111111",
+    "1111011111",
+    "1110001111",
+    "1100000111",
+    "1110001111",
+    "1111011111",
+    "1111111111"
 };
 const int TILE = 100;
 
@@ -76,25 +76,32 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
 
         while(true)
         {
-            if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end()) )
+            if (hb >= va || ha >= vb)
             {
-                va += TILE;
-                vb = va * tan(BAC);
+                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end()) )
+                {
+                    va += TILE;
+                    vb = va * tan(BAC);
+                }
+                else if (sqrt(va * va + vb * vb) >= vis_range)
+                    vray_is_completed = true;
+                else if (world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end())
+                    return sqrt(va * va + vb * vb);
             }
-            else if (sqrt(va * va + vb * vb) >= vis_range)
-                vray_is_completed = true;
-            else if (world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end())
-                return sqrt(va * va + vb * vb);
+            if (!(hb >= va || ha >= vb))
+            {
+                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
+                {
+                    ha += TILE;
+                    hb = ha * tan(EAD);
+                }
+                else if (sqrt(ha * ha + hb * hb) >= vis_range)
+                    hray_is_completed = true;
+                else if (world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
+                    return sqrt(ha * ha + hb * hb);
+            }
 
-            if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
-            {
-                ha += TILE;
-                hb = ha * tan(EAD);
-            }
-            else if (sqrt(ha * ha + hb * hb) >= vis_range)
-                hray_is_completed = true;
-            else if (world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
-                return sqrt(ha * ha + hb * hb);
+            
 
             if (vray_is_completed && hray_is_completed)
                 return vis_range;
@@ -116,26 +123,30 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
 
         while(true)
         {
-            if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end()) )
+            if (hb >= va || ha >= vb)
             {
-                va += TILE;
-                vb = va * tan(BAC);
+                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end()) )
+                {
+                    va += TILE;
+                    vb = va * tan(BAC);
+                }
+                else if (sqrt(va * va + vb * vb) >= vis_range)
+                    vray_is_completed = true;
+                else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end())
+                    return sqrt(va * va + vb * vb);
             }
-            else if (sqrt(va * va + vb * vb) >= vis_range)
-                vray_is_completed = true;
-            else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end())
-                return sqrt(va * va + vb * vb);
-
-            if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
+            if (!(hb >= va || ha >= vb))
             {
-                ha += TILE;
-                hb = ha * tan(EAD);
+                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
+                {
+                    ha += TILE;
+                    hb = ha * tan(EAD);
+                }
+                else if (sqrt(ha * ha + hb * hb) >= vis_range)
+                    hray_is_completed = true;
+                else if (world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
+                    return sqrt(ha * ha + hb * hb);
             }
-            else if (sqrt(ha * ha + hb * hb) >= vis_range)
-                hray_is_completed = true;
-            else if (world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
-                return sqrt(ha * ha + hb * hb);
-
             if (vray_is_completed && hray_is_completed)
                 return vis_range;
         }
@@ -157,26 +168,30 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
 
         while(true)
         {
-            if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end()) )
+            if (hb >= va || ha >= vb)
             {
-                va += TILE;
-                vb = va * tan(BAC);
+                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end()) )
+                {
+                    va += TILE;
+                    vb = va * tan(BAC);
+                }
+                else if (sqrt(va * va + vb * vb) >= vis_range)
+                    vray_is_completed = true;
+                else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end())
+                    return sqrt(va * va + vb * vb);
             }
-            else if (sqrt(va * va + vb * vb) >= vis_range)
-                vray_is_completed = true;
-            else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end())
-                return sqrt(va * va + vb * vb);
-
-            if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
+            if (!(hb >= va || ha >= vb))
             {
-                ha += TILE;
-                hb = ha * tan(EAD);
+                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
+                {
+                    ha += TILE;
+                    hb = ha * tan(EAD);
+                }
+                else if (sqrt(ha * ha + hb * hb) >= vis_range)
+                    hray_is_completed = true;
+                else if (world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end())
+                    return sqrt(ha * ha + hb * hb);
             }
-            else if (sqrt(ha * ha + hb * hb) >= vis_range)
-                hray_is_completed = true;
-            else if (world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end())
-                return sqrt(ha * ha + hb * hb);
-            
             if ( hray_is_completed && vray_is_completed)
                 return vis_range;
         }
@@ -197,26 +212,30 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
 
         while(true)
         {
-            if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end()) )
+            if (hb >= va || ha >= vb)
             {
-                va += TILE;
-                vb = va * tan(BAC);
+                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end()) )
+                {
+                    va += TILE;
+                    vb = va * tan(BAC);
+                }
+                else if (sqrt(va * va + vb * vb) >= vis_range)
+                    vray_is_completed = true;
+                else if (world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end())
+                    return sqrt(va * va + vb * vb);
             }
-            else if (sqrt(va * va + vb * vb) >= vis_range)
-                vray_is_completed = true;
-            else if (world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end())
-                return sqrt(va * va + vb * vb);
-
-            if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
+            if (!(hb >= va || ha >= vb))
             {
-                ha += TILE;
-                hb = ha * tan(EAD);
+                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
+                {
+                    ha += TILE;
+                    hb = ha * tan(EAD);
+                }
+                else if (sqrt(ha * ha + hb * hb) >= vis_range)
+                    hray_is_completed = true;
+                else if (world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end())
+                    return sqrt(ha * ha + hb * hb);
             }
-            else if (sqrt(ha * ha + hb * hb) >= vis_range)
-                hray_is_completed = true;
-            else if (world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end())
-                return sqrt(ha * ha + hb * hb);
-            
             if (vray_is_completed && hray_is_completed)
                 return vis_range;
         }
