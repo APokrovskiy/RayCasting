@@ -15,13 +15,17 @@ typedef std::set< Coords > World_Map;
 
 std::vector<std::string> text_map = 
 {
-    "0000000000",
-    "0110001110",
-    "0110001110",
-    "0000000000",
-    "0011100010",
-    "0010001110",
-    "0000000000"
+    "11111111111111111111111",
+    "11100011100001111000001",
+    "11100011100000001000001",
+    "10000000000010001000001",
+    "10111000100011100000001",
+    "10100011100011100000001",
+    "10100011100000100000111",
+    "10100000000000000000001",
+    "10100011100001000100001",
+    "10111111100000011111001",
+    "11111111111111111111111"
 };
 const int TILE = 100;
 
@@ -39,6 +43,7 @@ World_Map init_world_map(std::vector<std::string>& text_map)
 
     return res;
 }
+
 
 double radians_normalise(double angle_in_radians)
 {
@@ -58,14 +63,19 @@ double radians_normalise(double angle_in_radians)
 // TODO Поменять структуру карты на обычный массив строк
 distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_range)
 {   
+    // 0 <= rot_angle <= 2 * M_PI
     rot_angle = radians_normalise(rot_angle);
 
-    int va, vb, ha, hb;
-    double BAC, EAD;
-    bool  vray_is_completed = false, hray_is_completed = false;
-    Coords vintersection, hintersection;
-    // TODO: Найти закономерность
-    // Определение углов треугольника
+    // Использованные переменные
+    //////////////////////////////////////////////////////////////
+    int va, vb, ha, hb;                                         // Катеты треугольников
+    double BAC, EAD;                                            // Углы треугольников
+    Coords vintersection, hintersection, vcell, hcell;          // Координаты пересечения и ячейки, с которыми лучи пересекаются
+    bool  vray_is_completed = false, hray_is_completed = false; // Луч перестал искать пересечения по вертикальным/горизонтальным линиям?
+    //////////////////////////////////////////////////////////////
+
+    // Определение углов треугольников
+    ///////////////////////////////////////////////////////////
     if (rot_angle >= 0 && rot_angle <= M_PI_2)
     {
         BAC = rot_angle;
@@ -86,78 +96,113 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
         BAC = 2 * M_PI - rot_angle;
         EAD = M_PI_2 - (2 * M_PI - rot_angle);
     }
+    ///////////////////////////////////////////////////////////
 
-    // Определение катетов
+
+    // Определение катетов треугольников
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
     va = (pl.first/TILE + 1) * TILE - pl.first; // Если (x > 0) на тригонометрической окружности
-    if ( rot_angle >= M_PI_2 && rot_angle <= 3 * M_PI_2) // Если же (x < 0) на тригонометрической окружности
+    if ( rot_angle >= M_PI_2 && rot_angle <= 3 * M_PI_2) // Если (x < 0) на тригонометрической окружности
         va = TILE - va;
     
     ha = (pl.second /TILE + 1)* TILE - pl.second; // Если (y < 0) на тригонометрической окружности
-    if (rot_angle >= 0 && rot_angle <=  M_PI) // Если же (y > 0) на тригонометрической окружности
+    if (rot_angle >= 0 && rot_angle <=  M_PI) // Если (y > 0) на тригонометрической окружности
         ha = TILE - ha;
 
     vb = va * tan(BAC);
     hb = ha * tan(EAD);
-
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     while (true)
     {
+        // Если происходит переполнение, при расчете расстояния
+        ////////////////////////////////////////////////////
         if (std::isnan(sqrt(va * va + vb * vb)))
             vray_is_completed = true;
         if (std::isnan(sqrt(ha * ha + hb * hb)))
             hray_is_completed = true;
+        ////////////////////////////////////////////////////
 
-        //Определение потенциальных точек пересечения
+        // Определение потенциальных координат пересечения
+        ////////////////////////////////////////////////////////////////
         if (rot_angle >= 0 && rot_angle <= M_PI_2)
         {
-            vintersection = {(pl.first + va)/TILE, (pl.second - vb)/TILE};
-            hintersection = {(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1};
+            vintersection = {(pl.first + va), (pl.second - vb)};
+            hintersection = {(pl.first + hb), (pl.second - ha) - TILE};
         }
         else if ( rot_angle >= M_PI_2 && rot_angle <= M_PI)
         {
-            vintersection = {(pl.first - va)/TILE - 1, (pl.second - vb)/TILE};
-            hintersection = {(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1};
+            vintersection = {(pl.first - va) - TILE, (pl.second - vb)};
+            hintersection = {(pl.first - hb), (pl.second - ha) - TILE};
         }
         else if (rot_angle >= M_PI && rot_angle <= 3 * M_PI / 2)
         {
-            vintersection = {(pl.first - va)/TILE - 1, (pl.second + vb)/TILE};
-            hintersection = {(pl.first - hb)/TILE, (pl.second + ha)/TILE};
+            vintersection = {(pl.first - va) - TILE, (pl.second + vb)};
+            hintersection = {(pl.first - hb), (pl.second + ha)};
         }
         else if (rot_angle >= 3 * M_PI_2 )
         {
-            vintersection = {(pl.first + va)/TILE,(pl.second + vb)/TILE}; 
-            hintersection = {(pl.first + hb)/TILE, (pl.second + ha)/TILE};
-        }
+            vintersection = {(pl.first + va),(pl.second + vb)}; 
+            hintersection = {(pl.first + hb), (pl.second + ha)};
+        }  
+        ////////////////////////////////////////////////////////////////
+
+        // Определение ячеек, с которыми пересекаются лучи 
+        //////////////////////////////////////////////////////////////////
+        vcell = {vintersection.first / TILE, vintersection.second / TILE};
+        hcell = {hintersection.first / TILE, hintersection.second / TILE};
+        //////////////////////////////////////////////////////////////////
         
+        // Поиск пересечения по вертикальным линиям
         if ((hb >= va || ha >= vb) || hray_is_completed)
+        {
+            if ( (vintersection.first % TILE == 0) && (vintersection.second % TILE == 0 )) // Если луч находится в точке пересечения 4 ячеек карты
             {
-                
-                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(vintersection) != world_map.end()) )
-                {
-                    va += TILE;
-                    vb = va * tan(BAC);
-                }
-                else if (sqrt(va * va + vb * vb) >= vis_range)
-                    vray_is_completed = true;
-                else if (world_map.find(vintersection) != world_map.end())
+                if  ( 
+                        (world_map.find({vcell.first - 1, vcell.second}) != world_map.end())     || 
+                        (world_map.find({vcell.first - 1, vcell.second - 1}) != world_map.end()) ||
+                        (world_map.find({vcell.first, vcell.second - 1}) != world_map.end()) 
+                    )
                     return sqrt(va * va + vb * vb);
             }
-            
-            if ((!(hb >= va || ha >= vb)) || vray_is_completed)
-            { 
-                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(hintersection) != world_map.end()) )
-                {
-                    ha += TILE;
-                    hb = ha * tan(EAD);
-                } 
-                else if (sqrt(ha * ha + hb * hb) >= vis_range)
-                    hray_is_completed = true;
-                else if (world_map.find(hintersection) != world_map.end())
+
+            if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(vcell) != world_map.end()) ) // Если стены нет
+            {
+                va += TILE;
+                vb = va * tan(BAC);
+            }
+            else if (sqrt(va * va + vb * vb) >= vis_range) // Длина луча >= Дальности видимости
+                vray_is_completed = true;
+            else if (world_map.find(vcell) != world_map.end()) // Если стена есть
+                return sqrt(va * va + vb * vb);
+        }
+
+        // Поиск пересечения по горизонтальным линиям
+        if ((!(hb >= va || ha >= vb)) || vray_is_completed)
+        { 
+            if ( (hintersection.first % TILE == 0) && (hintersection.second % TILE == 0 )) // Если луч находится в точке пересечения 4 ячеек карты
+            {
+                if  ( 
+                        (world_map.find({hcell.first - 1, hcell.second}) != world_map.end())     ||
+                        (world_map.find({hcell.first - 1, hcell.second - 1}) != world_map.end()) || 
+                        (world_map.find({hcell.first, hcell.second - 1}) != world_map.end()) 
+                    )
                     return sqrt(ha * ha + hb * hb);
             }
+
+            if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(hcell) != world_map.end()) ) // Если стены нет
+            {
+                ha += TILE;
+                hb = ha * tan(EAD);
+            } 
+            else if (sqrt(ha * ha + hb * hb) >= vis_range) // Длина луча >= Дальности видимости
+                hray_is_completed = true;
+            else if (world_map.find(hcell) != world_map.end()) // Если стена есть
+                return sqrt(ha * ha + hb * hb);
+        }
             
-            if (vray_is_completed && hray_is_completed)
-                return vis_range;
+        if (vray_is_completed && hray_is_completed)
+            return vis_range;
     }
 }
 
@@ -212,9 +257,6 @@ int main()
 
     double angle = 0;
 
-
-
-    
 
 
     while (window.isOpen())
