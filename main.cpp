@@ -63,7 +63,7 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
     int va, vb, ha, hb;
     double BAC, EAD;
     bool  vray_is_completed = false, hray_is_completed = false;
-
+    Coords vintersection, hintersection;
     // TODO: Найти закономерность
     // Определение углов треугольника
     if (rot_angle >= 0 && rot_angle <= M_PI_2)
@@ -99,155 +99,66 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
     vb = va * tan(BAC);
     hb = ha * tan(EAD);
 
-    if (rot_angle >= 0 && rot_angle <= M_PI_2)
-    { std::cout << "rot_angle >= 0 && rot_angle <= M_PI_2\n";
-        while(true)
+
+    while (true)
+    {
+        if (std::isnan(sqrt(va * va + vb * vb)))
+            vray_is_completed = true;
+        if (std::isnan(sqrt(ha * ha + hb * hb)))
+            hray_is_completed = true;
+
+        //Определение потенциальных точек пересечения
+        if (rot_angle >= 0 && rot_angle <= M_PI_2)
         {
-            if (std::isnan(sqrt(va * va + vb * vb)))
-                vray_is_completed = true;
-            if (std::isnan(sqrt(ha * ha + hb * hb)))
-                hray_is_completed = true;
-            if ((hb >= va || ha >= vb) || hray_is_completed)
+            vintersection = {(pl.first + va)/TILE, (pl.second - vb)/TILE};
+            hintersection = {(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1};
+        }
+        else if ( rot_angle >= M_PI_2 && rot_angle <= M_PI)
+        {
+            vintersection = {(pl.first - va)/TILE - 1, (pl.second - vb)/TILE};
+            hintersection = {(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1};
+        }
+        else if (rot_angle >= M_PI && rot_angle <= 3 * M_PI / 2)
+        {
+            vintersection = {(pl.first - va)/TILE - 1, (pl.second + vb)/TILE};
+            hintersection = {(pl.first - hb)/TILE, (pl.second + ha)/TILE};
+        }
+        else if (rot_angle >= 3 * M_PI_2 )
+        {
+            vintersection = {(pl.first + va)/TILE,(pl.second + vb)/TILE}; 
+            hintersection = {(pl.first + hb)/TILE, (pl.second + ha)/TILE};
+        }
+        
+        if ((hb >= va || ha >= vb) || hray_is_completed)
             {
                 
-                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end()) )
+                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find(vintersection) != world_map.end()) )
                 {
                     va += TILE;
                     vb = va * tan(BAC);
                 }
                 else if (sqrt(va * va + vb * vb) >= vis_range)
                     vray_is_completed = true;
-                else if (world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end())
+                else if (world_map.find(vintersection) != world_map.end())
                     return sqrt(va * va + vb * vb);
             }
             
             if ((!(hb >= va || ha >= vb)) || vray_is_completed)
             { 
-                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
+                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find(hintersection) != world_map.end()) )
                 {
                     ha += TILE;
                     hb = ha * tan(EAD);
                 } 
                 else if (sqrt(ha * ha + hb * hb) >= vis_range)
                     hray_is_completed = true;
-                else if (world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
+                else if (world_map.find(hintersection) != world_map.end())
                     return sqrt(ha * ha + hb * hb);
             }
             
             if (vray_is_completed && hray_is_completed)
                 return vis_range;
-        }
     }
-    else if ( rot_angle >= M_PI_2 && rot_angle <= M_PI)
-    { std::cout << "rot_angle >= M_PI_2 && rot_angle <= M_PI\n";
-        while(true)
-        {
-            if (std::isnan(sqrt(va * va + vb * vb)))
-                vray_is_completed = true;
-            if (std::isnan(sqrt(ha * ha + hb * hb)))
-                hray_is_completed = true;
-            if ((hb >= va || ha >= vb) || hray_is_completed)
-            {
-                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end()) )
-                {
-                    va += TILE;
-                    vb = va * tan(BAC);
-                }
-                else if (sqrt(va * va + vb * vb) >= vis_range)
-                    vray_is_completed = true;
-                else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end())
-                    return sqrt(va * va + vb * vb);
-            }
-            if ((!(hb >= va || ha >= vb)) || vray_is_completed)
-            {
-                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
-                {
-                    ha += TILE;
-                    hb = ha * tan(EAD);
-                }
-                else if (sqrt(ha * ha + hb * hb) >= vis_range)
-                    hray_is_completed = true;
-                else if (world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
-                    return sqrt(ha * ha + hb * hb);
-            }
-            if (vray_is_completed && hray_is_completed)
-                return vis_range;
-        }
-    }
-    else if (rot_angle >= M_PI && rot_angle <= 3 * M_PI / 2)
-    { std::cout << "rot_angle >= M_PI && rot_angle <= 3 * M_PI / 2\n";
-        while(true)
-        {
-            if (std::isnan(sqrt(va * va + vb * vb)))
-                vray_is_completed = true;
-            if (std::isnan(sqrt(ha * ha + hb * hb)))
-                hray_is_completed = true;
-            if ((hb >= va || ha >= vb) || hray_is_completed)
-            {
-                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end()) )
-                {
-                    va += TILE;
-                    vb = va * tan(BAC);
-                }
-                else if (sqrt(va * va + vb * vb) >= vis_range)
-                    vray_is_completed = true;
-                else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end())
-                    return sqrt(va * va + vb * vb);
-            }
-            if ((!(hb >= va || ha >= vb)) || vray_is_completed)
-            {
-                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
-                {
-                    ha += TILE;
-                    hb = ha * tan(EAD);
-                }
-                else if (sqrt(ha * ha + hb * hb) >= vis_range)
-                    hray_is_completed = true;
-                else if (world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end())
-                    return sqrt(ha * ha + hb * hb);
-            }
-            if ( hray_is_completed && vray_is_completed)
-                return vis_range;
-        }
-    }
-    else if (rot_angle >= 3 * M_PI_2 )
-    {std::cout << "rot_angle >= 3 * M_PI_2\n";
-        while(true)
-        {
-            if (std::isnan(sqrt(va * va + vb * vb)))
-                vray_is_completed = true;
-            if (std::isnan(sqrt(ha * ha + hb * hb)))
-                hray_is_completed = true;
-            if ((hb >= va || ha >= vb) || hray_is_completed)
-            {
-                if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end()) )
-                {
-                    va += TILE;
-                    vb = va * tan(BAC);
-                }
-                else if (sqrt(va * va + vb * vb) >= vis_range)
-                    vray_is_completed = true;
-                else if (world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end())
-                    return sqrt(va * va + vb * vb);
-            }
-            if ((!(hb >= va || ha >= vb)) || vray_is_completed)
-            {
-                if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
-                {
-                    ha += TILE;
-                    hb = ha * tan(EAD);
-                }
-                else if (sqrt(ha * ha + hb * hb) >= vis_range)
-                    hray_is_completed = true;
-                else if (world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end())
-                    return sqrt(ha * ha + hb * hb);
-            }
-            if (vray_is_completed && hray_is_completed)
-                return vis_range;
-        }
-    }
-    
-
 }
 
 
