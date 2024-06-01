@@ -15,13 +15,13 @@ typedef std::set< Coords > World_Map;
 
 std::vector<std::string> text_map = 
 {
-    "1111111111",
-    "1111011111",
-    "1110001111",
-    "1100000111",
-    "1110001111",
-    "1111011111",
-    "1111111111"
+    "0000000000",
+    "0110001110",
+    "0110001110",
+    "0000000000",
+    "0011100010",
+    "0010001110",
+    "0000000000"
 };
 const int TILE = 100;
 
@@ -59,25 +59,57 @@ double radians_normalise(double angle_in_radians)
 distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_range)
 {   
     rot_angle = radians_normalise(rot_angle);
-    
+
+    int va, vb, ha, hb;
+    double BAC, EAD;
+    bool  vray_is_completed = false, hray_is_completed = false;
+
+    // TODO: Найти закономерность
+    // Определение углов треугольника
     if (rot_angle >= 0 && rot_angle <= M_PI_2)
     {
-        int va, vb, ha, hb;
-        double BAC, EAD;
-        bool  vray_is_completed = false, hray_is_completed = false;
-
-        va = (pl.first/TILE + 1) * TILE - pl.first;
         BAC = rot_angle;
-        vb = va * tan(BAC);
-
-        ha = (pl.second /TILE + 1)* TILE - pl.second;
         EAD = M_PI_2 - rot_angle;
-        hb = ha * tan(EAD);
+    }
+    else if ( rot_angle >= M_PI_2 && rot_angle <= M_PI)
+    {
+        BAC = M_PI - rot_angle;
+        EAD = M_PI_2 - BAC;
+    }
+    else if (rot_angle >= M_PI && rot_angle <= 3 * M_PI / 2)
+    {
+        BAC = rot_angle - M_PI;
+        EAD = 3* M_PI / 2 - rot_angle;
+    }
+    else if (rot_angle >= 3 * M_PI_2 )
+    {
+        BAC = 2 * M_PI - rot_angle;
+        EAD = M_PI_2 - (2 * M_PI - rot_angle);
+    }
 
+    // Определение катетов
+    va = (pl.first/TILE + 1) * TILE - pl.first; // Если (x > 0) на тригонометрической окружности
+    if ( rot_angle >= M_PI_2 && rot_angle <= 3 * M_PI_2) // Если же (x < 0) на тригонометрической окружности
+        va = TILE - va;
+    
+    ha = (pl.second /TILE + 1)* TILE - pl.second; // Если (y < 0) на тригонометрической окружности
+    if (rot_angle >= 0 && rot_angle <=  M_PI) // Если же (y > 0) на тригонометрической окружности
+        ha = TILE - ha;
+
+    vb = va * tan(BAC);
+    hb = ha * tan(EAD);
+
+    if (rot_angle >= 0 && rot_angle <= M_PI_2)
+    { std::cout << "rot_angle >= 0 && rot_angle <= M_PI_2\n";
         while(true)
         {
-            if (hb >= va || ha >= vb)
+            if (std::isnan(sqrt(va * va + vb * vb)))
+                vray_is_completed = true;
+            if (std::isnan(sqrt(ha * ha + hb * hb)))
+                hray_is_completed = true;
+            if ((hb >= va || ha >= vb) || hray_is_completed)
             {
+                
                 if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end()) )
                 {
                     va += TILE;
@@ -88,42 +120,33 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
                 else if (world_map.find({(pl.first + va)/TILE, (pl.second - vb)/TILE}) != world_map.end())
                     return sqrt(va * va + vb * vb);
             }
-            if (!(hb >= va || ha >= vb))
-            {
+            
+            if ((!(hb >= va || ha >= vb)) || vray_is_completed)
+            { 
                 if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
                 {
                     ha += TILE;
                     hb = ha * tan(EAD);
-                }
+                } 
                 else if (sqrt(ha * ha + hb * hb) >= vis_range)
                     hray_is_completed = true;
                 else if (world_map.find({(pl.first + hb)/TILE, (pl.second - ha)/TILE - 1}) != world_map.end())
                     return sqrt(ha * ha + hb * hb);
             }
-
             
-
             if (vray_is_completed && hray_is_completed)
                 return vis_range;
         }
     }
     else if ( rot_angle >= M_PI_2 && rot_angle <= M_PI)
-    {
-        int va, vb, ha, hb;
-        double BAC, EAD;
-        bool  vray_is_completed = false, hray_is_completed = false;
-
-        va = TILE - ((pl.first/TILE + 1) * TILE - pl.first);
-        BAC = M_PI - rot_angle;
-        vb = va * tan(BAC);
-
-        ha = (pl.second/TILE + 1) * TILE - pl.second;
-        EAD = M_PI_2 - BAC;
-        hb = ha * tan(EAD);
-
+    { std::cout << "rot_angle >= M_PI_2 && rot_angle <= M_PI\n";
         while(true)
         {
-            if (hb >= va || ha >= vb)
+            if (std::isnan(sqrt(va * va + vb * vb)))
+                vray_is_completed = true;
+            if (std::isnan(sqrt(ha * ha + hb * hb)))
+                hray_is_completed = true;
+            if ((hb >= va || ha >= vb) || hray_is_completed)
             {
                 if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end()) )
                 {
@@ -135,7 +158,7 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
                 else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second - vb)/TILE}) != world_map.end())
                     return sqrt(va * va + vb * vb);
             }
-            if (!(hb >= va || ha >= vb))
+            if ((!(hb >= va || ha >= vb)) || vray_is_completed)
             {
                 if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/ TILE, (pl.second - ha)/TILE - 1}) != world_map.end()) )
                 {
@@ -152,23 +175,14 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
         }
     }
     else if (rot_angle >= M_PI && rot_angle <= 3 * M_PI / 2)
-    {
-        
-        int va, vb, ha, hb;
-        double BAC, EAD;
-        bool  vray_is_completed = false, hray_is_completed = false;
-        va =  TILE - ( (pl.first / TILE + 1) * TILE - pl.first );
-        BAC = rot_angle - M_PI;
-        vb = va * tan(BAC);
-
-        ha = TILE - ( (pl.second / TILE + 1) * TILE - pl.second );
-        EAD = 3* M_PI / 2 - rot_angle;
-        hb = ha * tan(EAD);
-        
-
+    { std::cout << "rot_angle >= M_PI && rot_angle <= 3 * M_PI / 2\n";
         while(true)
         {
-            if (hb >= va || ha >= vb)
+            if (std::isnan(sqrt(va * va + vb * vb)))
+                vray_is_completed = true;
+            if (std::isnan(sqrt(ha * ha + hb * hb)))
+                hray_is_completed = true;
+            if ((hb >= va || ha >= vb) || hray_is_completed)
             {
                 if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end()) )
                 {
@@ -180,7 +194,7 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
                 else if (world_map.find({(pl.first - va)/TILE - 1, (pl.second + vb)/TILE}) != world_map.end())
                     return sqrt(va * va + vb * vb);
             }
-            if (!(hb >= va || ha >= vb))
+            if ((!(hb >= va || ha >= vb)) || vray_is_completed)
             {
                 if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first - hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
                 {
@@ -197,22 +211,14 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
         }
     }
     else if (rot_angle >= 3 * M_PI_2 )
-    {
-        int va, vb, ha, hb;
-        double BAC, EAD;
-        bool  vray_is_completed = false, hray_is_completed = false;
-
-        va = (pl.first/TILE + 1) * TILE - pl.first;
-        BAC = 2 * M_PI - rot_angle;
-        vb = va * tan(BAC);
-
-        ha =  TILE - ( (pl.second / TILE + 1) * TILE - pl.second );
-        EAD = M_PI_2 - (2 * M_PI - rot_angle);
-        hb = ha * tan(EAD);
-
+    {std::cout << "rot_angle >= 3 * M_PI_2\n";
         while(true)
         {
-            if (hb >= va || ha >= vb)
+            if (std::isnan(sqrt(va * va + vb * vb)))
+                vray_is_completed = true;
+            if (std::isnan(sqrt(ha * ha + hb * hb)))
+                hray_is_completed = true;
+            if ((hb >= va || ha >= vb) || hray_is_completed)
             {
                 if (!vray_is_completed && (sqrt(va * va + vb * vb) < vis_range) && !(world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end()) )
                 {
@@ -224,7 +230,7 @@ distance raycast(World_Map world_map, Coords pl, double rot_angle, distance vis_
                 else if (world_map.find({(pl.first + va)/TILE,(pl.second + vb)/TILE}) != world_map.end())
                     return sqrt(va * va + vb * vb);
             }
-            if (!(hb >= va || ha >= vb))
+            if ((!(hb >= va || ha >= vb)) || vray_is_completed)
             {
                 if (!hray_is_completed && (sqrt(ha * ha + hb * hb) < vis_range) && !(world_map.find({(pl.first + hb)/TILE, (pl.second + ha)/TILE}) != world_map.end()) )
                 {
@@ -279,6 +285,7 @@ void draw_line(sf::RenderWindow& w,Coords pl, distance dist, double rot_angle)
 int main()
 {
     sf::RenderWindow window{sf::VideoMode{1920, 1080},"Ray"};
+    window.setFramerateLimit(60);
     std::cout << "Start Game...\n";
     std::cout << "-----------------------------\n";
     Coords player = {450, 350};
@@ -308,15 +315,26 @@ int main()
                 window.close();
             
         }
+        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            angle += 0.0001;
+            angle += 0.01;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) 
-            angle -= 0.0001;
+            angle -= 0.01;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+            player.second -= 1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            player.first -= 1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            player.second += 1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            player.first += 1;
+        
 
         window.clear();
 
-        distance d = raycast(wm,player, angle,5000);
         
+
+        distance d = raycast(wm,player, angle,5000);
         draw_world_map(window, wm);
         draw_player(window,player);
         draw_line(window,player, d, angle);
