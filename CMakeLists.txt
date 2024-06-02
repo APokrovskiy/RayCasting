@@ -43,7 +43,7 @@ set(SFML_BUILD_WINDOW ON)
 FetchContent_MakeAvailable(sfml)
 
 # Создание исполняемого файла
-add_executable(${PROJECT_NAME} "main.cpp")
+add_executable(${PROJECT_NAME} "main.cpp" "ray-cast/ray-cast.hpp" "ray-cast/ray-cast.cpp")
 
 # Линковка Библиотеки с Исполняемым файлом
 target_link_libraries(${PROJECT_NAME} PRIVATE 
