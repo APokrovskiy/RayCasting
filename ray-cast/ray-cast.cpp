@@ -1,8 +1,9 @@
 #define _USE_MATH_DEFINES
 #include "./ray-cast.hpp"
-
+#define dbgvar(VAR) #VAR " = " << VAR
 #include <set>
 #include <cmath>
+#include <iostream>
 
 bool rc::Coords::operator==(rc::Coords other)
 {
@@ -67,10 +68,14 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
     //////////////////////////////////////////////////////////////
     int va, vb, ha, hb;                                         // Катеты треугольников
     double BAC, EAD;                                            // Углы треугольников
-    Coords vintersection, hintersection, vcell, hcell;          // Координаты пересечения и ячейки, с которыми лучи пересекаются
+    Coords dcell, vintersection, hintersection, vcell, hcell;   // Координаты пересечения и ячейки, с которыми лучи пересекаются
     bool  vray_is_completed = false, hray_is_completed = false; // Луч перестал искать пересечения по вертикальным/горизонтальным линиям?
     //////////////////////////////////////////////////////////////
+    
 
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
     // Определение углов треугольников
     ///////////////////////////////////////////////////////////
     if (rot_a >= 0 && rot_a <= M_PI_2)
@@ -95,7 +100,9 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
     }
     ///////////////////////////////////////////////////////////
 
-
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
     // Определение катетов треугольников
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     va = (cmr.x / cell_sz + 1) * cell_sz - cmr.x; // Если (x > 0) на тригонометрической окружности
@@ -109,7 +116,9 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
     vb = va * tan(BAC);
     hb = ha * tan(EAD);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
+    // НАЙТИ ЗАКОНОМЕРНОСТЬ
     while (true)
     {
         // Если происходит переполнение, при расчете расстояния
@@ -119,7 +128,7 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
         if (std::isnan(sqrt(ha * ha + hb * hb)))
             hray_is_completed = true;
         ////////////////////////////////////////////////////
-
+        
         // Определение потенциальных координат пересечения
         ////////////////////////////////////////////////////////////////
         if (rot_a >= 0 && rot_a <= M_PI_2)
@@ -155,11 +164,13 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
         {
             if ( (vintersection.x % cell_sz == 0) && (vintersection.y % cell_sz == 0 )) // Если луч находится в точке пересечения 4 ячеек карты
             {
-                if  ( 
-                        (wm.find({vcell.x - 1, vcell.y}) != wm.end())     || 
-                        (wm.find({vcell.x - 1, vcell.y - 1}) != wm.end()) ||
-                        (wm.find({vcell.x, vcell.y - 1}) != wm.end()) 
-                    )
+                dcell = {vcell.x, vcell.y};
+                if (rot_a >= 0 && rot_a <= M_PI_2)
+                    dcell.y--;
+                else if ( rot_a >= M_PI_2 && rot_a <= M_PI)
+                    dcell.y--;
+                
+                if (wm.find(dcell) != wm.end())
                     return sqrt(va * va + vb * vb);
             }
 
@@ -179,11 +190,13 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
         { 
             if ( (hintersection.x % cell_sz == 0) && (hintersection.y % cell_sz == 0 )) // Если луч находится в точке пересечения 4 ячеек карты
             {
-                if  ( 
-                        (wm.find({hcell.x - 1, hcell.y}) != wm.end())     ||
-                        (wm.find({hcell.x - 1, hcell.y - 1}) != wm.end()) || 
-                        (wm.find({hcell.x, hcell.y - 1}) != wm.end()) 
-                    )
+                dcell = {hcell.x, hcell.y};
+                if ( rot_a >= M_PI_2 && rot_a <= M_PI)
+                    dcell.x--; 
+                else if (rot_a >= M_PI && rot_a <= 3 * M_PI / 2)
+                    dcell.x--;
+                 
+                if (wm.find(dcell) != wm.end())
                     return sqrt(ha * ha + hb * hb);
             }
 
@@ -194,8 +207,8 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
             } 
             else if (sqrt(ha * ha + hb * hb) >= vis_r) // Длина луча >= Дальности видимости
                 hray_is_completed = true;
-            else if (wm.find(hcell) != wm.end()) // Если стена есть
-                return sqrt(ha * ha + hb * hb);
+            else if (wm.find(hcell) != wm.end()) // Если стена есть    
+                    return sqrt(ha * ha + hb * hb);
         }
             
         if (vray_is_completed && hray_is_completed)
@@ -203,3 +216,16 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
     }
 }
 
+std::vector<std::pair<unsigned int, double>> rc::ray_casting(const std::set<rc::Coords>& world_map, int cell_size, rc::Coords camera,double rotation_angle, unsigned int visual_range, double fov, int n_rays)
+{
+    std::vector<std::pair<unsigned int, double>> rays(n_rays, {5,6});
+    
+    int i = 0;
+    for(double cur_angle = rotation_angle - (fov/2); i < n_rays; cur_angle += (fov/n_rays) )
+    {
+        rays[i].first = rc::ray_cast(world_map, cell_size,camera, cur_angle,visual_range);
+        rays[i].second = cur_angle;
+        i++;
+    }
+    return rays;
+}

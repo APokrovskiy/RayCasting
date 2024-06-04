@@ -1,4 +1,6 @@
 #define _USE_MATH_DEFINES
+
+#define dbgvar(VAR) #VAR " = " << VAR
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
@@ -11,17 +13,17 @@
 
 std::vector<std::string> text_map = 
 {
-    "11111111111111111111111",
-    "11100011100001111000001",
-    "11100011100000001000001",
-    "10000000000010001000001",
-    "10111000100011100000001",
-    "10100011100011100000001",
-    "10100011100000100000111",
-    "10100000000000000000001",
-    "10100011100001000100001",
-    "10111111100000011111001",
-    "11111111111111111111111"
+    "11111111111111",
+    "11010101010101",
+    "10000011110001",
+    "11000000001101",
+    "10011110001101",
+    "11011000001101",
+    "10011001000001",
+    "11000000000001",
+    "10001100001001",
+    "11001000001001",
+    "11111111111111"
 };
 const int TILE = 100;
 
@@ -31,7 +33,7 @@ double radians_normalise(double angle_in_radians); // 0 <= angle <= 2 * M_PI
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 void draw_world_map(sf::RenderWindow& w, std::set<rc::Coords>& m);
 void draw_player(sf::RenderWindow& w,rc::Coords& pl);
-void draw_line(sf::RenderWindow& w,rc::Coords pl, int dist, double rot_angle);
+void draw_line(sf::RenderWindow& w,rc::Coords pl, int dist, double rot_angle, sf::Color color = sf::Color::Red);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -44,11 +46,13 @@ int main()
     std::set<rc::Coords> wm = rc::init_world_map(text_map, '1');
 
 
-
     double angle = 0;
 
 
-
+    ///////////////////////////////////////////
+    int n_rays = 10000;
+    std::vector<std::pair<unsigned int, double>> rays(n_rays);
+    ///////////////////////////////////////////
     while (window.isOpen())
     {
         sf::Event event;
@@ -75,11 +79,16 @@ int main()
 
         window.clear();
 
-        int d = rc::ray_cast(wm,TILE,player, angle,5000);
         draw_world_map(window, wm);
         draw_player(window,player);
-        draw_line(window,player, d, angle);
-        
+        rays = rc::ray_casting(wm,TILE,player,angle, 5000, M_PI/3, n_rays);
+        for (auto p: rays)
+        {
+            //std::cout << dbgvar(p.first) << ' ' << dbgvar(p.second) << '\n';
+            draw_line(window,player, p.first, p.second, sf::Color::White);
+        }
+        int d = rc::ray_cast(wm,TILE,player, angle,5000);
+        draw_line(window,player, d , angle, sf::Color::Blue);
         window.display();
     }
 
@@ -115,6 +124,7 @@ void draw_world_map(sf::RenderWindow& w, std::set<rc::Coords>& m)
     {
         sf::RectangleShape r{{TILE, TILE}};
         r.setPosition({crd.x * TILE,crd.y * TILE});
+        r.setFillColor(sf::Color::Cyan);
         w.draw(r);
     }
 }
@@ -125,14 +135,14 @@ void draw_player(sf::RenderWindow& w,rc::Coords& pl)
     c.setFillColor(sf::Color::Blue);
     w.draw(c);
 }
-void draw_line(sf::RenderWindow& w,rc::Coords pl, int dist, double rot_angle)
+void draw_line(sf::RenderWindow& w,rc::Coords pl, int dist, double rot_angle, sf::Color color)
 {
     rot_angle = radians_normalise(rot_angle);
     sf::VertexArray line{ sf::Lines, 2 };
     line[0] = sf::Vector2f{pl.x, pl.y};
     line[1] = sf::Vector2f{pl.x + dist * cos(rot_angle), pl.y - dist * sin(rot_angle) };
-    line[0].color = sf::Color::Red;
-    line[1].color = sf::Color::Red;
+    line[0].color = color;
+    line[1].color = color;
     w.draw(line);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////

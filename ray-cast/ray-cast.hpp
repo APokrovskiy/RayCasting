@@ -22,4 +22,5 @@ namespace rc
 
     unsigned int ray_cast(const std::set<rc::Coords>& world_map, int cell_size, rc::Coords camera, double rotation_angle, unsigned int visual_range);
     
+    std::vector<std::pair<unsigned int, double>> ray_casting(const std::set<rc::Coords>& world_map, int cell_size, rc::Coords camera,double rotation_angle, unsigned int visual_range, double fov, int n_rays);
 }
