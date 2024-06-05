@@ -1,6 +1,6 @@
 #define _USE_MATH_DEFINES
 #include "./ray-cast.hpp"
-#define dbgvar(VAR) #VAR " = " << VAR
+
 #include <set>
 #include <cmath>
 #include <iostream>
@@ -58,7 +58,6 @@ static double radians_normalise(double angle_in_radians)
     return angle_in_radians;
 }
 
-
 unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coords cmr, double rot_a, unsigned int vis_r)
 {   
     // 0 <= rot_angle <= 2 * M_PI
@@ -72,10 +71,6 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
     bool  vray_is_completed = false, hray_is_completed = false; // Луч перестал искать пересечения по вертикальным/горизонтальным линиям?
     //////////////////////////////////////////////////////////////
     
-
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
     // Определение углов треугольников
     ///////////////////////////////////////////////////////////
     if (rot_a >= 0 && rot_a <= M_PI_2)
@@ -100,9 +95,6 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
     }
     ///////////////////////////////////////////////////////////
 
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
     // Определение катетов треугольников
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     va = (cmr.x / cell_sz + 1) * cell_sz - cmr.x; // Если (x > 0) на тригонометрической окружности
@@ -116,9 +108,7 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
     vb = va * tan(BAC);
     hb = ha * tan(EAD);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
-    // НАЙТИ ЗАКОНОМЕРНОСТЬ
+
     while (true)
     {
         // Если происходит переполнение, при расчете расстояния
@@ -218,14 +208,10 @@ unsigned int rc::ray_cast(const std::set<rc::Coords>& wm, int cell_sz, rc::Coord
 
 std::vector<std::pair<unsigned int, double>> rc::ray_casting(const std::set<rc::Coords>& world_map, int cell_size, rc::Coords camera,double rotation_angle, unsigned int visual_range, double fov, int n_rays)
 {
-    std::vector<std::pair<unsigned int, double>> rays(n_rays, {5,6});
+    std::vector<std::pair<unsigned int, double>> rays(n_rays);
     
     int i = 0;
     for(double cur_angle = rotation_angle - (fov/2); i < n_rays; cur_angle += (fov/n_rays) )
-    {
-        rays[i].first = rc::ray_cast(world_map, cell_size,camera, cur_angle,visual_range);
-        rays[i].second = cur_angle;
-        i++;
-    }
+        rays[i++] = {rc::ray_cast(world_map, cell_size,camera, cur_angle,visual_range), cur_angle};
     return rays;
 }
