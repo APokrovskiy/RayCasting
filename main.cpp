@@ -11,17 +11,17 @@
 
 std::vector<std::string> text_map = 
 {
-    "11111111111111",
-    "11010101010101",
-    "10000011110001",
-    "11000000001101",
-    "10011110101101",
-    "11011000001101",
-    "10011001000001",
-    "11011001100101",
-    "10001100101001",
-    "11111000101001",
-    "11111111111111"
+    "1111111111111111111111",
+    "1000000000000000000001",
+    "1000001000000001000001",
+    "1000000000000000000001",
+    "1000000010000100000001",
+    "1000000001111000000001",
+    "1000000010000100000001",
+    "1000000000000000000001",
+    "1000001000000001000001",
+    "1000010000000000100001",
+    "1111111111111111111111"
 };
 const int TILE = 100;
 
@@ -32,9 +32,10 @@ double radians_normalise(double angle_in_radians); // 0 <= angle <= 2 * M_PI
 void draw_world_map(sf::RenderWindow& w, std::set<rc::Coords>& m);
 void draw_camera(sf::RenderWindow& w,const rc::Coords& cmr);
 void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, double rot_angle, sf::Color color = sf::Color::Red);
+void rendering_img(sf::RenderWindow& win, std::vector<std::pair<unsigned int, double>>& rays, double fov);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class Camera 
 {
     sf::Vector2f pos; 
@@ -65,7 +66,30 @@ public:
             rot_angle += 0.01; // Поворот направо
 }
 };
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void rendering_img(sf::RenderWindow& win, std::vector<std::pair<unsigned int, double>>& rays, double fov) 
+{
+    float dist_to_scrn = rays.size() / (2 * std::tan(fov / 2));
+    float projection_coeff = 3 * dist_to_scrn * TILE;
+    float scale = static_cast<float>(win.getSize().x) / rays.size();
+    
+    const unsigned int raysSize = rays.size();
+    const sf::Vector2u windowSize = win.getSize();
+
+
+    for (unsigned int i = 0; i < raysSize; ++i) {
+        const auto& ray = rays[i];
+        float projection_wall_height = projection_coeff / ray.first;
+        
+        sf::Uint8 r_color = static_cast<sf::Uint8>(255 / (1 + ray.first * 0.004));
+        
+        sf::RectangleShape r{ sf::Vector2f{(float)scale, projection_wall_height} };
+        r.setPosition({ i * static_cast<float>(scale), windowSize.y / 2 - projection_wall_height / 2 });
+        r.setFillColor(sf::Color{ r_color, r_color, r_color });
+        
+        win.draw(r);
+    }
+}
 
 /*
 В SFML (Simple and Fast Multimedia Library) используются координаты типа float, а не int, потому что координаты с плавающей запятой обеспечивают более гладкое и точное позиционирование объектов на экране.
@@ -101,12 +125,13 @@ int main()
         window.clear();
         rc::Coords cmrcoords = {cmr.get_position().x, cmr.get_position().y};
         //draw_world_map(window, wm); // Отрисовка карты
-        rays = rc::ray_casting(wm,TILE,cmrcoords,cmr.get_rotation_angle(), 5000, 2 * M_PI, n_rays);
-        for (auto p: rays)
-            draw_line(window,cmrcoords, p.first, p.second, sf::Color::White);
-        int d = rc::ray_cast(wm,TILE,cmrcoords, cmr.get_rotation_angle(),5000);
-        draw_line(window,cmrcoords, d , cmr.get_rotation_angle(), sf::Color::Blue); // Отрисовка направления камеры
+        rays = rc::ray_casting(wm,TILE,cmrcoords,cmr.get_rotation_angle(), 5000, M_PI/3, n_rays);
+        // for (auto p: rays)
+        //     draw_line(window,cmrcoords, p.first, p.second, sf::Color::White);
+        // int d = rc::ray_cast(wm,TILE,cmrcoords, cmr.get_rotation_angle(),5000);
+        // draw_line(window,cmrcoords, d , cmr.get_rotation_angle(), sf::Color::Blue); // Отрисовка направления камеры
         //draw_camera(window,cmrcoords); // Отрисовка Камеры
+        rendering_img(window,rays, M_PI/3);
         window.display();
     }
 
