@@ -44,7 +44,7 @@ std::set< rc::Coords > rc::init_world_map(std::vector<std::string>& text_map, ch
 }
 
 
-static double radians_normalise(double angle_in_radians)
+double rc::radians_normalise(double angle_in_radians)
 {
     while(angle_in_radians >= 2 * M_PI)
     {

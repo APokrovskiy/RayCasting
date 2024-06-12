@@ -42,8 +42,25 @@ set(SFML_BUILD_WINDOW ON)
 # Активация SFML
 FetchContent_MakeAvailable(sfml)
 
+# Подключение Хедеров
+include_directories("./headers")
+
+set(SOURCES 
+    "source/main.cpp"
+    "source/ray-cast.cpp"
+    "source/Camera.cpp"
+)
+
+set(HEADERS
+    "headers/ray-cast.hpp"
+    "headers/Camera.hpp"
+)
+
 # Создание исполняемого файла
-add_executable(${PROJECT_NAME} "main.cpp" "ray-cast/ray-cast.hpp" "ray-cast/ray-cast.cpp")
+add_executable(${PROJECT_NAME} 
+    ${SOURCES}
+    ${HEADERS}
+)
 
 # Линковка Библиотеки с Исполняемым файлом
 target_link_libraries(${PROJECT_NAME} PRIVATE 
