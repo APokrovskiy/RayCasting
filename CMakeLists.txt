@@ -68,3 +68,16 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-system
     sfml-audio
 )
+
+
+# Программа GUI (Без консоли)
+if(UNIX AND NOT APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mwindows")
+elseif(WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE true)
+elseif(APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
+    )
+endif()

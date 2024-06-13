@@ -22,7 +22,7 @@ public:
     {
         for (rc::Coords crd: wm)
         {
-            sf::RectangleShape r{{tile, tile}}; // TODO: Инициализация в цикле
+            sf::RectangleShape r{{tile, tile}};
             r.setPosition({crd.x * tile,crd.y * tile});
             r.setFillColor(sf::Color::Cyan);
             win.draw(r);

@@ -1,11 +1,8 @@
 #include "Camera.hpp"
 
-#include <cmath>
 #include <exception>
 
 Camera::Camera(World& w): world(w){}
-
-
 
  // Геттеры
 inline sf::Vector2f Camera::get_position() const
@@ -18,7 +15,7 @@ inline double Camera::get_rotation() const
     return rot_a;
 }
 
-inline int Camera::get_speed() const
+inline double Camera::get_speed() const
 {
     return speed;
 }
@@ -46,14 +43,11 @@ void Camera::set_field_of_view(double angle_in_radians)
         throw std::logic_error("Camera.field_of_view must be in range  0 < angle <= 2* M_PI\n");
 }
 
-
-void Camera::set_speed(int new_speed)
+void Camera::set_speed(double new_speed)
 {
     speed = new_speed;
     if (speed <= 0)
-    {
         throw std::logic_error("Camera.speed must be greater than 0\n");
-    }
 }
 
 void Camera::set_rotation(double angle_in_radians)
@@ -82,14 +76,24 @@ void Camera::move()
         pos.x += speed * cos_a;
         pos.y -= speed * sin_a;
     }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) 
+    {
+        pos.x += speed * sin_a; 
+        pos.y += speed * cos_a;
+    }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) 
     {
         pos.x -= speed * cos_a;
         pos.y += speed * sin_a;
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        rot_a -= 0.01;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) 
+    {
+        pos.x -= speed * sin_a;
+        pos.y -= speed * cos_a;
+    }  
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        rot_a -= 0.01;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) 
         rot_a += 0.01; 
 }
 
@@ -101,22 +105,23 @@ void Camera::rendering_3d(sf::RenderWindow& win)
     const sf::Vector2u windowSize = win.getSize();
 
     float dist_to_scrn = raysSize / (2 * std::tan(fov / 2));
-    float projection_coeff = 3 * dist_to_scrn * world.get_tile_size();
+    float projection_coeff =  ( dist_to_scrn * world.get_tile_size() ) / (0.0003 * n_rays);
     float scale = static_cast<float>(windowSize.x) / raysSize;
 
-
+    sf::Uint8 color;
+    float projection_wall_height;
     for (unsigned int i = 0; i < raysSize; ++i) 
     {
         const auto& ray = rays_buf[i];
         if (ray.first == visual_range) continue; // если объекта не встретилось, не выполнять расчеты и не отрисовывать несуществующий объект на расстоянии visual_range
 
-        float projection_wall_height = projection_coeff / ray.first;
+        projection_wall_height = projection_coeff / ray.first;
         
-        sf::Uint8 r_color = static_cast<sf::Uint8>(255 / (1 + ray.first * 0.004));//TODO: Убрать инициализацию в цикле
+        color = static_cast<sf::Uint8>(255 / (1 + ray.first * 0.004));
         
-        sf::RectangleShape r{ sf::Vector2f{(float)scale, projection_wall_height} }; //TODO: Убрать инициализацию в цикле
+        sf::RectangleShape r{ sf::Vector2f{(float)scale, projection_wall_height} }; 
         r.setPosition({ i * static_cast<float>(scale), windowSize.y / 2 - projection_wall_height / 2 });
-        r.setFillColor(sf::Color{ r_color, r_color, r_color });
+        r.setFillColor(sf::Color{ color, color, color});
         
         win.draw(r);
     }
@@ -129,6 +134,7 @@ static void draw_camera(sf::RenderWindow& w,const rc::Coords& cmr)
     c.setFillColor(sf::Color::Blue);
     w.draw(c);
 }
+
 static void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, double rot_angle, sf::Color color)
 {
     rot_angle = rc::radians_normalise(rot_angle);

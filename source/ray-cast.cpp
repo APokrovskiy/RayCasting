@@ -1,7 +1,6 @@
 #define _USE_MATH_DEFINES
 #include "./ray-cast.hpp"
 
-#include <set>
 #include <cmath>
 #include <iostream>
 

@@ -28,19 +28,31 @@ std::vector<std::string> text_map =
 
 int main()
 {
-    sf::RenderWindow window{sf::VideoMode{1920, 1080},"Ray"};
-    window.setFramerateLimit(144);
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    const unsigned SCRN_HEIGHT = desktop.height / 3 * 2;
+    const unsigned SCRN_WIDTH = desktop.width / 2;
+
+    sf::RenderWindow window{{SCRN_WIDTH, SCRN_HEIGHT},"Ray-Casting", sf::Style::Close | sf::Style::Titlebar};
+    window.setFramerateLimit(60);
 
     World wrld{text_map,'1', /*TILE*/ 100};
     Camera cmr{wrld};
     
-    cmr.set_position(50,50);
+    cmr.set_position(250,250);
     cmr.set_field_of_view(M_PI / 3);
     cmr.set_rotation(0);
-    cmr.set_speed(2);
-    cmr.set_n_rays(1000);
-    cmr.set_visual_range(5000);
+    cmr.set_speed(3);
+    cmr.set_n_rays(3000);
+    cmr.set_visual_range(3000);
     
+    sf::RectangleShape clouds, floor;
+    clouds.setFillColor(sf::Color{0,0,100});
+    floor.setFillColor(sf::Color{0,100,0});
+    clouds.setPosition({0,0});
+    floor.setPosition({0, SCRN_HEIGHT / 2});
+    clouds.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
+    floor.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -52,11 +64,13 @@ int main()
 
         window.clear();
 
+        window.draw(floor);
+        window.draw(clouds);
+
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
         
         window.display();
     }
-
-    std::cin.get();
+    
     return 0;
 }

@@ -1,7 +1,9 @@
 #pragma once
 #define _USE_MATH_DEFINES
+
 #include <cmath>
 #include <set>
+
 #include <SFML/Graphics.hpp>
 
 #include "ray-cast.hpp"
@@ -18,14 +20,14 @@ public:
     // Геттеры
     inline sf::Vector2f get_position() const;
     inline double get_rotation() const;
-    inline int get_speed() const;
+    inline double get_speed() const;
     inline unsigned int get_n_rays() const;
     inline const std::vector<std::pair<unsigned int, double>>& get_rays_buf() const;
 
     //Сеттеры
     void set_position(float new_x, float new_y);
     void set_field_of_view(double angle_in_radians);
-    void set_speed(int new_speed);
+    void set_speed(double new_speed);
     void set_rotation(double angle_in_radians);
     void set_n_rays(unsigned int);
     void set_visual_range(unsigned int);
@@ -40,7 +42,7 @@ public:
 private:
     // Положение камеры в пространстве
     sf::Vector2f pos{0,0}; 
-    int speed{1}; 
+    double speed{1}; 
     double rot_a{M_PI / 3}; 
 
     // Настройки рендеринга
