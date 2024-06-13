@@ -1,11 +1,10 @@
-# Для того чтобы собрать проект, нужно установить компилятор mingw, систему сборки cmake и ninja:
-# ссылка на компилятор mingw: https://www.softportal.com/software-45096-mingw.html
-# Откройте cmd или powershell и введите команды для установки cmake, ninja:
-# 1) winget install cmake 
-# 2) winget install Ninja-build.Ninja
-# Теперь перейдите в директорию с файлом CMakeLists.txt в cmd или powershell и введите команду:
-# cmake -DCMAKE_CXX_COMPILER=c++ -DCMAKE_CXX_FLAGS="-static -static-libgcc -static-libstdc++" -G Ninja -S . -B build && cmake --build build
-# смотрите результат в папке build Ray-Casting.exe
+# Сборка проекта
+#############################################################################################################################################
+# Для того чтобы собрать проект, нужно установить установить утилиты gcc, cmake и ninja, а также добавить их в переменные среды PATH:       #
+# Теперь перейдите в директорию с файлом CMakeLists.txt в cmd (Не в powershell) и введите команду:                                          #
+# cmake -DCMAKE_CXX_COMPILER=c++ -DCMAKE_CXX_FLAGS="-static -static-libgcc -static-libstdc++" -G Ninja -S . -B build && cmake --build build #
+# смотрите результат в папке build Ray-Casting.exe                                                                                          #
+#############################################################################################################################################
 
 # Минимальная допустимая версия системы сборки Cmake
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
