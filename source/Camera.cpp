@@ -112,8 +112,10 @@ void Camera::rendering_3d(sf::RenderWindow& win)
     float projection_wall_height;
     for (unsigned int i = 0; i < raysSize; ++i) 
     {
-        const auto& ray = rays_buf[i];
+        auto& ray = rays_buf[i];
         if (ray.first == visual_range) continue; // если объекта не встретилось, не выполнять расчеты и не отрисовывать несуществующий объект на расстоянии visual_range
+
+        ray.first *= cos(rot_a - ray.second);
 
         projection_wall_height = projection_coeff / ray.first;
         
