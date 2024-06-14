@@ -26,7 +26,7 @@ Ray-Casting является ключевой технологией в обла
 
 - Теперь при изменении количества испускаемых лучей, **не меняется проекционная высота стен**
 
-![Before Vs After 3](./Media/Before_vs_after_3.gif)
+![Before Vs After 3](./Media/Before_vs_After_3.gif)
 
 >Видеоролик высокого качества смотреть Media/Before_vs_after_3.gif
 
