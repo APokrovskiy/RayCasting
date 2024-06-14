@@ -42,7 +42,7 @@ int main()
     cmr.set_field_of_view(M_PI / 3);
     cmr.set_rotation(0);
     cmr.set_speed(3);
-    cmr.set_n_rays(3000);
+    cmr.set_n_rays(1000);
     cmr.set_visual_range(3000);
     
     sf::RectangleShape clouds, floor;
