@@ -105,7 +105,7 @@ void Camera::rendering_3d(sf::RenderWindow& win)
     const sf::Vector2u windowSize = win.getSize();
 
     float dist_to_scrn = raysSize / (2 * std::tan(fov / 2));
-    float projection_coeff =  ( dist_to_scrn * world.get_tile_size() ) / (0.0003 * n_rays);
+    float projection_coeff = windowSize.y * ( dist_to_scrn * world.get_tile_size() ) / n_rays;
     float scale = static_cast<float>(windowSize.x) / raysSize;
 
     sf::Uint8 color;
