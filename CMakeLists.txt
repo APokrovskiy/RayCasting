@@ -1,10 +1,10 @@
 # Сборка проекта
-#############################################################################################################################################
-# Для того чтобы собрать проект, нужно установить установить утилиты gcc, cmake и ninja, а также добавить их в переменные среды PATH:       #
-# Теперь перейдите в директорию с файлом CMakeLists.txt в cmd (Не в powershell) и введите команду:                                          #
-# cmake -DCMAKE_CXX_COMPILER=c++ -DCMAKE_CXX_FLAGS="-static -static-libgcc -static-libstdc++" -G Ninja -S . -B build && cmake --build build #
-# смотрите результат в папке build Ray-Casting.exe                                                                                          #
-#############################################################################################################################################
+##################################################################################################################################################
+# Для того чтобы собрать проект, нужно установить установить утилиты gcc, cmake, ninja, python, pip а также добавить их в переменные среды PATH: #
+# Теперь перейдите в директорию с файлом CMakeLists.txt в cmd (Не в powershell) и введите команду:                                               #
+# cmake -DCMAKE_CXX_COMPILER=c++ -DCMAKE_CXX_FLAGS="-static -static-libgcc -static-libstdc++" -G Ninja -S . -B build && cmake --build build      #
+# смотрите результат в папке build Ray-Casting.exe                                                                                               #
+##################################################################################################################################################
 
 # Минимальная допустимая версия системы сборки Cmake
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
@@ -81,3 +81,29 @@ elseif(APPLE)
         MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
     )
 endif()
+
+# Макрос для копирования директорий
+macro(copy_directory src dst)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${src} ${dst}
+        RESULT_VARIABLE ret
+        OUTPUT_VARIABLE out 
+        ERROR_VARIABLE err )
+    if(ret)
+        message(FATAL_ERROR "ERROR ---> could not be copied: ${err}")
+    endif()
+endmacro()
+
+# Configurator
+###############################################################################################################
+# Подгрузка всех python зависимостей
+execute_process(COMMAND python -m pip install -r ${CMAKE_SOURCE_DIR}/RayCastingConfigurator/requirements.txt
+                RESULT_VARIABLE pip_result
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+if(NOT ${pip_result} EQUAL 0)
+    message(FATAL_ERROR "Failed to install Python requirements. Try installing python and pip!")
+endif()
+
+#Копирование директории с конфигуратором в папку с исполняемым файлом
+copy_directory(${CMAKE_CURRENT_SOURCE_DIR}/RayCastingConfigurator   ${CMAKE_BINARY_DIR}/RayCastingConfigurator)
+################################################################################################################
