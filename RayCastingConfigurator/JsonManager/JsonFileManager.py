@@ -1,5 +1,6 @@
 import json
 
+from typing import Tuple
 import RayCastingConfigurator.JsonManager.serialisation_classes as sclass
 
 class RayCastingSettingsJsonFileManager:
@@ -11,7 +12,7 @@ class RayCastingSettingsJsonFileManager:
         with open(self.title, "w") as config:
             json.dump(data, config, indent=4)
 
-    def from_json(self) -> tuple[sclass.Window, sclass.World, sclass.Camera]:
+    def from_json(self) -> Tuple[sclass.Window, sclass.World, sclass.Camera]:
         data = None
         with open(self.title, "r") as f:
             data = json.load(f)
