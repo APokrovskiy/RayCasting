@@ -18,11 +18,13 @@ public:
     enum class Rendering_Mode {M_2D, M_3D};
 
     // Геттеры
-    inline sf::Vector2f get_position() const;
-    inline double get_rotation() const;
-    inline double get_speed() const;
-    inline unsigned int get_n_rays() const;
-    inline const std::vector<std::pair<unsigned int, double>>& get_rays_buf() const;
+    sf::Vector2f get_position() const;
+    double get_rotation() const;
+    double get_speed() const;
+    unsigned int get_n_rays() const;
+    const std::vector<std::pair<unsigned int, double>>& get_rays_buf() const;
+    unsigned int get_visual_range() const;
+    double get_field_of_view() const;
 
     //Сеттеры
     void set_position(float new_x, float new_y);

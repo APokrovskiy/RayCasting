@@ -5,29 +5,37 @@
 Camera::Camera(World& w): world(w){}
 
  // Геттеры
-inline sf::Vector2f Camera::get_position() const
+sf::Vector2f Camera::get_position() const
 {
     return pos;
 }
 
-inline double Camera::get_rotation() const
+double Camera::get_rotation() const
 {
     return rot_a;
 }
 
-inline double Camera::get_speed() const
+double Camera::get_speed() const
 {
     return speed;
 }
 
-inline unsigned int Camera::get_n_rays() const
+unsigned int Camera::get_n_rays() const
 {
     return n_rays;
 }
 
-inline const std::vector<std::pair<unsigned int, double>>& Camera::get_rays_buf() const
+const std::vector<std::pair<unsigned int, double>>& Camera::get_rays_buf() const
 {
     return rays_buf;
+}
+unsigned int Camera::get_visual_range() const
+{
+    return visual_range;
+}
+double Camera::get_field_of_view() const
+{
+    return fov;
 }
 
 //Сеттеры
