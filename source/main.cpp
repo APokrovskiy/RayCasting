@@ -68,7 +68,7 @@ int main()
         window.draw(clouds);
 
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
-        
+        wrld.draw_map(window, 0.1,2000,cmr.get_position(),cmr.get_rotation(),cmr.get_visual_range(),cmr.get_field_of_view(),cmr.get_n_rays());
         window.display();
     }
     
