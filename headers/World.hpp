@@ -55,8 +55,8 @@ public:
         for (rc::Coords crd: wm)
         {
             sf::RectangleShape r{{tile*multiply, tile*multiply}};
-            r.setPosition({(crd.x * tile - pos.x )*multiply + map_size/2,
-                           (crd.y * tile - pos.y )*multiply+ map_size/2});
+            r.setPosition({(crd.x * tile - pos.x + tile)*multiply + map_size/2,
+                           (crd.y * tile - pos.y + tile)*multiply+ map_size/2});
 
             if ((r.getPosition().x+tile*multiply > 0 && r.getPosition().x < map_size)&&
                 (r.getPosition().y+tile*multiply > 0 && r.getPosition().y < map_size))
