@@ -9,10 +9,13 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
+from kivy.uix.scrollview import ScrollView
 from typing import Tuple
 import default_settings as dsett
 from JsonManager.JsonFileManager import RayCastingSettingsJsonFileManager
 import JsonManager.serialisation_classes as sclass 
+
+# from kivy.app.App поменять на kivy.app.runTouchUp
 
 class Background(Widget):
     def __init__(self, **kwargs):
@@ -43,7 +46,6 @@ class ConverterApp(App):
         background = FloatLayout()
         background.add_widget(Background())
 
-        all_Widgets = BoxLayout(orientation='vertical')
         self.w_screen_resolution, self.input_scrn_w ,self.input_scrn_h  = self.__init_widgets_for_screen_resolution()
         self.w_position, self.input_pos_x, self.input_pos_y =  self.__init_widgets_for_position()
         
@@ -58,18 +60,27 @@ class ConverterApp(App):
         
         btn.bind(on_press=self.on_btn_click)
         btn1.bind(on_press=self.on_btn1_click)
-        all_Widgets.add_widget(self.w_screen_resolution)
-        all_Widgets.add_widget(self.w_position)
-        all_Widgets.add_widget(self.w_fps)
-        all_Widgets.add_widget(self.w_title)
-        all_Widgets.add_widget(self.w_rot_a)
-        all_Widgets.add_widget(self.n_rays)
-        all_Widgets.add_widget(self.w_vis_r)
-        all_Widgets.add_widget(self.w_fov)
-        all_Widgets.add_widget(btn_layout)
+
+        all_Widgets = BoxLayout(orientation='vertical')
+        scrollview = ScrollView(bar_width=5,bar_color = [0.4,0.4,0.5,1])
+        content = BoxLayout(orientation='vertical', size_hint_y=None)
+        content.bind(minimum_height = content.setter('height'))
         
+        content.add_widget(self.w_screen_resolution)
+        content.add_widget(self.w_position)
+        content.add_widget(self.w_fps)
+        content.add_widget(self.w_title)
+        content.add_widget(self.w_rot_a)
+        content.add_widget(self.n_rays)
+        content.add_widget(self.w_vis_r)
+        content.add_widget(self.w_fov)
+
+        scrollview.add_widget(content)
+        all_Widgets.add_widget(scrollview)
+        all_Widgets.add_widget(btn_layout)
         background.add_widget(all_Widgets)
        
+        
         return background
 
     def on_btn_click(self, instance): # TODO: Сделать отдельную функцию заполнения полей
@@ -91,7 +102,7 @@ class ConverterApp(App):
         self.jsonmanager.to_json(win,wrld,cmr)
 
     def __init_widgets_for_screen_resolution(self) -> Tuple[BoxLayout, TextInput, TextInput]:
-        scrn_sz_layout = BoxLayout(orientation='horizontal')
+        scrn_sz_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height =50)
         scrn_sz_layout.add_widget(Label(text = 'Screen size:', shorten = True))
         w_layout, w_inputs = self.__init_default_sett_box("Width:", str(self.window.screen_size[0]))
         scrn_sz_layout.add_widget(w_layout)
@@ -100,7 +111,7 @@ class ConverterApp(App):
         return scrn_sz_layout, w_inputs, h_inputs
 
     def __init_widgets_for_position(self) -> Tuple[BoxLayout, TextInput, TextInput]:
-        position_layout = BoxLayout(orientation='horizontal')
+        position_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height =50)
         position_layout.add_widget(Label(text = 'Position:', shorten = True))
         x_layout, x_inputs = self.__init_default_sett_box("X:", str(self.camera.position[0]))
         position_layout.add_widget(x_layout)
@@ -124,7 +135,7 @@ class ConverterApp(App):
 
 
     def __init_App_buttons(self) -> Tuple[BoxLayout, Button, Button]:
-        buttons = BoxLayout(orientation='horizontal', size_hint_y=0.4)
+        buttons = BoxLayout(orientation='horizontal', size_hint_y=0.05)
         btn = Button(text = "Вернуть изначальные настройки", background_color = [1,1,1,0.4],background_normal="")
         btn1 = Button(text = "Применить настройки", background_color = [1,1,1,0.4], background_normal="")
         buttons.add_widget(btn)
@@ -133,7 +144,7 @@ class ConverterApp(App):
     
 
     def __init_default_sett_box(self, title, text = "")-> Tuple[BoxLayout, TextInput]:
-        layout = BoxLayout(orientation='horizontal')
+        layout = BoxLayout(orientation='horizontal', size_hint_y=None, height = 50)
         layout.add_widget(Label(text = title, shorten = True))
         inputs = TextInput(text=text, background_color = (1,1,1,0.1), foreground_color = (1,1,1,1))
         layout.add_widget(inputs)
