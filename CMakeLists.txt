@@ -1,10 +1,10 @@
 # Сборка проекта
-##################################################################################################################################################
-# Для того чтобы собрать проект, нужно установить установить утилиты gcc, cmake, ninja, python, pip а также добавить их в переменные среды PATH: #
-# Теперь перейдите в директорию с файлом CMakeLists.txt в cmd (Не в powershell) и введите команду:                                               #
-# cmake -DCMAKE_CXX_COMPILER=c++ -DCMAKE_CXX_FLAGS="-static -static-libgcc -static-libstdc++" -G Ninja -S . -B build && cmake --build build      #
-# смотрите результат в папке build Ray-Casting.exe                                                                                               #
-##################################################################################################################################################
+#############################################################################################################################################
+# Для того чтобы собрать проект, нужно установить установить утилиты gcc, cmake и ninja, а также добавить их в переменные среды PATH:       #
+# Теперь перейдите в директорию с файлом CMakeLists.txt в cmd (Не в powershell) и введите команду:                                          #
+# cmake -DCMAKE_CXX_COMPILER=c++ -DCMAKE_CXX_FLAGS="-static -static-libgcc -static-libstdc++" -G Ninja -S . -B build && cmake --build build #
+# смотрите результат в папке build Ray-Casting.exe                                                                                          #
+#############################################################################################################################################
 
 # Минимальная допустимая версия системы сборки Cmake
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
@@ -21,11 +21,17 @@ include(FetchContent)
 # Версия графической библиотеки SFML
 set(SFML_VERSION "2.5.1")
 
-# Указания Сведений о библиотеке
+# Указания Сведений о библиотеке SFML
 FetchContent_Declare(
     sfml
     GIT_REPOSITORY "https://github.com/SFML/SFML.git"
     GIT_TAG        "${SFML_VERSION}"
+)
+
+# Указания Сведений о библиотеке json
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY "https://github.com/nlohmann/json.git"
 )
 # Отключение динамической компоновки библиотеки
 set(BUILD_SHARED_LIBS OFF)
@@ -38,8 +44,8 @@ set(SFML_BUILD_AUDIO ON)
 set(SFML_BUILD_GRAPHICS ON)
 set(SFML_BUILD_WINDOW ON)
 
-# Активация SFML
-FetchContent_MakeAvailable(sfml)
+# Активация SFML и json
+FetchContent_MakeAvailable(sfml json)
 
 # Подключение Хедеров
 include_directories("./headers")
@@ -61,26 +67,26 @@ add_executable(${PROJECT_NAME}
     ${HEADERS}
 )
 
-# Линковка Библиотеки с Исполняемым файлом
+# Линковка Библиотек с Исполняемым файлом
 target_link_libraries(${PROJECT_NAME} PRIVATE 
     sfml-graphics
     sfml-window
     sfml-system
     sfml-audio
+    nlohmann_json::nlohmann_json
 )
 
-
 # Программа GUI (Без консоли)
-if(UNIX AND NOT APPLE)
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mwindows")
-elseif(WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE true)
-elseif(APPLE)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
-    )
-endif()
+#if(UNIX AND NOT APPLE)
+#    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mwindows")
+#elseif(WIN32)
+#    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE true)
+#elseif(APPLE)
+#    set_target_properties(${PROJECT_NAME} PROPERTIES
+#        MACOSX_BUNDLE TRUE
+#        MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
+#    )
+#endif()
 
 # Макрос для копирования директорий
 macro(copy_directory src dst)

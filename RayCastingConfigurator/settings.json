@@ -1,14 +1,14 @@
 {
-    "window": {
-        "title": "Ray-Casting",
-        "screen_size": [
+    "window" : {
+        "title" : "Ray-Casting",
+        "screen_size" : [
             1920,
             1080
         ],
-        "fps_limit": 140
+        "fps_limit" : 140
     },
-    "world": {
-        "world_map": [
+    "world" : {
+        "world_map" : [
             "1111111111111111111111",
             "1000000000000000000001",
             "1000000000000000000001",
@@ -21,18 +21,18 @@
             "1000000000000000000001",
             "1111111111111111111111"
         ],
-        "wall_char": "1",
-        "tile_size": 100
+        "wall_char" : "1",
+        "tile_size" : 100
     },
-    "camera": {
-        "position": [
+    "camera" : {
+        "position" : [
             0,
             0
         ],
-        "speed": 5,
-        "rotation_angle": 3.14,
-        "n_rays": 100,
-        "visual_range": 3000.0,
-        "field_of_view": 1.0466666666666666
+        "speed" : 5,
+        "rotation_angle" : 3.14,
+        "n_rays" : 100,
+        "visual_range" : 3000,
+        "field_of_view" : 1.0466666666666666
     }
 }

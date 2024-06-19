@@ -5,46 +5,54 @@
 #include <string>
 #include <set>
 #include <cmath>
+#include <nlohmann/json.hpp>
+#include<fstream>
 
 #include "World.hpp"
 #include "Camera.hpp"
 
-std::vector<std::string> text_map = 
-{
-    "1111111111111111111111",
-    "1000000000000000000001",
-    "1000001000000001000001",
-    "1000000000000000000001",
-    "1000000010000100000001",
-    "1000000001111000000001",
-    "1000000010000100000001",
-    "1000000000000000000001",
-    "1000001000000001000001",
-    "1000010000000000100001",
-    "1111111111111111111111"
-};
+using json = nlohmann::json;
+
 
 
 
 int main()
 {
-    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-    const unsigned SCRN_HEIGHT = desktop.height / 3 * 2;
-    const unsigned SCRN_WIDTH = desktop.width / 2;
+    //импорт настроек json
 
-    sf::RenderWindow window{{SCRN_WIDTH, SCRN_HEIGHT},"Ray-Casting", sf::Style::Close | sf::Style::Titlebar};
-    window.setFramerateLimit(60);
+    std::ifstream settings_file("./RayCastingConfigurator/settings.json");
+    json settings_json = json::parse(settings_file);
 
-    World wrld{text_map,'1', /*TILE*/ 100};
+    //задание констант
+
+    const unsigned SCRN_WIDTH = settings_json["window"]["screen_size"][0];
+    const unsigned SCRN_HEIGHT = settings_json["window"]["screen_size"][1];
+    const std::string TITLE = settings_json["window"]["title"];
+
+    //создание окна
+
+    sf::RenderWindow window{{SCRN_WIDTH, SCRN_HEIGHT},TITLE, sf::Style::Close | sf::Style::Titlebar};
+    window.setFramerateLimit(settings_json["window"]["fps_limit"]);
+
+    //создание мира и камеры
+
+    World wrld{settings_json["world"]["world_map"],
+            settings_json["world"]["wall_char"].get<std::string>()[0],
+            settings_json["world"]["tile_size"]};
+
     Camera cmr{wrld};
-    
-    cmr.set_position(250,250);
-    cmr.set_field_of_view(M_PI / 3);
-    cmr.set_rotation(0);
-    cmr.set_speed(3);
-    cmr.set_n_rays(1000);
-    cmr.set_visual_range(3000);
-    
+
+    //настройка камеры
+
+    cmr.set_position(settings_json["camera"]["position"][0], settings_json["camera"]["position"][1]);
+    cmr.set_field_of_view(settings_json["camera"]["field_of_view"]);
+    cmr.set_rotation(settings_json["camera"]["rotation_angle"]);
+    cmr.set_speed(settings_json["camera"]["speed"]);
+    cmr.set_n_rays(settings_json["camera"]["n_rays"]);
+    cmr.set_visual_range(settings_json["camera"]["visual_range"]);
+
+    //настройка окруженя
+
     sf::RectangleShape clouds, floor;
     clouds.setFillColor(sf::Color{0,0,100});
     floor.setFillColor(sf::Color{0,100,0});
@@ -53,6 +61,8 @@ int main()
     clouds.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
     floor.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
 
+    //главный цикл
+    
     while (window.isOpen())
     {
         sf::Event event;
