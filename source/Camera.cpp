@@ -1,5 +1,5 @@
 #include "Camera.hpp"
-
+#include <iostream>
 #include <exception>
 
 Camera::Camera(World& w): world(w){}
@@ -145,8 +145,13 @@ static void draw_camera(sf::RenderWindow& w,const rc::Coords& cmr)
     w.draw(c);
 }
 
-static void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, double rot_angle, sf::Color color)
+static void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist,int max_dist, double rot_angle, sf::Color color,double multiply = 1)
 {
+    dist *=multiply;
+    if(dist>max_dist)
+    {
+        dist = max_dist;
+    }
     rot_angle = rc::radians_normalise(rot_angle);
     sf::VertexArray line{ sf::Lines, 2 };
     line[0] = sf::Vector2f{cmr.x, cmr.y};
@@ -160,9 +165,21 @@ void Camera::rendering_2d(sf::RenderWindow& win)
 {
     rays_buf = rc::ray_casting(world.get_walls_coords(), world.get_tile_size(), rc::Coords{pos.x, pos.y},rot_a, visual_range, fov, n_rays);
     for (auto ray: rays_buf)
-        draw_line(win,{pos.x, pos.y}, ray.first, ray.second, sf::Color::White);
+        draw_line(win,{pos.x, pos.y}, ray.first,ray.first, ray.second, sf::Color::White);
     draw_camera(win,{pos.x, pos.y}); // Отрисовка Камеры
 }
+
+void Camera::draw_map(sf::RenderWindow& win,double multiply,unsigned int size)
+{
+    unsigned int center_pos = size/2+world.get_tile_size()*multiply;
+
+    world.draw_map(win,multiply,size,pos);
+    for (auto ray: rays_buf){
+        draw_line(win,{center_pos, center_pos},ray.first, size/2,ray.second, sf::Color::White,multiply);
+    }
+    draw_camera(win,{center_pos,center_pos}); // Отрисовка Камеры
+}
+
 
 void Camera::draw(sf::RenderWindow& win, Rendering_Mode mode)
 {
