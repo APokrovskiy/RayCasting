@@ -12,7 +12,7 @@ from kivy.uix.button import Button
 from typing import Tuple
 import default_settings as dsett
 from JsonManager.JsonFileManager import RayCastingSettingsJsonFileManager
-
+import JsonManager.serialisation_classes as sclass 
 
 class Background(Widget):
     def __init__(self, **kwargs):
@@ -29,8 +29,8 @@ class Background(Widget):
 class ConverterApp(App):
     def build(self):
         try:
-            jsonmanager = RayCastingSettingsJsonFileManager("settings.json")
-            self.window, self.world, self.camera = jsonmanager.from_json()
+            self.jsonmanager = RayCastingSettingsJsonFileManager("settings.json")
+            self.window, self.world, self.camera = self.jsonmanager.from_json()
         except(FileExistsError):
             self.window, self.world, self.camera = dsett.win, dsett.wrld, dsett.cmr
         
@@ -44,31 +44,51 @@ class ConverterApp(App):
         background.add_widget(Background())
 
         all_Widgets = BoxLayout(orientation='vertical')
-        w_screen_resolution, input_scrn_w ,input_scrn_h  = self.__init_widgets_for_screen_resolution()
-        w_position, input_pos_x, input_pos_y =  self.__init_widgets_for_position()
+        self.w_screen_resolution, self.input_scrn_w ,self.input_scrn_h  = self.__init_widgets_for_screen_resolution()
+        self.w_position, self.input_pos_x, self.input_pos_y =  self.__init_widgets_for_position()
         
-        w_fps, input_fps = self.__init_widgets_for_fps()
-        w_title, input_title = self.__input_widgets_for_title()
-        w_rot_a, input_rot_a = self.__init_widgets_for_rot_a()
-        n_rays, input_rays = self.__init_widgets_for_n_rays()
-        w_vis_r, input_vis_r = self.__init_widgets_for_vis_range()
-        w_fov, input_fov = self.__init_widgets_for_fov()
+        self.w_fps, self.input_fps = self.__init_widgets_for_fps()
+        self.w_title, self.input_title = self.__input_widgets_for_title()
+        self.w_rot_a, self.input_rot_a = self.__init_widgets_for_rot_a()
+        self.n_rays, self.input_rays = self.__init_widgets_for_n_rays()
+        self.w_vis_r, self.input_vis_r = self.__init_widgets_for_vis_range()
+        self.w_fov, self.input_fov = self.__init_widgets_for_fov()
 
+        btn_layout, btn, btn1 = self.__init_App_buttons()
         
-        
-        all_Widgets.add_widget(w_screen_resolution)
-        all_Widgets.add_widget(w_position)
-        all_Widgets.add_widget(w_fps)
-        all_Widgets.add_widget(w_title)
-        all_Widgets.add_widget(w_rot_a)
-        all_Widgets.add_widget(n_rays)
-        all_Widgets.add_widget(w_vis_r)
-        all_Widgets.add_widget(w_fov)
-        all_Widgets.add_widget(self.__init_App_buttons())
+        btn.bind(on_press=self.on_btn_click)
+        btn1.bind(on_press=self.on_btn1_click)
+        all_Widgets.add_widget(self.w_screen_resolution)
+        all_Widgets.add_widget(self.w_position)
+        all_Widgets.add_widget(self.w_fps)
+        all_Widgets.add_widget(self.w_title)
+        all_Widgets.add_widget(self.w_rot_a)
+        all_Widgets.add_widget(self.n_rays)
+        all_Widgets.add_widget(self.w_vis_r)
+        all_Widgets.add_widget(self.w_fov)
+        all_Widgets.add_widget(btn_layout)
         
         background.add_widget(all_Widgets)
        
         return background
+
+    def on_btn_click(self, instance): # TODO: Сделать отдельную функцию заполнения полей
+        self.input_scrn_w.text = str(dsett.win.screen_size[0])
+        self.input_scrn_h.text = str(dsett.win.screen_size[1])
+        self.input_pos_x.text = str(dsett.cmr.position[0])
+        self.input_pos_y.text = str(dsett.cmr.position[1])
+        self.input_fps.text = str(dsett.win.fps_limit) 
+        self.input_title.text = str(dsett.win.title)
+        self.input_rot_a.text = str(dsett.cmr.rotation_angle)
+        self.input_rays.text = str(dsett.cmr.n_rays)
+        self.input_vis_r.text = str(dsett.cmr.visual_range)
+        self.input_fov.text = str(dsett.cmr.field_of_view)
+
+    def on_btn1_click(self, instance):
+        win = sclass.Window(self.input_title.text, (int(self.input_scrn_w.text), int(self.input_scrn_h.text)), int(self.input_fps.text))
+        wrld = sclass.World(dsett.text_map, '1', 100)
+        cmr = sclass.Camera((int(self.input_pos_x.text),int(self.input_pos_y.text)), 5, float(self.input_rot_a.text), int(self.input_rays.text), float(self.input_vis_r.text),  float(self.input_fov.text))
+        self.jsonmanager.to_json(win,wrld,cmr)
 
     def __init_widgets_for_screen_resolution(self) -> Tuple[BoxLayout, TextInput, TextInput]:
         scrn_sz_layout = BoxLayout(orientation='horizontal')
@@ -103,11 +123,13 @@ class ConverterApp(App):
     
 
 
-    def __init_App_buttons(self) -> BoxLayout:
+    def __init_App_buttons(self) -> Tuple[BoxLayout, Button, Button]:
         buttons = BoxLayout(orientation='horizontal', size_hint_y=0.4)
-        buttons.add_widget(Button(text = "Вернуть изначальные настройки", background_color = [1,1,1,0.4],background_normal=""))
-        buttons.add_widget(Button(text = "Применить настройки", background_color = [1,1,1,0.4], background_normal=""))
-        return buttons
+        btn = Button(text = "Вернуть изначальные настройки", background_color = [1,1,1,0.4],background_normal="")
+        btn1 = Button(text = "Применить настройки", background_color = [1,1,1,0.4], background_normal="")
+        buttons.add_widget(btn)
+        buttons.add_widget(btn1)
+        return buttons, btn, btn1
     
 
     def __init_default_sett_box(self, title, text = "")-> Tuple[BoxLayout, TextInput]:

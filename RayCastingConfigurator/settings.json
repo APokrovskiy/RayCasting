@@ -2,7 +2,7 @@
     "window": {
         "title": "Ray-Casting",
         "screen_size": [
-            192,
+            1920,
             1080
         ],
         "fps_limit": 140
@@ -32,7 +32,7 @@
         "speed": 5,
         "rotation_angle": 3.14,
         "n_rays": 100,
-        "visual_range": 3000,
+        "visual_range": 3000.0,
         "field_of_view": 1.0466666666666666
     }
 }
