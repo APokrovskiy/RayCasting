@@ -5,8 +5,8 @@
 #include <string>
 #include <set>
 #include <cmath>
-#include <future>  // для использования std::async
-
+#include <thread>  // для использования std::thread
+#include <atomic>  // для использования std::atomic
 #include "World.hpp"
 #include "Camera.hpp"
 #include "Button.cpp"
@@ -55,6 +55,7 @@ int main()
     floor.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
 
     Button menu_button("../Media/GUI/ButtonsIcons/MenuButton.png",{SCRN_WIDTH-64,32});
+    std::atomic_bool is_configurator_opened {false};
     while (window.isOpen())
     {
 
@@ -68,10 +69,17 @@ int main()
             else if(event.type == sf::Event::MouseButtonReleased )
             {
                 if(menu_button.isClicked(window,event.mouseButton))
-                {
-                    std::thread([] {
-                        system("python ./RayCastingConfigurator/Configurator.py");
-                    }).detach();
+                {   
+                    if (!is_configurator_opened.load()) // если поток с конфигуратором не создан => то создать
+                    {
+                        // Создание потока с конфигуратором
+                        std::thread([&] {
+                            is_configurator_opened.store(true);
+                            system("python ./RayCastingConfigurator/Configurator.py"); // запуск конфигуратора
+                            is_configurator_opened.store(false);
+                        }).detach();
+                    }
+                    else; // ничего ни делать
                 }
             }
             
