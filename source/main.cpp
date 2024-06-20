@@ -5,6 +5,7 @@
 #include <string>
 #include <set>
 #include <cmath>
+#include <future>  // для использования std::async
 
 #include "World.hpp"
 #include "Camera.hpp"
@@ -68,7 +69,9 @@ int main()
             {
                 if(menu_button.isClicked(window,event.mouseButton))
                 {
-                    //Действие кнопки
+                    std::thread([] {
+                        system("python ./RayCastingConfigurator/Configurator.py");
+                    }).detach();
                 }
             }
             
