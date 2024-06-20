@@ -53,6 +53,8 @@ set(SOURCES
 set(HEADERS
     "headers/ray-cast.hpp"
     "headers/Camera.hpp"
+    "headers/system_without_console.hpp"
+    "headers/World.hpp"
 )
 
 # Создание исполняемого файла

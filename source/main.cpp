@@ -10,6 +10,7 @@
 #include "World.hpp"
 #include "Camera.hpp"
 #include "Button.cpp"
+#include "system_without_console.hpp"
 
 std::vector<std::string> text_map = 
 {
@@ -25,6 +26,7 @@ std::vector<std::string> text_map =
     "1000010000000000100001",
     "1111111111111111111111"
 };
+
 
 int main()
 {
@@ -75,7 +77,7 @@ int main()
                         // Создание потока с конфигуратором
                         std::thread([&] {
                             is_configurator_opened.store(true);
-                            system("python ./RayCastingConfigurator/Configurator.py"); // запуск конфигуратора
+                            system_without_console_output(L"python ./RayCastingConfigurator/Configurator.pyw");
                             is_configurator_opened.store(false);
                         }).detach();
                     }
