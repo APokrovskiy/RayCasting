@@ -1,4 +1,4 @@
-from turtle import textinput
+# Импорты Фреймворка Kivy
 from kivy.app import runTouchApp
 from kivy.uix.label import Label
 from kivy.core.window import Window
@@ -10,22 +10,17 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
+
+# Импорты стандартной библиотеки
 from typing import Tuple
+
+# Импорты из пользовательских файлов
 import default_settings as dsett
-from JsonManager.JsonFileManager import RayCastingSettingsJsonFileManager
+from JsonManager.JsonFileManager import JsonFileManager
 import JsonManager.serialisation_classes as sclass 
 
-# from kivy.app.App поменять на kivy.app.runTouchUp
 
-class Background(Widget):
-    def __init__(self, **kwargs):
-        super(Background, self).__init__(**kwargs)
-        self.rect = Image(source='images/ConfiguratorBackground.png', allow_stretch=True, keep_ratio=False)
-        self.add_widget(self.rect)
-
-    def on_size(self, *args):
-        self.rect.size = self.size
-        self.rect.pos = self.pos
+# CallBacks
 
 def on_btn_click(instance): # TODO: Сделать отдельную функцию заполнения полей
     input_scrn_w.text = str(dsett.win.screen_size[0])
@@ -45,6 +40,16 @@ def on_btn1_click(instance):
     cmr = sclass.Camera((int(input_pos_x.text),int(input_pos_y.text)), 5, float(input_rot_a.text), int(input_rays.text), float(input_vis_r.text),  float(input_fov.text))
     jsonmanager.to_json(win,wrld,cmr)
 
+
+# Создание виджетов настройки одного параметра
+
+def init_default_sett_box( title, text = "")-> Tuple[BoxLayout, TextInput]:
+    layout = BoxLayout(orientation='horizontal', size_hint_y=None, height = 50)
+    layout.add_widget(Label(text = title, shorten = True))
+    inputs = TextInput(text=text, background_color = (1,1,1,0.1), foreground_color = (1,1,1,1))
+    layout.add_widget(inputs)
+    return layout, inputs
+
 def init_widgets_for_screen_resolution() -> Tuple[BoxLayout, TextInput, TextInput]:
     scrn_sz_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height =50)
     scrn_sz_layout.add_widget(Label(text = 'Screen size:', shorten = True))
@@ -63,8 +68,6 @@ def init_widgets_for_position() -> Tuple[BoxLayout, TextInput, TextInput]:
     position_layout.add_widget(y_layout)
     return position_layout, x_inputs, y_inputs
 
-
-
 def init_app_buttons() -> Tuple[BoxLayout, Button, Button]:
     buttons = BoxLayout(orientation='horizontal', size_hint_y=0.05)
     btn = Button(text = "Вернуть изначальные настройки", background_color = [1,1,1,0.4],background_normal="")
@@ -74,66 +77,66 @@ def init_app_buttons() -> Tuple[BoxLayout, Button, Button]:
     return buttons, btn, btn1
 
 
-def init_default_sett_box( title, text = "")-> Tuple[BoxLayout, TextInput]:
-    layout = BoxLayout(orientation='horizontal', size_hint_y=None, height = 50)
-    layout.add_widget(Label(text = title, shorten = True))
-    inputs = TextInput(text=text, background_color = (1,1,1,0.1), foreground_color = (1,1,1,1))
-    layout.add_widget(inputs)
-    return layout, inputs
+# Функция Main
+
+if __name__ == "__main__":
+
+    # Создание JsonManager и загрузка настроек
+    try:
+        jsonmanager = JsonFileManager("settings.json")
+        window, world, camera = jsonmanager.from_json()
+    except(FileExistsError):
+        window, world, camera = dsett.win, dsett.wrld, dsett.cmr
 
 
-try:
-    jsonmanager = RayCastingSettingsJsonFileManager("settings.json")
-    window, world, camera = jsonmanager.from_json()
-except(FileExistsError):
-    window, world, camera = dsett.win, dsett.wrld, dsett.cmr
+    # Настройки экрана
+    Window.size = (800, 800)
+    Window.set_title('Ray-Casting Configurator')
+
+    # Создание основного Layout
+    configurator_app = FloatLayout()
+    
+    # Загрузка фонового изображения
+    configurator_app.add_widget(Image(source='images/ConfiguratorBackground.png', allow_stretch=True, keep_ratio=False))
+
+    all_Widgets = BoxLayout(orientation='vertical')
+    content = BoxLayout(orientation='vertical', size_hint_y=None)
+    content.bind(minimum_height = content.setter('height'))
+
+    # Создание всех виджетов настроек
+    w_screen_resolution, input_scrn_w ,input_scrn_h  = init_widgets_for_screen_resolution()
+    w_position, input_pos_x, input_pos_y =  init_widgets_for_position()
+    w_fps, input_fps = init_default_sett_box("Fps:", str(window.fps_limit))
+    w_title, input_title = init_default_sett_box("Title:", str(window.title))
+    w_rot_a, input_rot_a = init_default_sett_box("Rotation Angle:", str(camera.rotation_angle))
+    n_rays, input_rays = init_default_sett_box("Rays:", str(camera.n_rays))
+    w_vis_r, input_vis_r = init_default_sett_box("Visual range:",str(camera.visual_range))
+    w_fov, input_fov = init_default_sett_box("Field Of View:",str(camera.field_of_view))
+    btn_layout, btn, btn1 = init_app_buttons()
+
+    # Добавление  виджетов
+    content.add_widget(w_screen_resolution)
+    content.add_widget(w_position)
+    content.add_widget(w_fps)
+    content.add_widget(w_title)
+    content.add_widget(w_rot_a)
+    content.add_widget(n_rays)
+    content.add_widget(w_vis_r)
+    content.add_widget(w_fov)
+
+    # Привязка callbacks к кнопкам
+    btn.bind(on_press=on_btn_click)
+    btn1.bind(on_press=on_btn1_click)
+
+    # Создание ScrollView и помещение виджетов из content
+    scrollview = ScrollView(bar_width=5,bar_color = [0.4,0.4,0.5,1])
+    scrollview.add_widget(content)
 
 
-# Настройки экрана
-title = 'My'  # Установка изначального заголовка
-Window.size = (800, 800)
-Clock.schedule_once(lambda *args: Window.set_title('Configurator'), 0)  # Обновление заголовка через 0 секунд (после обновления экрана)
+    #Добавление всех виджетов
+    all_Widgets.add_widget(scrollview)
+    all_Widgets.add_widget(btn_layout)
+    configurator_app.add_widget(all_Widgets)
 
-background = FloatLayout()
-background.add_widget(Background())
-
-w_screen_resolution, input_scrn_w ,input_scrn_h  = init_widgets_for_screen_resolution()
-w_position, input_pos_x, input_pos_y =  init_widgets_for_position()
-
-w_fps, input_fps = init_default_sett_box("Fps:", str(window.fps_limit))
-w_title, input_title = init_default_sett_box("Title:", str(window.title))
-w_rot_a, input_rot_a = init_default_sett_box("Rotation Angle:", str(camera.rotation_angle))
-n_rays, input_rays = init_default_sett_box("Rotation Angle:", str(camera.rotation_angle))
-w_vis_r, input_vis_r = init_default_sett_box("Visual range:",str(camera.visual_range))
-w_fov, input_fov = init_default_sett_box("Field Of View:",str(camera.field_of_view))
-
-btn_layout, btn, btn1 = init_app_buttons()
-
-btn.bind(on_press=on_btn_click)
-btn1.bind(on_press=on_btn1_click)
-
-all_Widgets = BoxLayout(orientation='vertical')
-scrollview = ScrollView(bar_width=5,bar_color = [0.4,0.4,0.5,1])
-content = BoxLayout(orientation='vertical', size_hint_y=None)
-content.bind(minimum_height = content.setter('height'))
-
-content.add_widget(w_screen_resolution)
-content.add_widget(w_position)
-content.add_widget(w_fps)
-content.add_widget(w_title)
-content.add_widget(w_rot_a)
-content.add_widget(n_rays)
-content.add_widget(w_vis_r)
-content.add_widget(w_fov)
-
-scrollview.add_widget(content)
-all_Widgets.add_widget(scrollview)
-all_Widgets.add_widget(btn_layout)
-background.add_widget(all_Widgets)
-
-
-
-
-
-
-runTouchApp(background)
+    # Запуск программы
+    runTouchApp(configurator_app)

@@ -4,7 +4,7 @@ from typing import Tuple
 import os
 import JsonManager.serialisation_classes as sclass
 
-class RayCastingSettingsJsonFileManager:
+class JsonFileManager:
     def __init__(self, title:str) -> None:
         if(os.path.exists(title)):
             self.title = title
