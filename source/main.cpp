@@ -8,6 +8,7 @@
 
 #include "World.hpp"
 #include "Camera.hpp"
+#include "Button.cpp"
 
 std::vector<std::string> text_map = 
 {
@@ -24,10 +25,9 @@ std::vector<std::string> text_map =
     "1111111111111111111111"
 };
 
-
-
 int main()
 {
+
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
     const unsigned SCRN_HEIGHT = desktop.height / 3 * 2;
     const unsigned SCRN_WIDTH = desktop.width / 2;
@@ -53,13 +53,28 @@ int main()
     clouds.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
     floor.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
 
+    Button menu_button("../Media/GUI/ButtonsIcons/MenuButton.png",{SCRN_WIDTH-64,32});
     while (window.isOpen())
     {
+
         sf::Event event;
         while (window.pollEvent(event))
+        {
             if (event.type == sf::Event::Closed)
+            {
                 window.close();
-        
+            }
+            else if(event.type == sf::Event::MouseButtonReleased )
+            {
+                if(menu_button.isClicked(window,event.mouseButton))
+                {
+                    //Действие кнопки
+                }
+            }
+            
+                
+        }
+
         cmr.move();
 
         window.clear();
@@ -68,6 +83,8 @@ int main()
         window.draw(clouds);
 
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
+
+        menu_button.draw(window);
         
         window.display();
     }
