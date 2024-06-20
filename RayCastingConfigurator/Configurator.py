@@ -26,6 +26,8 @@ class ConverterApp(App):
         # Настройки экрана
         self.title = 'My'  # Установка изначального заголовка
         Window.size = (800, 800)
+        Window.top = 100 # Это поможет разместить окно поверх других
+        Window.left = 100 # Это поможет разместить окно поверх других
         Clock.schedule_once(self.update_title, 0)  # Обновление заголовка через 0 секунд (после обновления экрана)
 
         background = FloatLayout()
