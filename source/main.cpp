@@ -86,7 +86,8 @@ int main()
                 
         }
 
-        cmr.move();
+        if(window.hasFocus())
+            cmr.move();
 
         window.clear();
 
