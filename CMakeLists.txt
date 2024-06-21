@@ -10,7 +10,7 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 # Стандарт C++ 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # Название проекта
 project(Ray-Casting LANGUAGES CXX)
@@ -54,6 +54,8 @@ set(SOURCES
     "source/main.cpp"
     "source/ray-cast.cpp"
     "source/Camera.cpp"
+    "source/Button.cpp"
+    "source/system_without_console.cpp"
 )
 
 set(HEADERS
@@ -61,6 +63,8 @@ set(HEADERS
     "headers/Camera.hpp"
     "headers/system_without_console.hpp"
     "headers/World.hpp"
+    "headers/Button.hpp"
+    "headers/system_without_console.hpp"
 )
 
 # Создание исполняемого файла

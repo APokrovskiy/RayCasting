@@ -1,12 +1,11 @@
 #define _USE_MATH_DEFINES
 #include <iostream>
 #include <vector>
-#include <string>
 #include <set>
 #include <cmath>
 #include <thread>  // для использования std::thread
 #include <atomic>  // для использования std::atomic
-#include<fstream>
+#include <fstream>
 
 #include <nlohmann/json.hpp>
 #include <SFML/Graphics.hpp>
@@ -14,11 +13,10 @@
 
 #include "World.hpp"
 #include "Camera.hpp"
-#include "Button.cpp"
+#include "Button.hpp"
 #include "system_without_console.hpp"
 
 using json = nlohmann::json;
-
 
 
 int main()
