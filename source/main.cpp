@@ -7,8 +7,8 @@
 #include <atomic>  // для использования std::atomic
 #include <fstream>
 
-#include <nlohmann/json.hpp>
 #include <SFML/Graphics.hpp>
+#include <nlohmann/json.hpp>
 
 
 #include "World.hpp"
@@ -27,8 +27,9 @@ int main()
 
     //импорт настроек json
 
-    std::ifstream settings_file("./RayCastingConfigurator/settings.json");
+    std::ifstream settings_file("RayCastingConfigurator/settings.json");
     json settings_json = json::parse(settings_file);
+    settings_file.close(); // Файл должен быть здесь явно закрыт
 
     //задание констант
 
@@ -57,6 +58,7 @@ int main()
     cmr.set_speed(settings_json["camera"]["speed"]);
     cmr.set_n_rays(settings_json["camera"]["n_rays"]);
     cmr.set_visual_range(settings_json["camera"]["visual_range"]);
+
 
     //настройка окруженя
 

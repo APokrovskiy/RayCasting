@@ -19,25 +19,16 @@ import default_settings as dsett
 from JsonManager.JsonFileManager import JsonFileManager
 import JsonManager.serialisation_classes as sclass 
 
-# CallBacks
 
-def on_btn_click(instance): # TODO: Сделать отдельную функцию заполнения полей
-    input_scrn_w.text = str(dsett.win.screen_size[0])
-    input_scrn_h.text = str(dsett.win.screen_size[1])
-    input_pos_x.text = str(dsett.cmr.position[0])
-    input_pos_y.text = str(dsett.cmr.position[1])
-    input_fps.text = str(dsett.win.fps_limit) 
-    input_title.text = str(dsett.win.title)
-    input_rot_a.text = str(dsett.cmr.rotation_angle)
-    input_rays.text = str(dsett.cmr.n_rays)
-    input_vis_r.text = str(dsett.cmr.visual_range)
-    input_fov.text = str(dsett.cmr.field_of_view)
+try:
+    jsonmanager = JsonFileManager("settings.json")
+    window, world, camera = jsonmanager.from_json()
+except(FileExistsError):
+    with open("settings.json", "w") as file: pass
+    jsonmanager = JsonFileManager("settings.json")
+    window, world, camera = dsett.win, dsett.wrld, dsett.cmr
+    jsonmanager.to_json(window,world, camera)
 
-def on_btn1_click(instance):
-    win = sclass.Window(input_title.text, (int(input_scrn_w.text), int(input_scrn_h.text)), int(input_fps.text))
-    wrld = sclass.World(dsett.text_map, '1', 100)
-    cmr = sclass.Camera((int(input_pos_x.text),int(input_pos_y.text)), 5, float(input_rot_a.text), int(input_rays.text), float(input_vis_r.text),  float(input_fov.text))
-    jsonmanager.to_json(win,wrld,cmr)
 
 
 # Создание виджетов настройки одного параметра
@@ -78,64 +69,78 @@ def init_app_buttons() -> Tuple[BoxLayout, Button, Button]:
 
 # Функция Main
 
-if __name__ == "__main__":
+# Настройки экрана
+Window.top = 100
+Window.left = 100
+Window.size = (800, 800)
+Window.set_title('Ray-Casting Configurator')
 
-    # Создание JsonManager и загрузка настроек
-    try:
-        jsonmanager = JsonFileManager("settings.json")
-        window, world, camera = jsonmanager.from_json()
-    except(FileExistsError):
-        window, world, camera = dsett.win, dsett.wrld, dsett.cmr
+# Создание основного Layout
+configurator_app = FloatLayout()
+
+# Загрузка фонового изображения
+configurator_app.add_widget(Image(source='images/ConfiguratorBackground.png', allow_stretch=True, keep_ratio=False))
+
+all_Widgets = BoxLayout(orientation='vertical')
+content = BoxLayout(orientation='vertical', size_hint_y=None)
+content.bind(minimum_height = content.setter('height'))
+
+# Создание всех виджетов настроек
+w_screen_resolution, input_scrn_w ,input_scrn_h  = init_widgets_for_screen_resolution()
+w_position, input_pos_x, input_pos_y =  init_widgets_for_position()
+w_fps, input_fps = init_default_sett_box("Fps:", str(window.fps_limit))
+w_title, input_title = init_default_sett_box("Title:", str(window.title))
+w_rot_a, input_rot_a = init_default_sett_box("Rotation Angle:", str(camera.rotation_angle))
+n_rays, input_rays = init_default_sett_box("Rays:", str(camera.n_rays))
+w_vis_r, input_vis_r = init_default_sett_box("Visual range:",str(camera.visual_range))
+w_fov, input_fov = init_default_sett_box("Field Of View:",str(camera.field_of_view))
+btn_layout, btn, btn1 = init_app_buttons()
+
+# CallBacks
+
+def on_btn_click(instance): # TODO: Сделать отдельную функцию заполнения полей
+    input_scrn_w.text = str(dsett.win.screen_size[0])
+    input_scrn_h.text = str(dsett.win.screen_size[1])
+    input_pos_x.text = str(dsett.cmr.position[0])
+    input_pos_y.text = str(dsett.cmr.position[1])
+    input_fps.text = str(dsett.win.fps_limit) 
+    input_title.text = str(dsett.win.title)
+    input_rot_a.text = str(dsett.cmr.rotation_angle)
+    input_rays.text = str(dsett.cmr.n_rays)
+    input_vis_r.text = str(dsett.cmr.visual_range)
+    input_fov.text = str(dsett.cmr.field_of_view)
+
+def on_btn1_click(instance):
+    win = sclass.Window(input_title.text, (int(input_scrn_w.text), int(input_scrn_h.text)), int(input_fps.text))
+    wrld = sclass.World(dsett.text_map, '1', 100)
+    cmr = sclass.Camera((int(input_pos_x.text),int(input_pos_y.text)), 5, float(input_rot_a.text), int(input_rays.text), float(input_vis_r.text),  float(input_fov.text))
+    jsonmanager.to_json(win,wrld,cmr)
+
+# Добавление  виджетов
+content.add_widget(w_screen_resolution)
+content.add_widget(w_position)
+content.add_widget(w_fps)
+content.add_widget(w_title)
+content.add_widget(w_rot_a)
+content.add_widget(n_rays)
+content.add_widget(w_vis_r)
+content.add_widget(w_fov)
+
+# Привязка callbacks к кнопкам
+btn.bind(on_press=on_btn_click)
+btn1.bind(on_press=on_btn1_click)
+
+# Создание ScrollView и помещение виджетов из content
+scrollview = ScrollView(bar_width=5,bar_color = [0.4,0.4,0.5,1])
+scrollview.add_widget(content)
 
 
-    # Настройки экрана
-    Window.size = (800, 800)
-    Window.set_title('Ray-Casting Configurator')
+#Добавление всех виджетов
+all_Widgets.add_widget(scrollview)
+all_Widgets.add_widget(btn_layout)
+configurator_app.add_widget(all_Widgets)
 
-    # Создание основного Layout
-    configurator_app = FloatLayout()
-    
-    # Загрузка фонового изображения
-    configurator_app.add_widget(Image(source='images/ConfiguratorBackground.png', allow_stretch=True, keep_ratio=False))
-
-    all_Widgets = BoxLayout(orientation='vertical')
-    content = BoxLayout(orientation='vertical', size_hint_y=None)
-    content.bind(minimum_height = content.setter('height'))
-
-    # Создание всех виджетов настроек
-    w_screen_resolution, input_scrn_w ,input_scrn_h  = init_widgets_for_screen_resolution()
-    w_position, input_pos_x, input_pos_y =  init_widgets_for_position()
-    w_fps, input_fps = init_default_sett_box("Fps:", str(window.fps_limit))
-    w_title, input_title = init_default_sett_box("Title:", str(window.title))
-    w_rot_a, input_rot_a = init_default_sett_box("Rotation Angle:", str(camera.rotation_angle))
-    n_rays, input_rays = init_default_sett_box("Rays:", str(camera.n_rays))
-    w_vis_r, input_vis_r = init_default_sett_box("Visual range:",str(camera.visual_range))
-    w_fov, input_fov = init_default_sett_box("Field Of View:",str(camera.field_of_view))
-    btn_layout, btn, btn1 = init_app_buttons()
-
-    # Добавление  виджетов
-    content.add_widget(w_screen_resolution)
-    content.add_widget(w_position)
-    content.add_widget(w_fps)
-    content.add_widget(w_title)
-    content.add_widget(w_rot_a)
-    content.add_widget(n_rays)
-    content.add_widget(w_vis_r)
-    content.add_widget(w_fov)
-
-    # Привязка callbacks к кнопкам
-    btn.bind(on_press=on_btn_click)
-    btn1.bind(on_press=on_btn1_click)
-
-    # Создание ScrollView и помещение виджетов из content
-    scrollview = ScrollView(bar_width=5,bar_color = [0.4,0.4,0.5,1])
-    scrollview.add_widget(content)
+# Запуск программы
+runTouchApp(configurator_app)
 
 
-    #Добавление всех виджетов
-    all_Widgets.add_widget(scrollview)
-    all_Widgets.add_widget(btn_layout)
-    configurator_app.add_widget(all_Widgets)
-
-    # Запуск программы
-    runTouchApp(configurator_app)
