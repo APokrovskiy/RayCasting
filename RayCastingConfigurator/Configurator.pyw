@@ -19,7 +19,6 @@ import default_settings as dsett
 from JsonManager.JsonFileManager import JsonFileManager
 import JsonManager.serialisation_classes as sclass 
 
-
 # CallBacks
 
 def on_btn_click(instance): # TODO: Сделать отдельную функцию заполнения полей

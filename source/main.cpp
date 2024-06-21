@@ -1,23 +1,32 @@
 #define _USE_MATH_DEFINES
-#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <set>
 #include <cmath>
-#include <nlohmann/json.hpp>
+#include <thread>  // для использования std::thread
+#include <atomic>  // для использования std::atomic
 #include<fstream>
+
+#include <nlohmann/json.hpp>
+#include <SFML/Graphics.hpp>
+
 
 #include "World.hpp"
 #include "Camera.hpp"
+#include "Button.cpp"
+#include "system_without_console.hpp"
 
 using json = nlohmann::json;
 
 
 
-
 int main()
 {
+    //sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    //const unsigned SCRN_HEIGHT = desktop.height / 3 * 2;
+    //const unsigned SCRN_WIDTH = desktop.width / 2;
+
     //импорт настроек json
 
     std::ifstream settings_file("./RayCastingConfigurator/settings.json");
@@ -61,16 +70,44 @@ int main()
     clouds.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
     floor.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
 
+
     //главный цикл
     
+    Button menu_button("../Media/GUI/ButtonsIcons/MenuButton.png",{SCRN_WIDTH-64,32});
+    std::atomic_bool is_configurator_opened {false};
+
     while (window.isOpen())
     {
+
         sf::Event event;
         while (window.pollEvent(event))
+        {
             if (event.type == sf::Event::Closed)
+            {
                 window.close();
-        
-        cmr.move();
+            }
+            else if(event.type == sf::Event::MouseButtonReleased )
+            {
+                if(menu_button.isClicked(window,event.mouseButton))
+                {   
+                    if (!is_configurator_opened.load()) // если поток с конфигуратором не создан => то создать
+                    {
+                        // Создание потока с конфигуратором
+                        std::thread([&] {
+                            is_configurator_opened.store(true);
+                            system_without_console_output(L"python ./RayCastingConfigurator/Configurator.pyw");
+                            is_configurator_opened.store(false);
+                        }).detach();
+                    }
+                    else; // ничего ни делать
+                }
+            }
+            
+                
+        }
+
+        if(window.hasFocus())
+            cmr.move();
 
         window.clear();
 
@@ -78,6 +115,8 @@ int main()
         window.draw(clouds);
 
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
+
+        menu_button.draw(window);
         
         window.display();
     }
