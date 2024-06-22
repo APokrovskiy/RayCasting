@@ -27,7 +27,20 @@ int main()
 
     //импорт настроек json
 
-    std::ifstream settings_file("RayCastingConfigurator/settings.json");
+    std::ifstream settings_file("settings.json");
+    if (!settings_file)
+    {
+        std::thread([] {
+            system_without_console_output(L"python ./RayCastingConfigurator/Configurator.pyw");
+        }).detach();
+        while (!settings_file)
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            settings_file.clear();
+            settings_file.open("settings.json");
+        }
+    }
+    
     json settings_json = json::parse(settings_file);
     settings_file.close(); // Файл должен быть здесь явно закрыт
 

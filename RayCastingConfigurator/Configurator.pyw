@@ -24,10 +24,8 @@ try:
     jsonmanager = JsonFileManager("settings.json")
     window, world, camera = jsonmanager.from_json()
 except(FileExistsError):
-    with open("settings.json", "w") as file: pass
-    jsonmanager = JsonFileManager("settings.json")
     window, world, camera = dsett.win, dsett.wrld, dsett.cmr
-    jsonmanager.to_json(window,world, camera)
+
 
 
 
@@ -70,8 +68,6 @@ def init_app_buttons() -> Tuple[BoxLayout, Button, Button]:
 # Функция Main
 
 # Настройки экрана
-Window.top = 100
-Window.left = 100
 Window.size = (800, 800)
 Window.set_title('Ray-Casting Configurator')
 
@@ -114,7 +110,12 @@ def on_btn1_click(instance):
     win = sclass.Window(input_title.text, (int(input_scrn_w.text), int(input_scrn_h.text)), int(input_fps.text))
     wrld = sclass.World(dsett.text_map, '1', 100)
     cmr = sclass.Camera((int(input_pos_x.text),int(input_pos_y.text)), 5, float(input_rot_a.text), int(input_rays.text), float(input_vis_r.text),  float(input_fov.text))
-    jsonmanager.to_json(win,wrld,cmr)
+    try:
+        local_jsonmanager = JsonFileManager("settings.json")
+    except:
+        with open("settings.json", "w") as file: pass 
+        local_jsonmanager = JsonFileManager("settings.json")
+    local_jsonmanager.to_json(win,wrld,cmr)
 
 # Добавление  виджетов
 content.add_widget(w_screen_resolution)
