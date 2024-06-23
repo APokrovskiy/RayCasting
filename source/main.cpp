@@ -27,17 +27,23 @@ int main()
 
     //импорт настроек json
 
+    std::atomic_bool is_configurator_opened {false};
+
     std::ifstream settings_file("settings.json");
     if (!settings_file)
     {
-        std::thread([] {
+        std::thread([&] {
+            is_configurator_opened.store(true);
             system_without_console_output(L"python ./RayCastingConfigurator/Configurator.pyw");
+            is_configurator_opened.store(false);
         }).detach();
         while (!settings_file)
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));
             settings_file.clear();
             settings_file.open("settings.json");
+            if (!is_configurator_opened)
+                throw std::runtime_error("Configurator was closed, but file settings.json was not created\n");
         }
     }
     
@@ -87,7 +93,6 @@ int main()
     //главный цикл
     
     Button menu_button("../Media/GUI/ButtonsIcons/MenuButton.png",{SCRN_WIDTH-64,32});
-    std::atomic_bool is_configurator_opened {false};
 
     while (window.isOpen())
     {
