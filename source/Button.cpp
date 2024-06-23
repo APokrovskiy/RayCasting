@@ -32,7 +32,7 @@ void Button::set_position(sf::Vector2f pos)
 
 void Button::set_scale(sf::Vector2f scale) 
 {
-    sprite.setPosition(scale); 
+    sprite.setScale(scale); 
 }
 
 void Button::set_texture(sf::Texture texture)

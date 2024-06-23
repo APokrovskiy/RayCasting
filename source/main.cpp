@@ -92,7 +92,8 @@ int main()
 
     //главный цикл
     
-    Button menu_button("../Media/GUI/ButtonsIcons/MenuButton.png",{SCRN_WIDTH-64,32});
+    Button menu_button("../Media/GUI/ButtonsIcons/MenuButton.png",{SCRN_WIDTH-71,16});
+    menu_button.set_scale({0.45,0.45});
 
     while (window.isOpen())
     {
@@ -117,7 +118,7 @@ int main()
                             is_configurator_opened.store(false);
                         }).detach();
                     }
-                    else; // ничего ни делать
+                    else; // ничего ни делать TODO: Сказать пользователю почему сообщение не появляется
                 }
             }
             
