@@ -111,6 +111,7 @@ void Camera::move()
         pos.x += speed * cos_a;
         pos.y -= speed * sin_a;
 
+        // проверка на совпадение движения и вектора соприкосновения
         if(perpendicular.x<0 &&cos_a>0)
         {
             pos.x -= speed * cos_a;
@@ -134,6 +135,7 @@ void Camera::move()
         pos.x += speed * sin_a; 
         pos.y += speed * cos_a;
 
+        // проверка на совпадение движения и вектора соприкосновения
         if(perpendicular.x<0 && sin_a >0)
         {
             pos.x -= speed * sin_a;
@@ -157,6 +159,7 @@ void Camera::move()
         pos.x -= speed * cos_a;
         pos.y += speed * sin_a;
 
+        // проверка на совпадение движения и вектора соприкосновения
         if(perpendicular.x<0 && cos_a<0)
         {
             pos.x += speed * cos_a;
@@ -180,6 +183,7 @@ void Camera::move()
         pos.x -= speed * sin_a;
         pos.y -= speed * cos_a;
 
+        // проверка на совпадение движения и вектора соприкосновения
         if(perpendicular.x<0 && sin_a<0)
         {
             pos.x += speed * sin_a;

@@ -8,8 +8,11 @@ public:
     Collider(sf::Vector2f start,sf::Vector2f end);
 
     //Геттеры
+    //точка от которой начинается коллайдек
     sf::Vector2f get_start() const;
+    //точка в которой заканчивается коллайдер
     sf::Vector2f get_end() const;
+    //вектор противоположный направлению косания
     sf::Vector2f get_collision_perpendicular(Collider& col, double error);
 
     //Сеттеры
