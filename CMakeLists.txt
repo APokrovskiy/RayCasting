@@ -48,11 +48,13 @@ set(SOURCES
     "source/main.cpp"
     "source/ray-cast.cpp"
     "source/Camera.cpp"
+    "source/Collider.cpp"
 )
 
 set(HEADERS
     "headers/ray-cast.hpp"
     "headers/Camera.hpp"
+    "headers/Collider.hpp"
 )
 
 # Создание исполняемого файла
