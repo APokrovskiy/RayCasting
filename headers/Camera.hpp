@@ -6,6 +6,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Collider.hpp"
 #include "ray-cast.hpp"
 #include "World.hpp"
 
@@ -13,7 +14,7 @@
 class Camera
 {
 public:
-    explicit Camera(World& wrld);
+    explicit Camera(World& wrld, int size);
 
     enum class Rendering_Mode {M_2D, M_3D};
 
@@ -23,6 +24,7 @@ public:
     inline double get_speed() const;
     inline unsigned int get_n_rays() const;
     inline const std::vector<std::pair<unsigned int, double>>& get_rays_buf() const;
+    inline unsigned int get_side_square_size() const;
 
     //Сеттеры
     void set_position(float new_x, float new_y);
@@ -31,7 +33,8 @@ public:
     void set_rotation(double angle_in_radians);
     void set_n_rays(unsigned int);
     void set_visual_range(unsigned int);
-    
+    void set_side_square_size(unsigned int);
+    void set_collider();
 
     // Движение игрока
     void move();
@@ -50,6 +53,10 @@ private:
     unsigned int visual_range{2000};
     double fov{M_PI/3};
     std::vector<std::pair<unsigned int, double>> rays_buf;
+
+    //Настройка колизии
+    unsigned int side_square_size;
+    Collider col{{0,0},{0,0}};
 
     // Указатель на мир
     World& world;

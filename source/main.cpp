@@ -36,7 +36,7 @@ int main()
     window.setFramerateLimit(60);
 
     World wrld{text_map,'1', /*TILE*/ 100};
-    Camera cmr{wrld};
+    Camera cmr{wrld, 100};
     
     cmr.set_position(250,250);
     cmr.set_field_of_view(M_PI / 3);
