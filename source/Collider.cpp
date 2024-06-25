@@ -18,21 +18,27 @@ sf::Vector2f Collider::get_collision_perpendicular(Collider& col, double error)
 {
     sf::Vector2f perpendicular ={0,0};
 
-    if(end.x >=col.get_start().x-error && end.x <=col.get_start().x+error)
+    if((end.y > col.start.y && end.y < col.end.y) || (start.y > col.start.y && start.y < col.end.y))
     {
-       perpendicular.x--;
+        if(end.x >=col.get_start().x-error && end.x <=col.get_start().x+error)
+        {
+        perpendicular.x--;
+        }
+        else if(start.x <= col.get_end().x+error && start.x >= col.get_end().x-error)
+        {
+        perpendicular.x++;
+        }
     }
-    else if(start.x <= col.get_end().x+error && start.x >= col.get_end().x-error)
-    {
-       perpendicular.x++;
-    }
-    if(end.y >= col.get_start().y-error && end.y <= col.get_start().y+error)
-    {
-        perpendicular.y--;
-    }
-    else if(start.y >= col.get_end().y-error && start.y <= col.get_end().y+error)
-    {
-        perpendicular.y++;
+   if((end.x > col.start.x && end.x < col.end.x) || (start.x > col.start.x && start.x < col.end.x))
+   {
+        if(end.y >= col.get_start().y-error && end.y <= col.get_start().y+error)
+        {
+            perpendicular.y--;
+        }
+        else if(start.y >= col.get_end().y-error && start.y <= col.get_end().y+error)
+        {
+            perpendicular.y++;
+        }
     }
     return perpendicular;
 }
