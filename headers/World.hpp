@@ -58,8 +58,8 @@ public:
             r.setPosition({(crd.x * tile - pos.x + tile)*multiply + map_size/2,
                            (crd.y * tile - pos.y + tile)*multiply+ map_size/2});
 
-            if ((r.getPosition().x+tile*multiply > 0 && r.getPosition().x < map_size)&&
-                (r.getPosition().y+tile*multiply > 0 && r.getPosition().y < map_size))
+            if ((r.getPosition().x+tile*multiply > 0 && r.getPosition().x < map_size+tile*multiply)&&
+                (r.getPosition().y+tile*multiply > 0 && r.getPosition().y < map_size+tile*multiply))
             {
                 r.setFillColor(sf::Color::Cyan);
                 win.draw(r);
