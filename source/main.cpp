@@ -8,6 +8,8 @@
 
 #include "World.hpp"
 #include "Camera.hpp"
+#include "Map.hpp"
+
 
 std::vector<std::string> text_map = 
 {
@@ -37,6 +39,7 @@ int main()
 
     World wrld{text_map,'1', /*TILE*/ 100};
     Camera cmr{wrld};
+    Map map{wrld,cmr,{150,150,150},{50,50,50},{200,200,200}};
     
     cmr.set_position(250,250);
     cmr.set_field_of_view(M_PI / 3);
@@ -63,12 +66,12 @@ int main()
         cmr.move();
 
         window.clear();
-
+        
         window.draw(floor);
         window.draw(clouds);
 
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
-        cmr.draw_map(window,0.1,200);
+        map.draw_map(window, 0.4, 500,{-100,-100});
         window.display();
     }
     
