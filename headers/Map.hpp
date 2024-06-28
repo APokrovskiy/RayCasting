@@ -9,19 +9,28 @@ class Map
 {
 public:
 
-    Map(World& world, Camera& camera, sf::Color background_color, sf::Color outline_color, sf::Color tile_color);
+    Map(World& world, Camera& camera,sf::Vector2f position,double multiply, sf::Color tile_color);
 
-    void draw_map(sf::RenderWindow& window, double multiply, unsigned int size, sf::Vector2f pos);
-    void draw_minimap(sf::RenderWindow& window, double multiply, unsigned int size, sf::Vector2f pos);
+    void draw(sf::RenderWindow& window);
+
+    //Геттеры
+
+    double  get_multiply();
+    sf::Vector2f get_position();
+    sf::Color get_tile_color();
+
+    //Сеттеры
+
+    void set_multiply(double value);
+    void set_position(sf::Vector2f value);
+    void set_tile_color(sf::Color color);
 
 private:
 
-    void draw_background(sf::RenderWindow& window, unsigned int size, sf::Vector2f pos);
-    void draw_outline(sf::RenderWindow& window, unsigned int size, double tile_on_map, sf::Vector2f pos);
-
-    sf::Color background_color;
-    sf::Color outline_color;
     sf::Color tile_color;
+    sf::Vector2f position;
+    double multiply;
+
     World& world;
     Camera& camera;
 };

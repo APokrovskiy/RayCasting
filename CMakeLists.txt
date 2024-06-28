@@ -49,12 +49,15 @@ set(SOURCES
     "source/ray-cast.cpp"
     "source/Camera.cpp"
     "source/Map.cpp"
+    "source/MiniMap.cpp"
 )
 
 set(HEADERS
     "headers/ray-cast.hpp"
     "headers/Camera.hpp"
     "headers/Map.hpp"
+    "headers/MiniMap.hpp"
+    
 )
 
 # Создание исполняемого файла

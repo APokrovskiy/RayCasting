@@ -40,8 +40,8 @@ public:
 
     // Рендеринг изображения
     void draw(sf::RenderWindow& win, Rendering_Mode mode);
-    //Отрисовка камеры
-    void draw_map(sf::RenderWindow& win,double multiply,unsigned int size);
+    // рисование линии
+    static void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist,int max_dist, double rot_angle, sf::Color color,double multiply);
 
 private:
     // Положение камеры в пространстве
