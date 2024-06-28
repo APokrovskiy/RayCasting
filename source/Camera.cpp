@@ -1,33 +1,41 @@
 #include "Camera.hpp"
-
+#include <iostream>
 #include <exception>
 
 Camera::Camera(World& w): world(w){}
 
  // Геттеры
-inline sf::Vector2f Camera::get_position() const
+sf::Vector2f Camera::get_position() const
 {
     return pos;
 }
 
-inline double Camera::get_rotation() const
+double Camera::get_rotation() const
 {
     return rot_a;
 }
 
-inline double Camera::get_speed() const
+double Camera::get_speed() const
 {
     return speed;
 }
 
-inline unsigned int Camera::get_n_rays() const
+unsigned int Camera::get_n_rays() const
 {
     return n_rays;
 }
 
-inline const std::vector<std::pair<unsigned int, double>>& Camera::get_rays_buf() const
+const std::vector<std::pair<unsigned int, double>>& Camera::get_rays_buf() const
 {
     return rays_buf;
+}
+unsigned int Camera::get_visual_range() const
+{
+    return visual_range;
+}
+double Camera::get_field_of_view() const
+{
+    return fov;
 }
 
 //Сеттеры
@@ -112,7 +120,7 @@ void Camera::rendering_3d(sf::RenderWindow& win)
     float projection_wall_height;
     for (unsigned int i = 0; i < raysSize; ++i) 
     {
-        auto& ray = rays_buf[i];
+        auto ray = rays_buf[i];
         if (ray.first == visual_range) continue; // если объекта не встретилось, не выполнять расчеты и не отрисовывать несуществующий объект на расстоянии visual_range
 
         ray.first *= cos(rot_a - ray.second);
@@ -137,8 +145,13 @@ static void draw_camera(sf::RenderWindow& w,const rc::Coords& cmr)
     w.draw(c);
 }
 
-static void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, double rot_angle, sf::Color color)
+void Camera::draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist,int max_dist, double rot_angle, sf::Color color,double multiply)
 {
+    dist *=multiply;
+    if(dist>max_dist)
+    {
+        dist = max_dist;
+    }
     rot_angle = rc::radians_normalise(rot_angle);
     sf::VertexArray line{ sf::Lines, 2 };
     line[0] = sf::Vector2f{cmr.x, cmr.y};
@@ -152,7 +165,7 @@ void Camera::rendering_2d(sf::RenderWindow& win)
 {
     rays_buf = rc::ray_casting(world.get_walls_coords(), world.get_tile_size(), rc::Coords{pos.x, pos.y},rot_a, visual_range, fov, n_rays);
     for (auto ray: rays_buf)
-        draw_line(win,{pos.x, pos.y}, ray.first, ray.second, sf::Color::White);
+        draw_line(win,{pos.x, pos.y}, ray.first,ray.first, ray.second, sf::Color::White,1);
     draw_camera(win,{pos.x, pos.y}); // Отрисовка Камеры
 }
 

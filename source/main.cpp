@@ -8,6 +8,9 @@
 
 #include "World.hpp"
 #include "Camera.hpp"
+#include "Map.hpp"
+#include "MiniMap.hpp"
+
 
 std::vector<std::string> text_map = 
 {
@@ -33,10 +36,11 @@ int main()
     const unsigned SCRN_WIDTH = desktop.width / 2;
 
     sf::RenderWindow window{{SCRN_WIDTH, SCRN_HEIGHT},"Ray-Casting", sf::Style::Close | sf::Style::Titlebar};
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(1000);
 
     World wrld{text_map,'1', /*TILE*/ 100};
     Camera cmr{wrld};
+    Map map{wrld, cmr, {0,0}, 0.1, {200,200,200}};
     
     cmr.set_position(250,250);
     cmr.set_field_of_view(M_PI / 3);
@@ -63,12 +67,12 @@ int main()
         cmr.move();
 
         window.clear();
-
+        
         window.draw(floor);
         window.draw(clouds);
 
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
-        
+        map.draw(window);
         window.display();
     }
     
