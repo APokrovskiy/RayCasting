@@ -1,133 +1,73 @@
 #define _USE_MATH_DEFINES
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include <string>
 #include <set>
 #include <cmath>
-#include <thread>  
-#include <atomic>  
-#include <fstream>
-#include <filesystem>
-
-#include <SFML/Graphics.hpp>
-#include <nlohmann/json.hpp>
-
 
 #include "World.hpp"
-
-
 #include "Camera.hpp"
-#include "Button.hpp"
-#include "start_configurator.hpp"
-#include "Settings_Updater.hpp"
-#include "Background.hpp"
 
-using json = nlohmann::json;
-
-
-
-
-
-
-
-void upload_settings(const ray_casting_settings& settings, Camera& cmr)
+std::vector<std::string> text_map = 
 {
-    cmr.set_position(settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y);
-    cmr.set_field_of_view(settings.cmr.fov);
-    cmr.set_rotation(settings.cmr.rot_a);
-    cmr.set_speed(settings.cmr.speed);
-    cmr.set_n_rays(settings.cmr.n_rays);
-    cmr.set_visual_range(settings.cmr.vis_r);
-}
+    "1111111111111111111111",
+    "1000000000000000000001",
+    "1000001000000001000001",
+    "1000000000000000000001",
+    "1000000010000100000001",
+    "1000000001111000000001",
+    "1000000010000100000001",
+    "1000000000000000000001",
+    "1000001000000001000001",
+    "1000010000000000100001",
+    "1111111111111111111111"
+};
 
 
-//TODO: Обновить список хедеров
 
-// main.cpp
-///////////////////////////////////////////////////////////////////////////////////////////////// 
 int main()
 {
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    const unsigned SCRN_HEIGHT = desktop.height / 3 * 2;
+    const unsigned SCRN_WIDTH = desktop.width / 2;
 
-    std::atomic_bool is_configurator_opened {false};
+    sf::RenderWindow window{{SCRN_WIDTH, SCRN_HEIGHT},"Ray-Casting", sf::Style::Close | sf::Style::Titlebar};
+    window.setFramerateLimit(60);
+
+    World wrld{text_map,'1', /*TILE*/ 100};
+    Camera cmr{wrld};
     
-    std::string title = "Ray-Casting";
-    std::string settings_file_path = "settings.json";
-
-    // Создание файла, если его нет (CORRECT)
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    std::ifstream settings_file(settings_file_path);
-    if (!settings_file)
-    {
-        start_configurator(is_configurator_opened);
-        while (!settings_file)
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            settings_file.clear();
-            settings_file.open(settings_file_path);
-        }
-    }
-    settings_file.close();
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    Settings_Updater setts_updater{settings_file_path};
-
-    ray_casting_settings settings = setts_updater.get_settings();
-    // Обновление настроек
+    cmr.set_position(250,250);
+    cmr.set_field_of_view(M_PI / 3);
+    cmr.set_rotation(0);
+    cmr.set_speed(3);
+    cmr.set_n_rays(1000);
+    cmr.set_visual_range(3000);
     
+    sf::RectangleShape clouds, floor;
+    clouds.setFillColor(sf::Color{0,0,100});
+    floor.setFillColor(sf::Color{0,100,0});
+    clouds.setPosition({0,0});
+    floor.setPosition({0, SCRN_HEIGHT / 2});
+    clouds.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
+    floor.setSize({SCRN_WIDTH, SCRN_HEIGHT / 2});
 
-
-
-
-
-    // Инициализация объектов
-    sf::RenderWindow window{{settings.win.screen_width, settings.win.screen_height}, title, sf::Style::Close | sf::Style::Titlebar};
-
-    World world{settings.world.string_map,
-            settings.world.wall_char,
-            settings.world.tile_size};
-
-    Camera cmr{world};
-
-    Background background{settings}; // TODO: Убрать зависимость от всей структуры настроек
-
-    Button menu_button {"../Media/GUI/ButtonsIcons/MenuButton.png"}; 
-    menu_button.set_scale({0.45,0.45});
-    int menu_button_shift = 12; // Смещение кнопки от границ окон
-    menu_button.set_position({settings.win.screen_width - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift });
-
-
-    // Загрузка настроек в камеру
-    upload_settings(settings, cmr);
-    
-
-
-    // Главный цикл
     while (window.isOpen())
     {
-        setts_updater.update(window, world, cmr, background, menu_button);
-
         sf::Event event;
         while (window.pollEvent(event))
-        {
             if (event.type == sf::Event::Closed)
                 window.close();
-
-            else if(event.type == sf::Event::MouseButtonReleased && menu_button.isClicked(window,event.mouseButton))
-                    // Создание потока с конфигуратором
-                    start_configurator(is_configurator_opened);
-
-        }
-
-        if(window.hasFocus())
-            cmr.move();
+        
+        cmr.move();
 
         window.clear();
 
-        background.draw(window);
+        window.draw(floor);
+        window.draw(clouds);
 
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
-
-        menu_button.draw(window);
         
         window.display();
     }

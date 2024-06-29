@@ -5,7 +5,7 @@
 Camera::Camera(World& w): world(w){}
 
  // Геттеры
-sf::Vector2f Camera::get_position() const
+inline sf::Vector2f Camera::get_position() const
 {
     return pos;
 }
