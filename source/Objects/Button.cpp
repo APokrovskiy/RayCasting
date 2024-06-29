@@ -37,7 +37,15 @@ void Button::set_scale(sf::Vector2f scale)
 
 void Button::set_texture(sf::Texture texture)
 {
-        sprite.setTexture(texture);
+    sprite.setTexture(texture);
+}
+
+void Button::set_texture(const std::string& file_path)
+{
+    if (!texture.loadFromFile(file_path)) 
+        std::runtime_error( ("The button texture was not loaded along the path "s + file_path + '\n').c_str() ); 
+    
+    sprite.setTexture(texture);
 }
 
 void Button::draw(sf::RenderWindow& window) 

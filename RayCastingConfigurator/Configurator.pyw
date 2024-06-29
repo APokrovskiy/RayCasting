@@ -13,20 +13,21 @@ from kivy.uix.scrollview import ScrollView
 
 # Импорты стандартной библиотеки
 from typing import Tuple
+import os
 
 # Импорты из пользовательских файлов
 import default_settings as dsett
 from JsonManager.JsonFileManager import JsonFileManager
 import JsonManager.serialisation_classes as sclass 
 
-
-try:
+if (not os.path.exists("settings.json")):
+    with open("settings.json", "w") as file: pass 
     jsonmanager = JsonFileManager("settings.json")
-    window, world, camera = jsonmanager.from_json()
-except(FileExistsError):
-    window, world, camera = dsett.win, dsett.wrld, dsett.cmr
+    jsonmanager.to_json(dsett.win, dsett.wrld, dsett.cmr)
+    exit()
 
-
+jsonmanager = JsonFileManager("settings.json")
+window, world, camera = jsonmanager.from_json()
 
 
 # Создание виджетов настройки одного параметра

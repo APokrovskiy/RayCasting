@@ -6,26 +6,34 @@
 # смотрите результат в папке build Ray-Casting.exe                                                                                          #
 #############################################################################################################################################
 
+# TODO: Сделать Сообщения об ошибках
+
 # Минимальная допустимая версия системы сборки Cmake
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 # Стандарт C++ 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # Название проекта
-project(Ray-Casting LANGUAGES CXX)
+project(Ray-Casting 
+    LANGUAGES CXX
+    VERSION 1.1.0
+    DESCRIPTION "Программа иллюстрирует работу алгоритма рендеринга Ray-Casting"
+)
 
-# Импорт модуля для автоматического скачивания библиотеки с интернетв
+# Импорт модуля для автоматического скачивания библиотеки с интернета
 include(FetchContent)
 
 # Версия графической библиотеки SFML
-set(SFML_VERSION "2.5.1")
+set(SFML_VERSION 2.5.1)
+
 
 # Указания Сведений о библиотеке SFML
 FetchContent_Declare(
     sfml
-    GIT_REPOSITORY "https://github.com/SFML/SFML.git"
-    GIT_TAG        "${SFML_VERSION}"
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG        ${SFML_VERSION}
 )
 
 # Указания Сведений о библиотеке json
@@ -46,41 +54,11 @@ set(SFML_BUILD_WINDOW ON)
 
 # Активация SFML и json
 FetchContent_MakeAvailable(sfml json)
+set(libsfml sfml-graphics sfml-window sfml-system sfml-audio)
 
-# Подключение Хедеров
-include_directories("./headers")
 
-set(SOURCES 
-    "source/main.cpp"
-    "source/ray-cast.cpp"
-    "source/Camera.cpp"
-    "source/Button.cpp"
-    "source/system_without_console.cpp"
-)
-
-set(HEADERS
-    "headers/ray-cast.hpp"
-    "headers/Camera.hpp"
-    "headers/system_without_console.hpp"
-    "headers/World.hpp"
-    "headers/Button.hpp"
-    "headers/system_without_console.hpp"
-)
-
-# Создание исполняемого файла
-add_executable(${PROJECT_NAME} 
-    ${SOURCES}
-    ${HEADERS}
-)
-
-# Линковка Библиотек с Исполняемым файлом
-target_link_libraries(${PROJECT_NAME} PRIVATE 
-    sfml-graphics
-    sfml-window
-    sfml-system
-    sfml-audio
-    nlohmann_json::nlohmann_json
-)
+# Добавление целей из папки headers в HEADERS
+add_subdirectory(source)
 
 # Программа GUI (Без консоли)
 if(UNIX AND NOT APPLE)

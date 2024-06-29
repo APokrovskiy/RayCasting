@@ -1,4 +1,3 @@
-
 #include "system_without_console.hpp"
 
 #ifdef _WIN32
@@ -8,7 +7,8 @@
     #include <sys/wait.h>
 #endif
 
-
+//TODO: Проверить на Linux
+// TODO: Заккоментировать
 void system_without_console_output(const std::wstring& cmd)
 {
 #ifdef _WIN32

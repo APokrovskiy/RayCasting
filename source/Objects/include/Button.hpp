@@ -22,6 +22,7 @@ public:
     void set_position(sf::Vector2f pos);
     void set_scale(sf::Vector2f scale);
     void set_texture(sf::Texture texture);
+    void set_texture(const std::string& file_path);
     
 
     // Функции-члены
