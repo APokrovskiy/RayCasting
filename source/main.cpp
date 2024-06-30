@@ -40,7 +40,7 @@ int main()
 
     World wrld{text_map,'1', /*TILE*/ 100};
     Camera cmr{wrld};
-    Map map{wrld, cmr, {0,0}, 0.1, {200,200,200}};
+    MiniMap mini_map{wrld, cmr, {0,0}, {100,100}, 0.1, {200,200,200}, {100,100,100}, {0,0,0}};
     
     cmr.set_position(250,250);
     cmr.set_field_of_view(M_PI / 3);
@@ -72,7 +72,7 @@ int main()
         window.draw(clouds);
 
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
-        map.draw(window);
+        mini_map.draw(window);
         window.display();
     }
     

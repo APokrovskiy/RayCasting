@@ -28,7 +28,7 @@ void MiniMap::draw(sf::RenderWindow& window)
     draw_outline(window);
 
     for (auto ray: camera.get_rays_buf()){
-        Camera::draw_line(window,{scale.x/2+position.x, scale.y/2+position.y},ray.first, scale.x/2 - tile_size,ray.second, sf::Color::White,multiply);
+        Camera::draw_line(window,{scale.x/2+position.x, scale.y/2+position.y},ray.first,{tile_size,tile_size},{scale.x-tile_size, scale.y-tile_size},ray.second, sf::Color::White,multiply);
     }
 }
 
@@ -68,7 +68,7 @@ void MiniMap::draw_outline(sf::RenderWindow& window)
     side_out_line_background.setFillColor(outline_color);
     side_out_line_background.setPosition(position);
 
-    sf::RectangleShape top_and_bottom_out_line_background{{scale.y,tile_size}};
+    sf::RectangleShape top_and_bottom_out_line_background{{scale.x,tile_size}};
     top_and_bottom_out_line_background.setFillColor(outline_color);
     top_and_bottom_out_line_background.setPosition(position);
         

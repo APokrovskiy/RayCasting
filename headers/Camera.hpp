@@ -41,7 +41,7 @@ public:
     // Рендеринг изображения
     void draw(sf::RenderWindow& win, Rendering_Mode mode);
     // рисование линии
-    static void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist,int max_dist, double rot_angle, sf::Color color,double multiply);
+    static void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, sf::Vector2f min_border, sf::Vector2f max_border, double rot_angle, sf::Color color,double multiply);
 
 private:
     // Положение камеры в пространстве

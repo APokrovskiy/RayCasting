@@ -145,14 +145,29 @@ static void draw_camera(sf::RenderWindow& w,const rc::Coords& cmr)
     w.draw(c);
 }
 
-void Camera::draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist,int max_dist, double rot_angle, sf::Color color,double multiply)
+void Camera::draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, sf::Vector2f min_border, sf::Vector2f max_border, double rot_angle, sf::Color color,double multiply)
 {
-    dist *=multiply;
-    if(dist>max_dist)
-    {
-        dist = max_dist;
-    }
     rot_angle = rc::radians_normalise(rot_angle);
+
+    dist *=multiply;
+
+    if(cmr.x + dist * cos(rot_angle)>max_border.x)
+    {
+        dist = (max_border.x-cmr.x)/cos(rot_angle);
+    }
+    else if(cmr.x + dist * cos(rot_angle) < min_border.x)
+    {
+        dist = (min_border.x-cmr.x)/cos(rot_angle);
+    }
+    if(cmr.y - dist * sin(rot_angle)>max_border.y)
+    {
+        dist = -(max_border.y-cmr.y)/sin(rot_angle);
+    }
+    else if(cmr.y - dist * sin(rot_angle) < min_border.y)
+    {
+        dist = -(min_border.y-cmr.y)/sin(rot_angle);
+    }
+
     sf::VertexArray line{ sf::Lines, 2 };
     line[0] = sf::Vector2f{cmr.x, cmr.y};
     line[1] = sf::Vector2f{cmr.x + dist * cos(rot_angle), cmr.y - dist * sin(rot_angle) };
@@ -165,7 +180,7 @@ void Camera::rendering_2d(sf::RenderWindow& win)
 {
     rays_buf = rc::ray_casting(world.get_walls_coords(), world.get_tile_size(), rc::Coords{pos.x, pos.y},rot_a, visual_range, fov, n_rays);
     for (auto ray: rays_buf)
-        draw_line(win,{pos.x, pos.y}, ray.first,ray.first, ray.second, sf::Color::White,1);
+        draw_line(win,{pos.x, pos.y}, ray.first,{0,0},{win.getSize().x,win.getSize().y}, ray.second, sf::Color::White,1);
     draw_camera(win,{pos.x, pos.y}); // Отрисовка Камеры
 }
 

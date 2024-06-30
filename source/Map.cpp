@@ -25,7 +25,7 @@ void Map::draw(sf::RenderWindow& window)
 
     for (auto ray: camera.get_rays_buf()){
         Camera::draw_line(window,{camera.get_position().x*multiply + position.x+tile_size, camera.get_position().y*multiply + position.y +tile_size},
-                ray.first, ray.first,ray.second, sf::Color::White, multiply);
+                ray.first, {0,0}, {window.getSize().x,window.getSize().y},ray.second, sf::Color::White, multiply);
     }
 
 }
