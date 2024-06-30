@@ -46,8 +46,8 @@ void upload_settings(const ray_casting_settings& settings, Camera& cmr)
 ///////////////////////////////////////////////////////////////////////////////////////////////// 
 int main()
 {
-
     std::atomic_bool is_configurator_opened {false};
+
     
     std::string title = "Ray-Casting";
     std::string settings_file_path = "settings.json";
@@ -86,7 +86,7 @@ int main()
             settings.world.wall_char,
             settings.world.tile_size};
 
-    Camera cmr{world};
+    Camera cmr{world, 50};
 
     Background background{settings}; // TODO: Убрать зависимость от всей структуры настроек
 

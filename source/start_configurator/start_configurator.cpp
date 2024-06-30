@@ -1,4 +1,4 @@
-#include "start_configurator.hpp" // TODO: Определится с названием
+#include "start_configurator.hpp"
 
 #include <stdexcept>
 

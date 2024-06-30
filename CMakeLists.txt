@@ -56,7 +56,6 @@ set(SFML_BUILD_WINDOW ON)
 FetchContent_MakeAvailable(sfml json)
 set(libsfml sfml-graphics sfml-window sfml-system sfml-audio)
 
-
 # Добавление целей из папки headers в HEADERS
 add_subdirectory(source)
 
