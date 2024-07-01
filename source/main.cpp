@@ -40,7 +40,8 @@ int main()
 
     World wrld{text_map,'1', /*TILE*/ 100};
     Camera cmr{wrld};
-    MiniMap mini_map{wrld, cmr, {0,0}, {100,100}, 0.1, {200,200,200}, {100,100,100}, {0,0,0}};
+    MiniMap mini_map{wrld, cmr, {0,0}, {200,200}, 0.1, {200,200,200}, {100,100,100}, {0,0,0}};
+    Map map{wrld,cmr,{100,100},0.5,{20,20,20},10};
     
     cmr.set_position(250,250);
     cmr.set_field_of_view(M_PI / 3);
@@ -63,16 +64,27 @@ int main()
         while (window.pollEvent(event))
             if (event.type == sf::Event::Closed)
                 window.close();
-        
-        cmr.move();
-
+                
         window.clear();
-        
+        // отрисовка заднего фона
         window.draw(floor);
         window.draw(clouds);
-
+        //отрисаовка вида от камеры
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
-        mini_map.draw(window);
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+        {
+            //отрисовка карты и её движение
+            map.move();
+            map.draw(window);        
+        }
+        else
+        {
+            //отрисовка мини карты и движение камеры
+            cmr.move();
+            mini_map.draw(window);
+        }
+        
         window.display();
     }
     

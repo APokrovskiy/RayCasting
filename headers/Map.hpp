@@ -9,9 +9,11 @@ class Map
 {
 public:
 
-    Map(World& world, Camera& camera,sf::Vector2f position,double multiply, sf::Color tile_color);
+    Map(World& world, Camera& camera,sf::Vector2f position,double multiply, sf::Color tile_color, double speed);
 
     void draw(sf::RenderWindow& window);
+
+    void move();
 
     //Геттеры
 
@@ -30,6 +32,7 @@ private:
     sf::Color tile_color;
     sf::Vector2f position;
     double multiply;
+    double speed;
 
     World& world;
     Camera& camera;

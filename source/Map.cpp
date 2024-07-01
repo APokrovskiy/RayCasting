@@ -1,7 +1,7 @@
 #include "Map.hpp"
 
-Map::Map(World& world, Camera& camera,sf::Vector2f position, double multiply, sf::Color tile_color)
-: world(world), camera(camera), position(position), multiply(multiply), tile_color(tile_color){}
+Map::Map(World& world, Camera& camera,sf::Vector2f position, double multiply, sf::Color tile_color, double speed = 1)
+: world(world), camera(camera), position(position), multiply(multiply), tile_color(tile_color), speed(speed){}
 
 void Map::draw(sf::RenderWindow& window)
 {
@@ -30,7 +30,27 @@ void Map::draw(sf::RenderWindow& window)
 
 }
 
-//Геттеры
+void Map::move()
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+    {
+        position.y -= speed;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) 
+    {
+        position.x -= speed;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) 
+    {
+        position.y += speed;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) 
+    {
+        position.x += speed;
+    }  
+}
+
+    //Геттеры
 
     double  Map::get_multiply(){return multiply;}
     sf::Vector2f Map::get_position(){return position;}
