@@ -36,10 +36,10 @@ void Settings_Updater::update(sf::RenderWindow& window, World& world, Camera& cm
 
         } 
 
+
         window.setFramerateLimit(settings.win.fps_limit);
 
-        world.set_tile(settings.world.tile_size);
-        world.set_walls_coords(settings.world.string_map, settings.world.wall_char);
+        world = World{settings.world.string_map, settings.world.wall_char, settings.world.tile_size};
 
         if (pos != sf::Vector2f{settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y})
         {
