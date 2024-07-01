@@ -1,4 +1,4 @@
-#include "MiniMap.hpp"
+#include "world_map/MiniMap.hpp"
 
 MiniMap::MiniMap(World& world, Camera& camera, sf::Vector2f position, sf::Vector2f scale, double multiply, sf::Color background_color, sf::Color outline_color, sf::Color tile_color)
 : world(world), camera(camera), position(position), scale(scale), multiply(multiply), background_color(background_color), outline_color(outline_color), tile_color(tile_color){}

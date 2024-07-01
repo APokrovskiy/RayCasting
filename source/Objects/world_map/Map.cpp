@@ -1,4 +1,4 @@
-#include "Map.hpp"
+#include "world_map/Map.hpp"
 
 Map::Map(World& world, Camera& camera,sf::Vector2f position, double multiply, sf::Color tile_color, double speed = 1)
 : world(world), camera(camera), position(position), multiply(multiply), tile_color(tile_color), speed(speed){}

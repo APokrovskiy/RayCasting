@@ -1,88 +1,84 @@
 # Сборка проекта
-#############################################################################################################################################
-# Для того чтобы собрать проект, нужно установить установить утилиты gcc, cmake и ninja, а также добавить их в переменные среды PATH:       #
-# Теперь перейдите в директорию с файлом CMakeLists.txt в cmd (Не в powershell) и введите команду:                                          #
-# cmake -DCMAKE_CXX_COMPILER=c++ -DCMAKE_CXX_FLAGS="-static -static-libgcc -static-libstdc++" -G Ninja -S . -B build && cmake --build build #
-# смотрите результат в папке build Ray-Casting.exe                                                                                          #
-#############################################################################################################################################
+# Для того чтобы собрать проект, нужно установить установить утилиты gcc, cmake и ninja, а также добавить их в переменные среды PATH:       
+# Теперь перейдите в директорию с файлом CMakeLists.txt в cmd (Не в powershell) и введите команду:                                          
+# запустите скрипт scripts/build.cmd(для Windows) или scripts/build.sh (Для Линукс) Из проводника (или из директории, где он находится) #TODO: Проверить на линукс
+# смотрите результат в папке build Ray-Casting.exe                                                                                                   
+
+
+message("
+
+        -------------------------------------
+        Начинается сборка проекта Ray-Casting
+        -------------------------------------
+
+")
 
 # Минимальная допустимая версия системы сборки Cmake
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
+
 # Стандарт C++ 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # Название проекта
-project(Ray-Casting LANGUAGES CXX)
-
-# Импорт модуля для автоматического скачивания библиотеки с интернетв
-include(FetchContent)
-
-# Версия графической библиотеки SFML
-set(SFML_VERSION "2.5.1")
-
-# Указания Сведений о библиотеке
-FetchContent_Declare(
-    sfml
-    GIT_REPOSITORY "https://github.com/SFML/SFML.git"
-    GIT_TAG        "${SFML_VERSION}"
+project(Ray-Casting 
+LANGUAGES CXX
+VERSION 1.2.0
+DESCRIPTION "3D Лабиринт: Визуализация работы алгоритма ray-casting"
 )
+
+# Импорт модулей
+include(FetchContent)
+include(scripts/cmake/LINK_LIB_SFML.cmake)
+include(scripts/cmake/LINK_LIB_JSON.cmake)
+include(scripts/cmake/GUI_PROGRAM.cmake)
+include(scripts/cmake/LINK_PYTHON_REQUIREMENTS.cmake)
+include(scripts/cmake/CP.cmake)
+
+# Тишина от FetchContent
+set(FETCHCONTENT_QUIET True)
+
+
 # Отключение динамической компоновки библиотеки
 set(BUILD_SHARED_LIBS OFF)
 
-# Настройки SFML
-set(SFML_BUILD_EXAMPLES OFF)
-set(SFML_BUILD_DOC OFF)
-set(SFML_BUILD_NETWORK OFF)
-set(SFML_BUILD_AUDIO ON)
-set(SFML_BUILD_GRAPHICS ON)
-set(SFML_BUILD_WINDOW ON)
 
-# Активация SFML
-FetchContent_MakeAvailable(sfml)
+# подключение SFML и json
+LINK_LIB_SFML(sfml 2.5.1)
+LINK_LIB_JSON(json)
+set(libsfml sfml-graphics sfml-window sfml-system sfml-audio)
 
-# Подключение Хедеров
-include_directories("./headers")
 
-set(SOURCES 
-    "source/main.cpp"
-    "source/ray-cast.cpp"
-    "source/Camera.cpp"
-    "source/Map.cpp"
-    "source/MiniMap.cpp"
-)
+add_subdirectory(source)
 
-set(HEADERS
-    "headers/ray-cast.hpp"
-    "headers/Camera.hpp"
-    "headers/Map.hpp"
-    "headers/MiniMap.hpp"
+# Без консоли
+GUI_PROGRAM(${PROJECT_NAME})
+
+# Установка python зависимостей
+LINK_PYTHON_REQUIREMENTS(${CMAKE_SOURCE_DIR}/RayCastingConfigurator/requirements.txt)
+
+
+# Копирование директории с конфигуратором в папку с исполняемым файлом
+message(
+"
+++++++++++++++++++++++++++++++++++++++++++++++
+________________________________
+|    Копирование Configurator   |
+|           Подождите           |
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+++++++++++++++++++++++++++++++++++++++++++++++
+")
+CP(${CMAKE_CURRENT_SOURCE_DIR}/RayCastingConfigurator   ${CMAKE_BINARY_DIR}/RayCastingConfigurator)
     
-)
-
-# Создание исполняемого файла
-add_executable(${PROJECT_NAME} 
-    ${SOURCES}
-    ${HEADERS}
-)
-
-# Линковка Библиотеки с Исполняемым файлом
-target_link_libraries(${PROJECT_NAME} PRIVATE 
-    sfml-graphics
-    sfml-window
-    sfml-system
-    sfml-audio
-)
-
-
-# Программа GUI (Без консоли)
-if(UNIX AND NOT APPLE)
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mwindows")
-elseif(WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE true)
-elseif(APPLE)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
-    )
-endif()
+    
+# Добавление целей из папки headers в HEADERS
+message(
+"
+++++++++++++++++++++++++++++++++++++++++++++++
+         __________________________
+        |    Компиляция проекта    |
+        |         Подождите        |
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+++++++++++++++++++++++++++++++++++++++++++++++
+")

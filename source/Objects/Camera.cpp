@@ -2,7 +2,12 @@
 #include <iostream>
 #include <exception>
 
-Camera::Camera(World& w): world(w){}
+Camera::Camera(World& w, int size): world(w)
+{
+    side_square_size = size;
+    col = Collider({pos.x-side_square_size/2 , pos.y-side_square_size/2},
+    {pos.x+side_square_size/2 , pos.y+side_square_size/2});
+}
 
  // Геттеры
 sf::Vector2f Camera::get_position() const
@@ -29,6 +34,7 @@ const std::vector<std::pair<unsigned int, double>>& Camera::get_rays_buf() const
 {
     return rays_buf;
 }
+
 unsigned int Camera::get_visual_range() const
 {
     return visual_range;
@@ -36,6 +42,12 @@ unsigned int Camera::get_visual_range() const
 double Camera::get_field_of_view() const
 {
     return fov;
+}
+
+// взять длинну стороны квадрата
+unsigned int Camera::get_side_square_size() const
+{
+    return side_square_size;
 }
 
 //Сеттеры
@@ -73,36 +85,138 @@ void Camera::set_visual_range(unsigned int vr)
     visual_range = vr;
 }
 
+void Camera::set_side_square_size(unsigned int size)
+{
+    side_square_size = size;
+}
+
+void Camera::set_collider()
+{
+    col = Collider({pos.x-side_square_size/2 , pos.y-side_square_size/2},
+    {pos.x+side_square_size/2 , pos.y+side_square_size/2});
+}
+
 // Движение игрока
 void Camera::move() 
 {
+    sf::Vector2f perpendicular;
+
+    for(auto wall_collider: world.get_colliders())
+    {
+        if (col.is_collised(wall_collider, speed))
+        {
+            perpendicular += col.get_collision_perpendicular(wall_collider,speed);
+        }
+    }
+
     rot_a = rc::radians_normalise(rot_a);
+
     double cos_a = cos(rot_a),
             sin_a = sin(rot_a);
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
         pos.x += speed * cos_a;
         pos.y -= speed * sin_a;
+
+        // проверка на совпадение движения и вектора соприкосновения
+        if(perpendicular.x<0 &&cos_a>0)
+        {
+            pos.x -= speed * cos_a;
+        }   
+        else if(perpendicular.x>0 &&cos_a<0)
+        {
+            pos.x -= speed * cos_a;
+        }   
+        if(perpendicular.y<0 &&sin_a<0)
+        {
+            pos.y += speed * sin_a;
+        }   
+        else if(perpendicular.y>0 &&sin_a>0)
+        {
+            pos.y += speed * sin_a;
+        }   
     }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) 
     {
         pos.x += speed * sin_a; 
         pos.y += speed * cos_a;
+
+        // проверка на совпадение движения и вектора соприкосновения
+        if(perpendicular.x<0 && sin_a >0)
+        {
+            pos.x -= speed * sin_a;
+        }
+        else if(perpendicular.x>0 && sin_a <0)
+        {
+            pos.x -= speed * sin_a;
+        }
+        if(perpendicular.y<0 && cos_a>0)
+        {
+            pos.y -= speed * cos_a;
+        }
+        else if(perpendicular.y>0 && cos_a<0)
+        {
+            pos.y -= speed * cos_a;
+        }
     }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) 
-    {
+    { 
         pos.x -= speed * cos_a;
         pos.y += speed * sin_a;
+
+        // проверка на совпадение движения и вектора соприкосновения
+        if(perpendicular.x<0 && cos_a<0)
+        {
+            pos.x += speed * cos_a;
+        }
+        else if(perpendicular.x>0 && cos_a>0)
+        {
+            pos.x += speed * cos_a;
+        }
+        if(perpendicular.y<0 && sin_a>0)
+        {
+            pos.y -= speed * sin_a;
+        }
+        else if(perpendicular.y>0 && sin_a<0)
+        {
+            pos.y -= speed * sin_a;
+        }
     }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) 
     {
         pos.x -= speed * sin_a;
         pos.y -= speed * cos_a;
-    }  
+
+        // проверка на совпадение движения и вектора соприкосновения
+        if(perpendicular.x<0 && sin_a<0)
+        {
+            pos.x += speed * sin_a;
+        }
+        else if(perpendicular.x>0 && sin_a>0)
+        {
+            pos.x += speed * sin_a;
+        }
+        if(perpendicular.y<0 && cos_a<0)
+        {
+            pos.y += speed * cos_a;
+        }
+        else if(perpendicular.y>0 && cos_a>0)
+        {
+            pos.y += speed * cos_a;
+        }
+    }
+        
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         rot_a -= 0.01;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) 
         rot_a += 0.01; 
+        
+    // установка колайдера
+    set_collider();
 }
 
 void Camera::rendering_3d(sf::RenderWindow& win)

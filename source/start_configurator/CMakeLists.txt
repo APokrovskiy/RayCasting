@@ -1,0 +1,3 @@
+add_library(libconfigurator start_configurator.cpp system_without_console.cpp)
+
+target_include_directories(libconfigurator PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
