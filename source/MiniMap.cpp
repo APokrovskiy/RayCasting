@@ -28,7 +28,8 @@ void MiniMap::draw(sf::RenderWindow& window)
     draw_outline(window);
 
     for (auto ray: camera.get_rays_buf()){
-        Camera::draw_line(window,{scale.x/2+position.x, scale.y/2+position.y},ray.first,{tile_size,tile_size},{scale.x-tile_size, scale.y-tile_size},ray.second, sf::Color::White,multiply);
+        Camera::draw_line(window,{scale.x/2+position.x, scale.y/2+position.y},ray.first,{tile_size+position.x,tile_size+position.y},
+        {scale.x-tile_size+position.x, scale.y-tile_size+position.y},ray.second, sf::Color::White,multiply);
     }
 }
 
