@@ -23,7 +23,7 @@ public:
 
     Deserialization_Struct update_settings(std::function<Deserialization_Struct(const nlohmann::json&)> load_settings)
     {
-        std::this_thread::sleep_for(std::chrono::microseconds{50}); // Задержка программы для корректной подгрузки файла
+        std::this_thread::sleep_for(std::chrono::microseconds{100}); // Задержка программы для корректной подгрузки файла
         std::ifstream file_setts_json{path_to_file};
         nlohmann::json data;
         if (!file_setts_json)

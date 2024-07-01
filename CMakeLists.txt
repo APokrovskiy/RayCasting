@@ -55,7 +55,7 @@ set(libsfml sfml-graphics sfml-window sfml-system sfml-audio)
 add_subdirectory(source)
 
 # Без консоли
-GUI_PROGRAM(${PROJECT_NAME})
+# GUI_PROGRAM(${PROJECT_NAME})
 
 # Установка python зависимостей
 LINK_PYTHON_REQUIREMENTS(${CMAKE_SOURCE_DIR}/RayCastingConfigurator/requirements.txt)

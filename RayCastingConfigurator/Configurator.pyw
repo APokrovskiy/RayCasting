@@ -66,6 +66,7 @@ def init_app_buttons() -> Tuple[BoxLayout, Button, Button]:
     return buttons, btn, btn1
 
 
+
 # Функция Main
 
 # Настройки экрана
@@ -91,6 +92,11 @@ w_rot_a, input_rot_a = init_default_sett_box("Rotation Angle:", str(camera.rotat
 n_rays, input_rays = init_default_sett_box("Rays:", str(camera.n_rays))
 w_vis_r, input_vis_r = init_default_sett_box("Visual range:",str(camera.visual_range))
 w_fov, input_fov = init_default_sett_box("Field Of View:",str(camera.field_of_view))
+w_speed, input_speed = init_default_sett_box("Speed: ", str(camera.speed))
+inputs_world = TextInput(text="\n".join(world.world_map), background_color = (1,1,1,0.1), foreground_color = (1,1,1,1), size_hint_y=None, multiline = False, allow_copy = False)
+inputs_world.bind(minimum_height=inputs_world.setter('height'))
+
+
 btn_layout, btn, btn1 = init_app_buttons()
 
 # CallBacks
@@ -106,19 +112,18 @@ def on_btn_click(instance): # TODO: Сделать отдельную функц
     input_rays.text = str(dsett.cmr.n_rays)
     input_vis_r.text = str(dsett.cmr.visual_range)
     input_fov.text = str(dsett.cmr.field_of_view)
+    input_speed.text = str(dsett.cmr.speed)
+    inputs_world.text = '\n'.join(dsett.text_map)
 
 def on_btn1_click(instance):
+    string_map = inputs_world.text.split('\n')
     win = sclass.Window(input_title.text, (int(input_scrn_w.text), int(input_scrn_h.text)), int(input_fps.text))
-    wrld = sclass.World(dsett.text_map, '1', 100)
-    cmr = sclass.Camera((int(input_pos_x.text),int(input_pos_y.text)), 5, float(input_rot_a.text), int(input_rays.text), float(input_vis_r.text),  float(input_fov.text))
-    try:
-        local_jsonmanager = JsonFileManager("settings.json")
-    except:
-        with open("settings.json", "w") as file: pass 
-        local_jsonmanager = JsonFileManager("settings.json")
+    wrld = sclass.World(string_map, '1', 100)
+    cmr = sclass.Camera((int(input_pos_x.text),int(input_pos_y.text)), float(input_speed.text), float(input_rot_a.text), int(input_rays.text), float(input_vis_r.text),  float(input_fov.text))
+    local_jsonmanager = JsonFileManager("settings.json")
     local_jsonmanager.to_json(win,wrld,cmr)
 
-# Добавление  виджетов
+# Добавление виджетов
 content.add_widget(w_screen_resolution)
 content.add_widget(w_position)
 content.add_widget(w_fps)
@@ -127,6 +132,9 @@ content.add_widget(w_rot_a)
 content.add_widget(n_rays)
 content.add_widget(w_vis_r)
 content.add_widget(w_fov)
+content.add_widget(w_speed)
+content.add_widget(Label(text = "World Map", shorten = True, size_hint_y=None, height = 50))
+content.add_widget(inputs_world)
 
 # Привязка callbacks к кнопкам
 btn.bind(on_press=on_btn_click)

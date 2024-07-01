@@ -1,7 +1,7 @@
 #include "Settings_Updater.hpp"
 
 #include <string>
-
+#include <iostream>
 #include "Observer/JSON_File_Observer.hpp"
 #include "World.hpp"
 #include "Camera.hpp"
@@ -9,16 +9,22 @@
 #include "Button.hpp"
 
 
+
 Settings_Updater::Settings_Updater(const std::string& path_to_settings_file) : observer(path_to_settings_file)
 {
     settings = observer.update_settings(load_settings);
+
+}
+
+bool Settings_Updater::is_file_changed()
+{
+    return observer.is_file_changed();
 }
 
 void Settings_Updater::update(sf::RenderWindow& window, World& world, Camera& cmr, Background& background, Button& menu_button)
 {
-    if (observer.is_file_changed())
-    {
 
+        std::cout << "True\n";
         settings = observer.update_settings(load_settings);
 
         if (win_size != sf::VideoMode{settings.win.screen_width, settings.win.screen_height})
@@ -59,7 +65,5 @@ void Settings_Updater::update(sf::RenderWindow& window, World& world, Camera& cm
         background.update();
 
         menu_button.set_position({settings.win.screen_width - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift });
-
-    }
 }
 

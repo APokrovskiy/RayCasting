@@ -96,15 +96,14 @@ int main()
     menu_button.set_position({settings.win.screen_width - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift });
 
 
-    // Загрузка настроек в камеру
-    upload_settings(settings, cmr);
-    
+    setts_updater.update(window, world, cmr, background, menu_button);
 
 
     // Главный цикл
     while (window.isOpen())
     {
-        setts_updater.update(window, world, cmr, background, menu_button);
+        if (setts_updater.is_file_changed())
+            setts_updater.update(window, world, cmr, background, menu_button);
 
         sf::Event event;
         while (window.pollEvent(event))
