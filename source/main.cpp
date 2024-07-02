@@ -25,10 +25,6 @@ using json = nlohmann::json;
 
 
 
-
-
-
-
 void upload_settings(const ray_casting_settings& settings, Camera& cmr)
 {
     cmr.set_position(settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y);
@@ -69,18 +65,13 @@ int main()
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    Settings_Updater setts_updater{settings_file_path};
-
-    ray_casting_settings settings = setts_updater.get_settings();
     // Обновление настроек
+    Settings_Updater setts_updater{settings_file_path};
+    ray_casting_settings settings = setts_updater.get_settings();
     
 
-
-
-
-
     // Инициализация объектов
-    sf::RenderWindow window{{settings.win.screen_width, settings.win.screen_height}, title, sf::Style::Close | sf::Style::Titlebar};
+    sf::RenderWindow window{{settings.win.screen_width, settings.win.screen_height}, title};
 
     World world{settings.world.string_map,
             settings.world.wall_char,
@@ -88,15 +79,15 @@ int main()
 
     Camera cmr{world, 50};
 
-    Background background{settings}; // TODO: Убрать зависимость от всей структуры настроек
-
+    Background background{window.getSize().x, window.getSize().y}; // TODO: Убрать зависимость от всей структуры настроек
+    int menu_button_shift{15};
     Button menu_button {"../Media/GUI/ButtonsIcons/MenuButton.png"}; 
     menu_button.set_scale({0.45,0.45});
-    int menu_button_shift = 12; // Смещение кнопки от границ окон
-    menu_button.set_position({settings.win.screen_width - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift });
+    
 
 
     setts_updater.update(window, world, cmr, background, menu_button);
+    menu_button.set_position({settings.win.screen_width - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift });
 
 
     // Главный цикл
@@ -114,6 +105,13 @@ int main()
             else if(event.type == sf::Event::MouseButtonReleased && menu_button.isClicked(window,event.mouseButton))
                     // Создание потока с конфигуратором
                     start_configurator(is_configurator_opened);
+            else if (event.type == sf::Event::Resized)
+            {
+                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                window.setView(sf::View(visibleArea));
+                background.update(window.getSize().x, window.getSize().y);
+                menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift });
+            }
 
         }
 

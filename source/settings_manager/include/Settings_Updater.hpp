@@ -28,5 +28,5 @@ private:
     sf::VideoMode win_size{};
     sf::Vector2f pos{};
     double rot_a{};
-    int menu_button_shift{}; // Смещение кнопки от границ окон
+    int menu_button_shift{15}; // Смещение кнопки от границ окон
 };

@@ -55,10 +55,10 @@ set(libsfml sfml-graphics sfml-window sfml-system sfml-audio)
 add_subdirectory(source)
 
 # Без консоли
-# GUI_PROGRAM(${PROJECT_NAME})
+GUI_PROGRAM(${PROJECT_NAME})
 
 # Установка python зависимостей
-LINK_PYTHON_REQUIREMENTS(${CMAKE_SOURCE_DIR}/RayCastingConfigurator/requirements.txt)
+LINK_PYTHON_REQUIREMENTS(${CMAKE_SOURCE_DIR}/Configurator/requirements.txt)
 
 
 # Копирование директории с конфигуратором в папку с исполняемым файлом
@@ -71,7 +71,7 @@ ________________________________
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ++++++++++++++++++++++++++++++++++++++++++++++
 ")
-CP(${CMAKE_CURRENT_SOURCE_DIR}/RayCastingConfigurator   ${CMAKE_BINARY_DIR}/RayCastingConfigurator)
+CP(${CMAKE_CURRENT_SOURCE_DIR}/Configurator   ${CMAKE_BINARY_DIR}/Configurator)
     
     
 # Добавление целей из папки headers в HEADERS

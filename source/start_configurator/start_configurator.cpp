@@ -10,7 +10,7 @@ void start_configurator(std::atomic_bool& is_configurator_opened)
         // Создание потока с конфигуратором
         std::thread([&] {
             is_configurator_opened.store(true);
-            system_without_console_output(L"python ./RayCastingConfigurator/Configurator.pyw");
+            system_without_console_output(L"python ./Configurator/Configurator.pyw");
             is_configurator_opened.store(false);
         }).detach();
     }
