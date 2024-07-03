@@ -24,7 +24,10 @@
 
 using json = nlohmann::json;
 
+
 // TODO: Обновить список хедеров
+// TODO: Сделать BoxLayout Для виджетов с возможностью помещать их туда
+
 
 // main.cpp
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,21 +54,27 @@ int main()
     settings_file.close();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
     // Обновление настроек
     Settings_Updater setts_updater{settings_file_path};
     ray_casting_settings settings = setts_updater.get_settings();
 
     sf::VideoMode screen_res = sf::VideoMode::getDesktopMode();
 
+
     // Инициализация объектов
     sf::RenderWindow window{{screen_res.width / 2, screen_res.height / 3 * 2}, title};
 
     World world{settings.string_map, '1', 100};
 
+
     Camera cmr{world, 50};
 
+
+    // TODO: Сделать здесь код по читабельнее, избавиться от большого количества параметров в конструкторах, сделать как в Классе Camera
     MiniMap mini_map{world, cmr, {0, 0}, {200, 200}, 0.1, {200, 200, 200}, {100, 100, 100}, {0, 0, 0}};
     Map map{world, cmr, {100, 100}, 0.5, {20, 20, 20}, {100, 100, 100}, 10};
+
 
     Background background{window.getSize().x, window.getSize().y}; // TODO: Убрать зависимость от всей структуры настроек
     int menu_button_shift{15};
@@ -74,6 +83,18 @@ int main()
 
     setts_updater.update(window, world, cmr, background, menu_button);
     menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
+
+    //загрузка шрифта
+    sf::Font font;
+    font.loadFromFile("../Media/GUI/Fonts/Ebbe.ttf");
+
+    int fps;
+    //создание текста для отображения фпс
+    sf::Text fpslabel{L"fps: ", font, 30};
+    fpslabel.setColor(sf::Color::Red);
+    fpslabel.setPosition(window.getSize().x / 2, 10);
+
+    sf::Clock clock;
 
     // Главный цикл
     bool is_map_open = false;
@@ -91,6 +112,7 @@ int main()
             else if (event.type == sf::Event::MouseButtonReleased && menu_button.isClicked(window, event.mouseButton))
                 // Создание потока с конфигуратором
                 start_configurator(is_configurator_opened);
+
                 
             else if (event.type == sf::Event::Resized)
             {
@@ -102,6 +124,22 @@ int main()
         }
 
         // движение камеры
+        
+
+        
+        //расчет фпс
+        if (clock.getElapsedTime().asSeconds() >= 1) // TODO: Вынести это добро в класс
+        {
+            clock.restart();
+            fpslabel.setString("fps: " + std::to_string(fps));
+
+            // TODO: Вставить в Settings_Updater, Когда будет готов BoxLayout
+            // TODO: У BoxLayout Будет метод Update, Который обновляет все помещенныйе в него виджеты
+            // TODO: Пример BoxLayout в Configurator.py
+            fpslabel.setPosition(window.getSize().x / 2, 10); 
+            fps = 0;
+        }
+
         if (window.hasFocus() && !is_map_open)
             cmr.move();
         
@@ -117,9 +155,9 @@ int main()
         // отрисовка кнопки меню настроек
         menu_button.draw(window);
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) // TODO: Внести проверку куда нибудь в другое место
         {
-            is_map_open = true;
+            is_map_open = true; 
             // отрисовка карты
             map.move();
             // движение карты
@@ -131,7 +169,11 @@ int main()
             is_map_open = false;
         }
 
+        window.draw(fpslabel);
+
         window.display();
+
+        fps++;
     }
 
     return 0;
