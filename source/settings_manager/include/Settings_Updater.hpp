@@ -9,16 +9,14 @@
 #include "Background.hpp"
 #include "settings.hpp"
 
-
-
-
 class Settings_Updater
 {
 public:
-    Settings_Updater(const std::string& path_to_settings_file);
-    void update(sf::RenderWindow& window, World& world, Camera& cmr, Background& background, Button& menu_button);
+    Settings_Updater(const std::string &path_to_settings_file);
+    void update(sf::RenderWindow &window, World &world, Camera &cmr, Background &background, Button &menu_button);
     bool is_file_changed();
-    const ray_casting_settings& get_settings() const { return settings; }
+    const ray_casting_settings &get_settings() const { return settings; }
+
 private:
     JSON_File_Observer<ray_casting_settings> observer;
 

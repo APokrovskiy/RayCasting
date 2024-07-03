@@ -1,6 +1,6 @@
 #include "settings.hpp"
 
-ray_casting_settings load_settings(const nlohmann::json& settings_json)
+ray_casting_settings load_settings(const nlohmann::json &settings_json)
 {
 
     ray_casting_settings settings;
@@ -18,7 +18,6 @@ ray_casting_settings load_settings(const nlohmann::json& settings_json)
     settings.cmr.speed = settings_json["camera"]["speed"];
     settings.cmr.n_rays = settings_json["camera"]["n_rays"];
     settings.cmr.vis_r = settings_json["camera"]["visual_range"];
-
 
     return settings; // TODO: Реализовать семантику перемещения
 }

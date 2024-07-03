@@ -93,7 +93,7 @@ n_rays, input_rays = init_default_sett_box("Rays:", str(camera.n_rays))
 w_vis_r, input_vis_r = init_default_sett_box("Visual range:",str(camera.visual_range))
 w_fov, input_fov = init_default_sett_box("Field Of View:",str(camera.field_of_view))
 w_speed, input_speed = init_default_sett_box("Speed: ", str(camera.speed))
-inputs_world = TextInput(text="\n".join(world.world_map), background_color = (1,1,1,0.1), foreground_color = (1,1,1,1), size_hint_y=None, multiline = False, allow_copy = False)
+inputs_world = TextInput(text="\n".join(world.world_map), background_color = (1,1,1,0.1), foreground_color = (1,1,1,1), size_hint_y=None, multiline = True, readonly = False)
 inputs_world.bind(minimum_height=inputs_world.setter('height'))
 
 

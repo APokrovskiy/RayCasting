@@ -5,9 +5,9 @@
 class Is_File_Changed
 {
 public:
-    Is_File_Changed(const std::string& path_to_file);
+    Is_File_Changed(const std::string &path_to_file);
 
-    bool operator()() &; // Только lvalue-ссылки
+    bool operator()() &;           // Только lvalue-ссылки
     bool operator()() && = delete; // Недоступен для rvalue-ссылок
 
 private:
