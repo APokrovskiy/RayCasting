@@ -110,14 +110,6 @@ int main()
 
         window.clear();
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
-        {
-            // отрисовка карты
-            map.move();
-            // движение карты
-            map.draw(window);
-        }
-
         // движение камеры
         if (window.hasFocus())
             cmr.move();
@@ -130,6 +122,14 @@ int main()
 
         // отрисовка кнопки меню настроек
         menu_button.draw(window);
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+        {
+            // отрисовка карты
+            map.move();
+            // движение карты
+            map.draw(window);
+        }
 
         window.display();
     }
