@@ -22,7 +22,9 @@ public:
     };
 
     // Геттеры
+
     // TODO: Сделать встраиваемыми
+
     sf::Vector2f get_position() const;
     double get_rotation() const;
     double get_speed() const;
@@ -44,7 +46,12 @@ public:
     void move();
 
     // Рендеринг изображения
-    void draw(sf::RenderWindow &win, Rendering_Mode mode);
+
+    void draw(sf::RenderWindow& win, Rendering_Mode mode);
+    
+    // рисование линии
+    static void draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, sf::Vector2f min_border, sf::Vector2f max_border, double rot_angle, sf::Color color,double multiply);
+
 
 private:
     // Положение камеры в пространстве

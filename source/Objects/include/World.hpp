@@ -24,11 +24,16 @@ public:
     void set_walls_coords(std::vector<std::string> wm, char wall);
     void set_tile(unsigned int tile);
 
-    void draw(sf::RenderWindow &win) const;
+    void draw(sf::RenderWindow& win) const;
+    void draw_map(sf::RenderWindow& win,float multiply,float map_size,sf::Vector2f pos);
+
 
 private:
     World_Map wm;
     unsigned int tile;
 
     std::vector<Collider> wall_colliders;
+
+    void draw_background(sf::RenderWindow& win,float map_size,float tile_on_map);
+    void draw_out_line_background(sf::RenderWindow& win,float map_size,float tile_on_map);
 };

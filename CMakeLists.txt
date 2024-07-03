@@ -45,6 +45,7 @@ LINK_LIB_SFML(sfml 2.5.1)
 LINK_LIB_JSON(json)
 set(libsfml sfml-graphics sfml-window sfml-system sfml-audio)
 
+
 add_subdirectory(source)
 
 # Без консоли

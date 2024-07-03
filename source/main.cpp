@@ -14,6 +14,9 @@
 #include "World.hpp"
 
 #include "Camera.hpp"
+
+#include "world_map/Map.hpp" // TODO: Добавить один хедер который добавляет эти две карты
+#include "world_map/MiniMap.hpp"
 #include "Button.hpp"
 #include "start_configurator.hpp"
 #include "Settings_Updater.hpp"
@@ -61,6 +64,9 @@ int main()
 
     Camera cmr{world, 50};
 
+    MiniMap mini_map{world, cmr, {0, 0}, {200, 200}, 0.1, {200, 200, 200}, {100, 100, 100}, {0, 0, 0}};
+    Map map{world, cmr, {100, 100}, 0.5, {20, 20, 20}, {100, 100, 100}, 10};
+
     Background background{window.getSize().x, window.getSize().y}; // TODO: Убрать зависимость от всей структуры настроек
     int menu_button_shift{15};
     Button menu_button{"../Media/GUI/ButtonsIcons/MenuButton.png"};
@@ -70,6 +76,7 @@ int main()
     menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
 
     // Главный цикл
+    bool is_map_open = false;
     while (window.isOpen())
     {
         if (setts_updater.is_file_changed())
@@ -84,6 +91,7 @@ int main()
             else if (event.type == sf::Event::MouseButtonReleased && menu_button.isClicked(window, event.mouseButton))
                 // Создание потока с конфигуратором
                 start_configurator(is_configurator_opened);
+                
             else if (event.type == sf::Event::Resized)
             {
                 sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
@@ -93,16 +101,35 @@ int main()
             }
         }
 
-        if (window.hasFocus())
+        // движение камеры
+        if (window.hasFocus() && !is_map_open)
             cmr.move();
-
+        
         window.clear();
 
+        // отрисовка заднего фона
         background.draw(window);
-
+        // отрисовка вида камеры алгоритмом Ray Casting
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
+        // отрисовка мини карты
+        mini_map.draw(window);
 
+        // отрисовка кнопки меню настроек
         menu_button.draw(window);
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+        {
+            is_map_open = true;
+            // отрисовка карты
+            map.move();
+            // движение карты
+            map.draw(window);
+        }
+        else if (is_map_open)
+        {
+            map.set_position(cmr.get_position());
+            is_map_open = false;
+        }
 
         window.display();
     }
