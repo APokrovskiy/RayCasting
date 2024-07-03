@@ -3,20 +3,17 @@
 #include <vector>
 #include <set>
 #include <cmath>
-#include <thread>  
-#include <atomic>  
+#include <thread>
+#include <atomic>
 #include <fstream>
 #include <filesystem>
 
 #include <SFML/Graphics.hpp>
 #include <nlohmann/json.hpp>
 
-
 #include "World.hpp"
 
-
 #include "Camera.hpp"
-
 
 #include "world_map/Map.hpp" // TODO: Добавить один хедер который добавляет эти две карты
 #include "world_map/MiniMap.hpp"
@@ -27,13 +24,7 @@
 
 using json = nlohmann::json;
 
-
-
-
-
-
-
-void upload_settings(const ray_casting_settings& settings, Camera& cmr)
+void upload_settings(const ray_casting_settings &settings, Camera &cmr)
 {
     cmr.set_position(settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y);
     cmr.set_field_of_view(settings.cmr.fov);
@@ -43,14 +34,13 @@ void upload_settings(const ray_casting_settings& settings, Camera& cmr)
     cmr.set_visual_range(settings.cmr.vis_r);
 }
 
-
-//TODO: Обновить список хедеров
+// TODO: Обновить список хедеров
 
 // main.cpp
-///////////////////////////////////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
 {
-    std::atomic_bool is_configurator_opened {false};
+    std::atomic_bool is_configurator_opened{false};
 
     std::string title = "Ray-Casting";
     std::string settings_file_path = "settings.json";
@@ -71,36 +61,31 @@ int main()
     settings_file.close();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
     // Обновление настроек
     Settings_Updater setts_updater{settings_file_path};
     ray_casting_settings settings = setts_updater.get_settings();
-    
 
     // Инициализация объектов
     sf::RenderWindow window{{settings.win.screen_width, settings.win.screen_height}, title, sf::Style::Close | sf::Style::Titlebar};
 
     World world{settings.world.string_map,
-            settings.world.wall_char,
-            settings.world.tile_size};
+                settings.world.wall_char,
+                settings.world.tile_size};
 
     Camera cmr{world, 50};
 
     Background background{settings}; // TODO: Убрать зависимость от всей структуры настроек
 
-    MiniMap mini_map{world, cmr, {0,0}, {200,200}, 0.1, {200,200,200}, {100,100,100}, {0,0,0}};
-    Map map{world,cmr,{100,100},0.5,{20,20,20},10};
+    MiniMap mini_map{world, cmr, {0, 0}, {200, 200}, 0.1, {200, 200, 200}, {100, 100, 100}, {0, 0, 0}};
+    Map map{world, cmr, {100, 100}, 0.5, {20, 20, 20}, {100, 100, 100}, 10};
 
-    Button menu_button {"../Media/GUI/ButtonsIcons/MenuButton.png"}; 
-    menu_button.set_scale({0.45,0.45});
+    Button menu_button{"../Media/GUI/ButtonsIcons/MenuButton.png"};
+    menu_button.set_scale({0.45, 0.45});
     int menu_button_shift = 12; // Смещение кнопки от границ окон
-    menu_button.set_position({settings.win.screen_width - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift });
-
+    menu_button.set_position({settings.win.screen_width - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
 
     // Загрузка настроек в камеру
     upload_settings(settings, cmr);
-    
-
 
     // Главный цикл
     while (window.isOpen())
@@ -112,41 +97,42 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            else if(event.type == sf::Event::MouseButtonReleased && menu_button.isClicked(window,event.mouseButton))
+            // Перечисление действий при нажатых кнопках
+            else if (event.type == sf::Event::MouseButtonReleased)
+            {
+                if (menu_button.isClicked(window, event.mouseButton))
+                {
                     // Создание потока с конфигуратором
                     start_configurator(is_configurator_opened);
-
+                }
+            }
         }
-
-
 
         window.clear();
 
-        background.draw(window);
-
-        cmr.draw(window, Camera::Rendering_Mode::M_3D);
-
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
         {
-            //отрисовка карты и её движение
+            // отрисовка карты
             map.move();
-            map.draw(window);        
-        }
-        else
-        {
-            //отрисовка мини карты и движение камеры
-            if(window.hasFocus())
-                cmr.move();
-            mini_map.draw(window);
+            // движение карты
+            map.draw(window);
         }
 
+        // движение камеры
+        if (window.hasFocus())
+            cmr.move();
+        // отрисовка заднего фона
+        background.draw(window);
+        // отрисовка вида камеры алгоритмом Ray Casting
+        cmr.draw(window, Camera::Rendering_Mode::M_3D);
+        // отрисовка мини карты
+        mini_map.draw(window);
 
-
+        // отрисовка кнопки меню настроек
         menu_button.draw(window);
 
-        
         window.display();
     }
-    
+
     return 0;
 }
