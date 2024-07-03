@@ -1,4 +1,4 @@
-import math
+
 
 import JsonManager.serialisation_classes as sclass
 
@@ -17,6 +17,6 @@ text_map = (
     "1111111111111111111111"
 )
 
-win = sclass.Window("Ray-Casting", (1920, 1080), 140)
-wrld = sclass.World(text_map, '1', 100)
-cmr = sclass.Camera((0,0), 5, 3.14, 100, 3000,  3.14 / 3)
+fps_limit = 60
+
+cmr = sclass.Camera((250,250), 5, 800, 3000)

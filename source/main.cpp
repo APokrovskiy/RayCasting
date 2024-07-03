@@ -21,16 +21,6 @@
 
 using json = nlohmann::json;
 
-void upload_settings(const ray_casting_settings &settings, Camera &cmr)
-{
-    cmr.set_position(settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y);
-    cmr.set_field_of_view(settings.cmr.fov);
-    cmr.set_rotation(settings.cmr.rot_a);
-    cmr.set_speed(settings.cmr.speed);
-    cmr.set_n_rays(settings.cmr.n_rays);
-    cmr.set_visual_range(settings.cmr.vis_r);
-}
-
 // TODO: Обновить список хедеров
 
 // main.cpp
@@ -62,12 +52,12 @@ int main()
     Settings_Updater setts_updater{settings_file_path};
     ray_casting_settings settings = setts_updater.get_settings();
 
-    // Инициализация объектов
-    sf::RenderWindow window{{settings.win.screen_width, settings.win.screen_height}, title};
+    sf::VideoMode screen_res = sf::VideoMode::getDesktopMode();
 
-    World world{settings.world.string_map,
-                settings.world.wall_char,
-                settings.world.tile_size};
+    // Инициализация объектов
+    sf::RenderWindow window{{screen_res.width / 2, screen_res.height / 3 * 2}, title};
+
+    World world{settings.string_map, '1', 100};
 
     Camera cmr{world, 50};
 
@@ -77,7 +67,7 @@ int main()
     menu_button.set_scale({0.45, 0.45});
 
     setts_updater.update(window, world, cmr, background, menu_button);
-    menu_button.set_position({settings.win.screen_width - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
+    menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
 
     // Главный цикл
     while (window.isOpen())

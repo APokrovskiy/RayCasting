@@ -23,8 +23,6 @@ private:
     ray_casting_settings settings;
 
     // Переменные состояния
-    sf::VideoMode win_size{};
     sf::Vector2f pos{};
-    double rot_a{};
     int menu_button_shift{15}; // Смещение кнопки от границ окон
 };

@@ -23,22 +23,14 @@ void Settings_Updater::update(sf::RenderWindow &window, World &world, Camera &cm
 
     settings = observer.update_settings(load_settings);
 
-    window.setFramerateLimit(settings.win.fps_limit);
+    window.setFramerateLimit(settings.fps_limit);
 
-    world = World{settings.world.string_map, settings.world.wall_char, settings.world.tile_size};
+    world = World{settings.string_map, '1' , 100};
 
     if (pos != sf::Vector2f{settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y})
     {
         cmr.set_position(settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y);
         pos = cmr.get_position();
-    }
-
-    cmr.set_field_of_view(settings.cmr.fov);
-
-    if (rot_a != settings.cmr.rot_a)
-    {
-        rot_a = settings.cmr.rot_a;
-        cmr.set_rotation(rot_a);
     }
 
     cmr.set_speed(settings.cmr.speed);

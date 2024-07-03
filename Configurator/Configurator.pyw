@@ -23,11 +23,11 @@ import JsonManager.serialisation_classes as sclass
 if (not os.path.exists("settings.json")):
     with open("settings.json", "w") as file: pass 
     jsonmanager = JsonFileManager("settings.json")
-    jsonmanager.to_json(dsett.win, dsett.wrld, dsett.cmr)
+    jsonmanager.to_json(dsett.fps_limit, dsett.text_map, dsett.cmr)
     exit()
 
 jsonmanager = JsonFileManager("settings.json")
-window, world, camera = jsonmanager.from_json()
+fps_limit , world_map, camera = jsonmanager.from_json()
 
 
 # Создание виджетов настройки одного параметра
@@ -38,15 +38,6 @@ def init_default_sett_box( title, text = "")-> Tuple[BoxLayout, TextInput]:
     inputs = TextInput(text=text, background_color = (1,1,1,0.1), foreground_color = (1,1,1,1))
     layout.add_widget(inputs)
     return layout, inputs
-
-def init_widgets_for_screen_resolution() -> Tuple[BoxLayout, TextInput, TextInput]:
-    scrn_sz_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height =50)
-    scrn_sz_layout.add_widget(Label(text = 'Screen size:', shorten = True))
-    w_layout, w_inputs = init_default_sett_box("Width:", str(window.screen_size[0]))
-    scrn_sz_layout.add_widget(w_layout)
-    h_layout, h_inputs = init_default_sett_box("Height:",str(window.screen_size[1]))
-    scrn_sz_layout.add_widget(h_layout)
-    return scrn_sz_layout, w_inputs, h_inputs
 
 def init_widgets_for_position() -> Tuple[BoxLayout, TextInput, TextInput]:
     position_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height =50)
@@ -84,54 +75,37 @@ content = BoxLayout(orientation='vertical', size_hint_y=None)
 content.bind(minimum_height = content.setter('height'))
 
 # Создание всех виджетов настроек
-w_screen_resolution, input_scrn_w ,input_scrn_h  = init_widgets_for_screen_resolution()
+
 w_position, input_pos_x, input_pos_y =  init_widgets_for_position()
-w_fps, input_fps = init_default_sett_box("Fps:", str(window.fps_limit))
-w_title, input_title = init_default_sett_box("Title:", str(window.title))
-w_rot_a, input_rot_a = init_default_sett_box("Rotation Angle:", str(camera.rotation_angle))
 n_rays, input_rays = init_default_sett_box("Rays:", str(camera.n_rays))
+w_fps_limit, input_fps = init_default_sett_box("FPS: ", str(fps_limit))
 w_vis_r, input_vis_r = init_default_sett_box("Visual range:",str(camera.visual_range))
-w_fov, input_fov = init_default_sett_box("Field Of View:",str(camera.field_of_view))
 w_speed, input_speed = init_default_sett_box("Speed: ", str(camera.speed))
-inputs_world = TextInput(text="\n".join(world.world_map), background_color = (1,1,1,0.1), foreground_color = (1,1,1,1), size_hint_y=None, multiline = True, readonly = False)
+inputs_world = TextInput(text="\n".join(world_map), background_color = (1,1,1,0.1), foreground_color = (1,1,1,1), size_hint_y=None, multiline = True, readonly = False)
 inputs_world.bind(minimum_height=inputs_world.setter('height'))
-
-
 btn_layout, btn, btn1 = init_app_buttons()
 
 # CallBacks
 
 def on_btn_click(instance): # TODO: Сделать отдельную функцию заполнения полей
-    input_scrn_w.text = str(dsett.win.screen_size[0])
-    input_scrn_h.text = str(dsett.win.screen_size[1])
     input_pos_x.text = str(dsett.cmr.position[0])
     input_pos_y.text = str(dsett.cmr.position[1])
-    input_fps.text = str(dsett.win.fps_limit) 
-    input_title.text = str(dsett.win.title)
-    input_rot_a.text = str(dsett.cmr.rotation_angle)
     input_rays.text = str(dsett.cmr.n_rays)
     input_vis_r.text = str(dsett.cmr.visual_range)
-    input_fov.text = str(dsett.cmr.field_of_view)
     input_speed.text = str(dsett.cmr.speed)
     inputs_world.text = '\n'.join(dsett.text_map)
 
 def on_btn1_click(instance):
     string_map = inputs_world.text.split('\n')
-    win = sclass.Window(input_title.text, (int(input_scrn_w.text), int(input_scrn_h.text)), int(input_fps.text))
-    wrld = sclass.World(string_map, '1', 100)
-    cmr = sclass.Camera((int(input_pos_x.text),int(input_pos_y.text)), float(input_speed.text), float(input_rot_a.text), int(input_rays.text), float(input_vis_r.text),  float(input_fov.text))
+    cmr = sclass.Camera((int(input_pos_x.text),int(input_pos_y.text)), float(input_speed.text), int(input_rays.text), float(input_vis_r.text))
     local_jsonmanager = JsonFileManager("settings.json")
-    local_jsonmanager.to_json(win,wrld,cmr)
+    local_jsonmanager.to_json(int(input_fps.text),string_map, cmr)
 
 # Добавление виджетов
-content.add_widget(w_screen_resolution)
 content.add_widget(w_position)
-content.add_widget(w_fps)
-content.add_widget(w_title)
-content.add_widget(w_rot_a)
 content.add_widget(n_rays)
 content.add_widget(w_vis_r)
-content.add_widget(w_fov)
+content.add_widget(w_fps_limit)
 content.add_widget(w_speed)
 content.add_widget(Label(text = "World Map", shorten = True, size_hint_y=None, height = 50))
 content.add_widget(inputs_world)

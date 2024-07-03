@@ -60,7 +60,7 @@ bool Button::isMouseOver(sf::RenderWindow &window)
     sf::Vector2f buttonSize = sf::Vector2f(sprite.getGlobalBounds().width, sprite.getGlobalBounds().height);
 
     return mousePos.x > buttonPos.x && mousePos.x < buttonPos.x + buttonSize.x &&
-           mousePos.y > buttonPos.y && mousePos.y < buttonPos.y + buttonSize.y;
+        mousePos.y > buttonPos.y && mousePos.y < buttonPos.y + buttonSize.y;
 }
 
 bool Button::isClicked(sf::RenderWindow &window, sf::Event::MouseButtonEvent event)
