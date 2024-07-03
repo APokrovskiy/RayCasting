@@ -88,6 +88,7 @@ int main()
     upload_settings(settings, cmr);
 
     // Главный цикл
+    bool is_map_open = false;
     while (window.isOpen())
     {
         setts_updater.update(window, world, cmr, background, menu_button);
@@ -111,7 +112,7 @@ int main()
         window.clear();
 
         // движение камеры
-        if (window.hasFocus())
+        if (window.hasFocus() && !is_map_open)
             cmr.move();
         // отрисовка заднего фона
         background.draw(window);
@@ -122,14 +123,20 @@ int main()
 
         // отрисовка кнопки меню настроек
         menu_button.draw(window);
-
+        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
         {
+            is_map_open = true;
             // отрисовка карты
             map.move();
             // движение карты
             map.draw(window);
         }
+        else if (is_map_open)
+        {
+            map.set_position(cmr.get_position());
+            is_map_open = false;
+        } 
 
         window.display();
     }

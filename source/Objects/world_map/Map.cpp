@@ -33,19 +33,19 @@ void Map::draw(sf::RenderWindow &window)
 
 void Map::move()
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
         position.y -= speed;
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
         position.x -= speed;
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
         position.y += speed;
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
         position.x += speed;
     }
