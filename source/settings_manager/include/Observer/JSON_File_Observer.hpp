@@ -1,8 +1,9 @@
 #pragma once
+
 #include <fstream>
 #include <thread>
 #include <chrono>
-#include <nlohmann/json.hpp>
+#include "../json.hpp"
 
 #include "Observer/Is_File_Changed.hpp"
 

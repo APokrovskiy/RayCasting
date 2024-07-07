@@ -9,7 +9,6 @@
 #include <filesystem>
 
 #include <SFML/Graphics.hpp>
-#include <nlohmann/json.hpp>
 
 #include "World.hpp"
 
@@ -21,9 +20,6 @@
 #include "start_configurator.hpp"
 #include "Settings_Updater.hpp"
 #include "Background.hpp"
-
-using json = nlohmann::json;
-
 
 // TODO: Обновить список хедеров
 // TODO: Сделать BoxLayout Для виджетов с возможностью помещать их туда
@@ -38,7 +34,7 @@ int main()
     std::string title = "Ray-Casting";
     std::string settings_file_path = "settings.json";
 
-    // Создание файла, если его нет (CORRECT)
+    // Создание файла, если его нет
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     std::ifstream settings_file(settings_file_path);
     if (!settings_file)
@@ -54,6 +50,7 @@ int main()
     settings_file.close();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    
 
     // Обновление настроек
     Settings_Updater setts_updater{settings_file_path};
@@ -61,25 +58,18 @@ int main()
 
     sf::VideoMode screen_res = sf::VideoMode::getDesktopMode();
 
-
     // Инициализация объектов
     sf::RenderWindow window{{screen_res.width / 2, screen_res.height / 3 * 2}, title};
-
     World world{settings.string_map, '1', 100};
-
-
     Camera cmr{world, 50};
-
-
     // TODO: Сделать здесь код по читабельнее, избавиться от большого количества параметров в конструкторах, сделать как в Классе Camera
     MiniMap mini_map{world, cmr, {0, 0}, {200, 200}, 0.1, {200, 200, 200}, {100, 100, 100}, {0, 0, 0}};
     Map map{world, cmr, {100, 100}, 0.5, {20, 20, 20}, {100, 100, 100}, 10};
-
-
     Background background{window.getSize().x, window.getSize().y}; // TODO: Убрать зависимость от всей структуры настроек
-    int menu_button_shift{15};
     Button menu_button{"../Media/GUI/ButtonsIcons/MenuButton.png"};
+    int menu_button_shift{15};
     menu_button.set_scale({0.45, 0.45});
+
 
     setts_updater.update(window, world, cmr, background, menu_button);
     menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
@@ -132,10 +122,6 @@ int main()
         {
             clock.restart();
             fpslabel.setString("fps: " + std::to_string(fps));
-
-            // TODO: Вставить в Settings_Updater, Когда будет готов BoxLayout
-            // TODO: У BoxLayout Будет метод Update, Который обновляет все помещенныйе в него виджеты
-            // TODO: Пример BoxLayout в Configurator.py
             fpslabel.setPosition(window.getSize().x / 2, 10); 
             fps = 0;
         }

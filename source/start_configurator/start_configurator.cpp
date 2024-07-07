@@ -4,7 +4,6 @@
 
 void start_configurator(std::atomic_bool &is_configurator_opened)
 {
-
     if (!is_configurator_opened.load()) // если поток с конфигуратором не создан => то создать
     {
         // Создание потока с конфигуратором
@@ -15,6 +14,5 @@ void start_configurator(std::atomic_bool &is_configurator_opened)
             is_configurator_opened.store(false); })
             .detach();
     }
-    else
-        ; // ничего ни делать
+    else; // ничего ни делать
 }

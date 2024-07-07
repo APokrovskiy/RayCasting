@@ -38,4 +38,5 @@ void Settings_Updater::update(sf::RenderWindow &window, World &world, Camera &cm
     cmr.set_n_rays(settings.cmr.n_rays);
 
     cmr.set_visual_range(settings.cmr.vis_r);
+
 }

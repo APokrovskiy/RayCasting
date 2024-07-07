@@ -1,6 +1,6 @@
 #pragma once
 #include "World.hpp"
-#include <nlohmann/json.hpp>
+#include "json.hpp"
 
 struct ray_casting_settings
 {
