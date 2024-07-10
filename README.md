@@ -32,44 +32,12 @@ ____
 
 ![NewColors](./Media/NewColors.png)
 
-## Сборка проекта
+____
 
-Для сборки проекта вам потребуются инструменты для сборки:
+В этом проекте использовалась потрясающие  библиотеки **nlochmann_json** (<https://github.com/nlochmann/json>) и SFML (<https://sfml-dev.org>)
 
-- Cmake
-- Компилятор C++ (GСС, Clang, MSVC или другой)
-- Система сборки проекта (Ninja, Make или другой)
-
-Также для сборки вам потребуется библиотека **SFML**.
-
-Для Windows:
-
-1) Скачайте библиотеку Cmake для вашего компилятора на оффициальном сайте <https://sfml-dev.org>
-
-2) Поместите библиотеку в любую удобную папку на вашем компьютере (Во время ввода команды Cmake для сборки установите флаг **-DCMAKE_MODULE_PATH=path/to/your/libs**)
-
-3) Запустите сборку Cmake
-
-Пример команды:
-
->*cmake -Wno-dev -DCMAKE_CXX_COMPILER=c++ -DCMAKE_CXX_FLAGS="-static -static-libgcc -static-libstdc++" -G Ninja -S . -B build && cmake --build build*
-
-Используйте **"-static -static-libgcc -static-libstdc++"**, если хотите, чтобы на других компьютерах программа заработала
-
-Для Linux:
-
-Для построения проекта в Linux вам потребуется библиотека SFML и ее зависимости (Подробнее <https://sfml-dev.org>). Если вы пользуетесь пакетным менеджером вашего дистрибутива, то флаг -DCMAKE_MODULE_PATH устанавливать не нужно, так как библиотека установится по дефолтному пути.
-
-Не используйте **"-static -static-libgcc -static-libstdc++"**!!!
-
-Замечание: посмотрите инструкцию по правильной настройки SFML наоффициальном сайте библиотеки (<https://sfml-dev.org>)
-
-___
-
-Также в этом проекте использовалась потрясающая библиотека **nlochmann_json** (<https://github.com/nlochmann/json>)
-
-___
+____
 
 Связь с разработчиками
 
-<pokrantnicol@gmail.com> 
+<pokrantnicol@gmail.com>
