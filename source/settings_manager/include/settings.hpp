@@ -4,11 +4,11 @@
 
 struct ray_casting_settings
 {
-    unsigned int fps_limit;     // Максимальный FPS
+    unsigned int fps;     // Максимальный FPS
 
-    World::World_String_Map string_map; // текстовая карта из строк
+    World::World_String_Map world_map; // текстовая карта из строк
 
-    struct visible_widgets
+    struct vis_widgets
     {
         bool fps;
         bool minimap;

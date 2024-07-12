@@ -58,7 +58,7 @@ int main()
 
     // Инициализация объектов
     sf::RenderWindow window{{screen_res.width / 2, screen_res.height / 3 * 2}, title};
-    World world{settings.string_map, '1', 100};
+    World world{settings.world_map, '1', 100};
     Camera cmr{world, 50};
     // TODO: Сделать здесь код по читабельнее, избавиться от большого количества параметров в конструкторах, сделать как в Классе Camera
     MiniMap mini_map{world, cmr, {0, 0}, {200, 200}, 0.1, {200, 200, 200}, {100, 100, 100}, {0, 0, 0}};

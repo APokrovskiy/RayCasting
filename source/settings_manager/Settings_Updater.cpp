@@ -23,9 +23,9 @@ void Settings_Updater::update(sf::RenderWindow &window, World &world, Camera &cm
 
     settings = observer.update_settings(load_settings);
 
-    window.setFramerateLimit(settings.fps_limit);
+    window.setFramerateLimit(settings.fps);
 
-    world = World{settings.string_map, '1' , 100};
+    world = World{settings.world_map, '1' , 100};
 
     if (pos != sf::Vector2f{settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y})
     {
