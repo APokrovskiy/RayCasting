@@ -21,3 +21,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     kernel
     ${libsfml}
 )
+
+include(../scripts/cmake/CP.cmake)
+CP(${CMAKE_CURRENT_SOURCE_DIR}/gui ${CMAKE_BINARY_DIR}/gui)

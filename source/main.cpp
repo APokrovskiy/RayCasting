@@ -60,11 +60,13 @@ int main()
     sf::RenderWindow window{{screen_res.width / 2, screen_res.height / 3 * 2}, title};
     World world{settings.world_map, '1', 100};
     Camera cmr{world, 50};
+
     // TODO: Сделать здесь код по читабельнее, избавиться от большого количества параметров в конструкторах, сделать как в Классе Camera
     MiniMap mini_map{world, cmr, {0, 0}, {200, 200}, 0.1, {200, 200, 200}, {100, 100, 100}, {0, 0, 0}};
     Map map{world, cmr, {100, 100}, 0.5, {20, 20, 20}, {100, 100, 100}, 10};
+    
     Background background{window.getSize().x, window.getSize().y}; // TODO: Убрать зависимость от всей структуры настроек
-    Button menu_button{"../Media/GUI/ButtonsIcons/MenuButton.png"};
+    Button menu_button{"./gui/ButtonsIcons/MenuButton.png"};
     int menu_button_shift{15};
     menu_button.set_scale({0.45, 0.45});
 
@@ -74,7 +76,7 @@ int main()
 
     //загрузка шрифта
     sf::Font font;
-    font.loadFromFile("../Media/GUI/Fonts/Ebbe.ttf");
+    font.loadFromFile("gui/Fonts/Ebbe.ttf");
 
     int fps;
     //создание текста для отображения фпс
