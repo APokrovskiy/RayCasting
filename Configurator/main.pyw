@@ -126,28 +126,27 @@ if __name__ == "__main__":
     button_layout, button1, button2 = create_buttons()
 
 
-    map_checkbox = CheckBox(size_hint_y=None, height = 50)
-    map_checkbox.active = settings.widgets.minimap
-    def on_map_checkbox_active(checkbox, value):
-        global settings
-        if value:
-            settings.widgets.minimap = True
-        else:
-            settings.widgets.minimap = False
+    def create_checkbox_settings(flag: bool, text: str) -> Tuple[BoxLayout, CheckBox]:
+        box = BoxLayout(orientation='horizontal', size_hint_y=None, height = 50)
 
-    map_checkbox.bind(active=on_map_checkbox_active)
+        checkbox = CheckBox()
+        checkbox.active = flag
+        def on_checkbox_active(checkbox, value):
+            if value:
+                flag = True
+            else:
+                flag = False
+        checkbox.bind(active=on_checkbox_active)
+
+        label = Label(text = text)
+
+        box.add_widget(checkbox)
+        box.add_widget(label)
+        return box, checkbox
 
 
-    fps_checkbox = CheckBox(size_hint_y=None, height = 50)
-    fps_checkbox.active = settings.widgets.fps
-    def on_fps_checkbox_active(checkbox, value):
-        global settings
-        if value:
-            settings.widgets.fps = True
-        else:
-            settings.widgets.fps = False
-
-    fps_checkbox.bind(active=on_fps_checkbox_active)
+    minimap, minimap_checkbox = create_checkbox_settings(settings.widgets.minimap, "map visible")
+    fps_visible, fps_checkbox = create_checkbox_settings(settings.widgets.fps, "fps visible")
 
 
 
@@ -165,7 +164,7 @@ if __name__ == "__main__":
 
         world_text_input.text = '\n'.join(dsetts.TEXT_MAP)
 
-        map_checkbox.active = dsetts.WIDGETS.minimap
+        minimap_checkbox.active = dsetts.WIDGETS.minimap
         fps_checkbox.active = dsetts.WIDGETS.fps
 
         settings.widgets.minimap = dsetts.WIDGETS.minimap
@@ -184,7 +183,7 @@ if __name__ == "__main__":
                             float(rot_speed_text_input.text)
         )
 
-        widgets = sclasses.Settings.Visible_widgets(map_checkbox.active, fps_checkbox.active)
+        widgets = sclasses.Settings.Visible_widgets(minimap_checkbox.active, fps_checkbox.active)
 
         global settings
         settings = sclasses.Settings(
@@ -204,8 +203,8 @@ if __name__ == "__main__":
     settings_widgets.add_widget(fps)
     settings_widgets.add_widget(speed)
     settings_widgets.add_widget(rot_speed)
-    settings_widgets.add_widget(map_checkbox)
-    settings_widgets.add_widget(fps_checkbox)
+    settings_widgets.add_widget(minimap)
+    settings_widgets.add_widget(fps_visible)
     settings_widgets.add_widget(Label(text = "World Map", shorten = True, size_hint_y=None, height = 50))
     settings_widgets.add_widget(world_text_input)
 
