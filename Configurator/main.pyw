@@ -50,13 +50,13 @@ def create_position_settings_box( camera ) -> Tuple[BoxLayout, TextInput, TextIn
 
 
 def create_buttons() -> Tuple[BoxLayout, Button, Button]:
-    box = BoxLayout(orientation='horizontal', size_hint_y=0.05)
+    box = BoxLayout(orientation='horizontal', size_hint_y=0.06)
 
-    button1 = Button(text = "Return to default settings",
+    button1 = Button(text = "return to default settings",
                     background_color = [1,1,1,0.4],
                     background_normal=""
     )
-    button2 = Button(text = "Apply settings",
+    button2 = Button(text = "apply settings",
                     background_color = [1,1,1,0.4],
                     background_normal=""
     )
