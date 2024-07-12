@@ -84,7 +84,7 @@ if __name__ == "__main__":
     settings = jsonmanager.from_json()
 
 
-    Window.size = (800, 600)
+    Window.size = (500, 600)
     Window.set_title('Configurator')
 
 
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     settings_widgets.add_widget(rot_speed)
     settings_widgets.add_widget(minimap)
     settings_widgets.add_widget(fps_visible)
-    settings_widgets.add_widget(Label(text = "World Map", shorten = True, size_hint_y=None, height = 50))
+    settings_widgets.add_widget(Label(text = "world map", shorten = True, size_hint_y=None, height = 50))
     settings_widgets.add_widget(world_text_input)
 
 
