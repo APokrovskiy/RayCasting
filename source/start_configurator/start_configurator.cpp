@@ -10,7 +10,7 @@ void start_configurator(std::atomic_bool &is_configurator_opened)
         std::thread([&]
                     {
             is_configurator_opened.store(true);
-            system_without_console_output(L"python ./Configurator/Configurator.pyw");
+            system_without_console_output(L"python ./Configurator/main.pyw");
             is_configurator_opened.store(false); })
             .detach();
     }

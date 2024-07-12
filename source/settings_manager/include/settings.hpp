@@ -8,6 +8,12 @@ struct ray_casting_settings
 
     World::World_String_Map string_map; // текстовая карта из строк
 
+    struct visible_widgets
+    {
+        bool fps;
+        bool minimap;
+    } vis_widgets;
+
     struct camera
     {
         int cmr_pos_x;       // Координата x
@@ -15,6 +21,7 @@ struct ray_casting_settings
         double speed;        // Скорость
         unsigned int n_rays; // Количество лучей
         unsigned int vis_r;  // Дальность видимости
+        double rot_speed;    // Скорость поворота
     } cmr;
 };
 

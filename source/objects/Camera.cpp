@@ -204,9 +204,9 @@ void Camera::move()
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        rot_a -= 0.01;
+        rot_a -= rot_speed;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        rot_a += 0.01;
+        rot_a += rot_speed;
 
     // установка колайдера
     set_collider();
@@ -301,4 +301,14 @@ void Camera::draw(sf::RenderWindow &win, Rendering_Mode mode)
         rendering_3d(win);
     else if (mode == Rendering_Mode::M_2D)
         rendering_2d(win);
+}
+
+double Camera::get_rotation_speed() const
+{
+    return rot_speed;
+}
+
+void Camera::set_rotation_speed(double rotation_speed)
+{
+    rot_speed = rotation_speed;
 }

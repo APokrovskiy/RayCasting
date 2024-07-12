@@ -91,6 +91,8 @@ int main()
         if (setts_updater.is_file_changed())
             setts_updater.update(window, world, cmr, background, menu_button);
 
+        settings = setts_updater.get_settings();
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -116,12 +118,15 @@ int main()
 
         
         //расчет фпс
-        if (clock.getElapsedTime().asSeconds() >= 1) // TODO: Вынести это добро в класс
+        if (settings.vis_widgets.fps)
         {
-            clock.restart();
-            fpslabel.setString("fps: " + std::to_string(fps));
-            fpslabel.setPosition(window.getSize().x / 2, 10); 
-            fps = 0;
+            if (clock.getElapsedTime().asSeconds() >= 1) // TODO: Вынести это добро в класс
+            {
+                clock.restart();
+                fpslabel.setString("fps: " + std::to_string(fps));
+                fpslabel.setPosition(window.getSize().x / 2, 10); 
+                fps = 0;
+            }
         }
 
         if (window.hasFocus() && !is_map_open)
@@ -133,8 +138,9 @@ int main()
         background.draw(window);
         // отрисовка вида камеры алгоритмом Ray Casting
         cmr.draw(window, Camera::Rendering_Mode::M_3D);
-        // отрисовка мини карты
-        mini_map.draw(window);
+        if (settings.vis_widgets.minimap)
+            // отрисовка мини карты
+            mini_map.draw(window);
 
         // отрисовка кнопки меню настроек
         menu_button.draw(window);
@@ -153,7 +159,8 @@ int main()
             is_map_open = false;
         }
 
-        window.draw(fpslabel);
+        if(settings.vis_widgets.fps)
+            window.draw(fpslabel);
 
         window.display();
 

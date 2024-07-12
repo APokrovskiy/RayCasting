@@ -17,7 +17,7 @@ bool Settings_Updater::is_file_changed()
     return observer.is_file_changed();
 }
 
-// TODO: Убрать все лишние повторения настроек
+
 void Settings_Updater::update(sf::RenderWindow &window, World &world, Camera &cmr, Background &background, Button &menu_button)
 {
 
@@ -38,5 +38,7 @@ void Settings_Updater::update(sf::RenderWindow &window, World &world, Camera &cm
     cmr.set_n_rays(settings.cmr.n_rays);
 
     cmr.set_visual_range(settings.cmr.vis_r);
+
+    cmr.set_rotation_speed(settings.cmr.rot_speed);
 
 }

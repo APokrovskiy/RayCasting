@@ -27,6 +27,7 @@ public:
 
     sf::Vector2f get_position() const;
     double get_rotation() const;
+    double get_rotation_speed() const;
     double get_speed() const;
     unsigned int get_n_rays() const;
     const std::vector<std::pair<unsigned int, double>> &get_rays_buf() const;
@@ -37,6 +38,7 @@ public:
     void set_field_of_view(double angle_in_radians);
     void set_speed(double new_speed);
     void set_rotation(double angle_in_radians);
+    void set_rotation_speed(double rotation_speed);
     void set_n_rays(unsigned int);
     void set_visual_range(unsigned int);
     void set_side_square_size(unsigned int);
@@ -57,6 +59,7 @@ private:
     // Положение камеры в пространстве
     sf::Vector2f pos{0, 0};
     double speed{1};
+    double rot_speed{0.01};
     double rot_a{M_PI / 3};
 
     // Настройки рендеринга

@@ -12,6 +12,8 @@ ray_casting_settings load_settings(const nlohmann::json &settings_json)
     settings.cmr.speed = settings_json["camera"]["speed"];
     settings.cmr.n_rays = settings_json["camera"]["n_rays"];
     settings.cmr.vis_r = settings_json["camera"]["visual_range"];
-
-    return settings; // TODO: Реализовать семантику перемещения
+    settings.cmr.rot_speed = settings_json["camera"]["rot_speed"];
+    settings.vis_widgets.fps = settings_json["vis_widgets"]["fps"];
+    settings.vis_widgets.minimap = settings_json["vis_widgets"]["minimap"];
+    return settings;
 }
