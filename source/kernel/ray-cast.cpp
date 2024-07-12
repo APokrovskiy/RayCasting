@@ -151,7 +151,7 @@ unsigned int rc::ray_cast(const std::set<rc::Coords> &wm, int cell_sz, rc::Coord
         // Поиск пересечения по вертикальным линиям
         if ((hb >= va || ha >= vb) || hray_is_completed)
         {
-            if ((vintersection.x % cell_sz == 0) && (vintersection.y % cell_sz == 0)) // Если луч находится в точке пересечения 4 ячеек карты
+            if ( (sqrt(va * va + vb * vb) < vis_r) &&(vintersection.x % cell_sz == 0) && (vintersection.y % cell_sz == 0)) // Если луч находится в точке пересечения 4 ячеек карты
             {
                 dcell = {vcell.x, vcell.y};
                 if (rot_a >= 0 && rot_a <= M_PI_2)
@@ -177,7 +177,7 @@ unsigned int rc::ray_cast(const std::set<rc::Coords> &wm, int cell_sz, rc::Coord
         // Поиск пересечения по горизонтальным линиям
         if ((!(hb >= va || ha >= vb)) || vray_is_completed)
         {
-            if ((hintersection.x % cell_sz == 0) && (hintersection.y % cell_sz == 0)) // Если луч находится в точке пересечения 4 ячеек карты
+            if ((sqrt(ha * ha + hb * hb) < vis_r) && (hintersection.x % cell_sz == 0) && (hintersection.y % cell_sz == 0)) // Если луч находится в точке пересечения 4 ячеек карты
             {
                 dcell = {hcell.x, hcell.y};
                 if (rot_a >= M_PI_2 && rot_a <= M_PI)
