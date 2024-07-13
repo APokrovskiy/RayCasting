@@ -1,8 +1,6 @@
 #pragma once
 #include "ray-cast.hpp"
 
-// TODO: Затем убрать зависимость из CMakeLists.txt
-
 class Collider
 {
 public:
