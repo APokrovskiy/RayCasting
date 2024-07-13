@@ -98,7 +98,8 @@ void Camera::move()
     {
         if (col.is_collised(wall_collider, speed))
         {
-            perpendicular += col.get_collision_perpendicular(wall_collider, speed);
+            perpendicular.x += col.get_collision_perpendicular(wall_collider, speed).x;
+            perpendicular.y += col.get_collision_perpendicular(wall_collider, speed).y;
         }
     }
 

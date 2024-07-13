@@ -1,21 +1,21 @@
 #include "Collider.hpp"
 
-Collider::Collider(sf::Vector2f start, sf::Vector2f end) : start(start), end(end) {}
+Collider::Collider(rc::Coords start, rc::Coords end) : start(start), end(end) {}
 
 // Геттеры
-sf::Vector2f Collider::get_start() const
+rc::Coords Collider::get_start() const
 {
     return start;
 }
 
-sf::Vector2f Collider::get_end() const
+rc::Coords Collider::get_end() const
 {
     return end;
 }
 
-sf::Vector2f Collider::get_collision_perpendicular(Collider &col, double error)
+rc::Coords Collider::get_collision_perpendicular(Collider &col, double error)
 {
-    sf::Vector2f perpendicular = {0, 0};
+    rc::Coords perpendicular = {0, 0};
     // проверка на нужной ли высоте чтобы проверять по х
     if ((end.y > col.start.y && end.y < col.end.y) || (start.y > col.start.y && start.y < col.end.y))
     {
@@ -48,12 +48,12 @@ sf::Vector2f Collider::get_collision_perpendicular(Collider &col, double error)
 }
 
 // Сеттеры
-void Collider::set_start(sf::Vector2f start)
+void Collider::set_start(rc::Coords start)
 {
     this->start = start;
 }
 
-void Collider::set_end(sf::Vector2f end)
+void Collider::set_end(rc::Coords end)
 {
     this->end = end;
 }
