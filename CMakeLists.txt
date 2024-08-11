@@ -2,10 +2,8 @@
 
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-
 
 project(Ray-Casting
         LANGUAGES CXX # + Python
@@ -13,7 +11,20 @@ project(Ray-Casting
         DESCRIPTION "3D Лабиринт: Визуализация работы алгоритма ray-casting"
 )
 
-find_package(SFML 2.6.1 COMPONENTS system window graphics REQUIRED)
+set(BUILD_SHARED_LIBS OFF)
+
+include(FetchContent)
+
+# Подключаем SFML
+FetchContent_Declare(
+    SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.1
+)
+
+# Загружаем SFML
+FetchContent_MakeAvailable(SFML)
+
 
 set(libsfml sfml-graphics sfml-window sfml-system)
 

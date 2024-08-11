@@ -4,6 +4,7 @@ add_library(objects
     Button.cpp 
     Camera.cpp 
     World.cpp 
+    FPSLabel.cpp
     world_map/Map.cpp
     world_map/MiniMap.cpp
 ) 

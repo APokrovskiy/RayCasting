@@ -14,6 +14,7 @@
 
 #include "Camera.hpp"
 
+#include "FPSLabel.hpp"
 #include "world_map/Map.hpp" // TODO: Добавить один хедер который добавляет эти две карты
 #include "world_map/MiniMap.hpp"
 #include "Button.hpp"
@@ -75,16 +76,17 @@ int main()
     menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
 
     //загрузка шрифта
-    sf::Font font;
-    font.loadFromFile("gui/Fonts/Ebbe.ttf");
+    // sf::Font font;
+    // font.loadFromFile("gui/Fonts/Ebbe.ttf");
 
-    int fps;
-    //создание текста для отображения фпс
-    sf::Text fpslabel{L"fps: ", font, 30};
-    fpslabel.setColor(sf::Color::Red);
-    fpslabel.setPosition(window.getSize().x / 2, 10);
+    // int fps;
+    // //создание текста для отображения фпс
+    // sf::Text fpslabel{L"fps: ", font, 30};
+    // fpslabel.setColor(sf::Color::Red);
+    // fpslabel.setPosition(window.getSize().x / 2, 10);
 
-    sf::Clock clock;
+    // sf::Clock clock;
+    FPSLabel fps{&window};
 
     // Главный цикл
     bool is_map_open = false;
@@ -115,21 +117,9 @@ int main()
             }
         }
 
-        // движение камеры
-        
-
-        
         //расчет фпс
         if (settings.vis_widgets.fps)
-        {
-            if (clock.getElapsedTime().asSeconds() >= 1) // TODO: Вынести это добро в класс
-            {
-                clock.restart();
-                fpslabel.setString("fps: " + std::to_string(fps));
-                fpslabel.setPosition(window.getSize().x / 2, 10); 
-                fps = 0;
-            }
-        }
+            fps.update();
 
         if (window.hasFocus() && !is_map_open)
             cmr.move();
@@ -161,12 +151,13 @@ int main()
             is_map_open = false;
         }
 
-        if(settings.vis_widgets.fps)
-            window.draw(fpslabel);
+        if (settings.vis_widgets.fps)
+            fps.draw();
 
         window.display();
 
-        fps++;
+        if (settings.vis_widgets.fps)
+            fps++;
     }
 
     return 0;
