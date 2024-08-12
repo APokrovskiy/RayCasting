@@ -63,8 +63,12 @@ int main()
     Camera cmr{world, 50};
 
     // TODO: Сделать здесь код по читабельнее, избавиться от большого количества параметров в конструкторах, сделать как в Классе Camera
-    MiniMap mini_map{world, cmr, {0, 0}, {200, 200}, 0.1, {200, 200, 200}, {100, 100, 100}, {0, 0, 0}};
-    Map map{world, cmr, {100, 100}, 0.5, {20, 20, 20}, {100, 100, 100}, 10};
+    
+    MiniMap mini_map{&world, &cmr};
+    Map map{&world, &cmr};
+    map.set_multiply(0.5);
+    
+    // Map map{world, cmr, {100, 100}, 0.5, {20, 20, 20}, {100, 100, 100}, 10};
     
     Background background{window.getSize().x, window.getSize().y}; // TODO: Убрать зависимость от всей структуры настроек
     Button menu_button{"./gui/ButtonsIcons/MenuButton.png"};
@@ -75,17 +79,6 @@ int main()
     setts_updater.update(window, world, cmr, background, menu_button);
     menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
 
-    //загрузка шрифта
-    // sf::Font font;
-    // font.loadFromFile("gui/Fonts/Ebbe.ttf");
-
-    // int fps;
-    // //создание текста для отображения фпс
-    // sf::Text fpslabel{L"fps: ", font, 30};
-    // fpslabel.setColor(sf::Color::Red);
-    // fpslabel.setPosition(window.getSize().x / 2, 10);
-
-    // sf::Clock clock;
     FPSLabel fps{&window};
 
     // Главный цикл
@@ -137,19 +130,15 @@ int main()
         // отрисовка кнопки меню настроек
         menu_button.draw(window);
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) // TODO: Внести проверку куда нибудь в другое место
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) 
         {
             is_map_open = true; 
-            // отрисовка карты
             map.move();
-            // движение карты
             map.draw(window);
         }
         else if (is_map_open)
-        {
-            map.set_position(cmr.get_position());
             is_map_open = false;
-        }
+
 
         if (settings.vis_widgets.fps)
             fps.draw();

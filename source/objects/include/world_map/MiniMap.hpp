@@ -9,7 +9,7 @@ class MiniMap
 {
 public:
 
-    MiniMap(World& world, Camera& camera, sf::Vector2f position, sf::Vector2f scale, double multiply, sf::Color background_color, sf::Color outline_color, sf::Color tile_color);
+    MiniMap(World *world, Camera *camera);
 
     void draw(sf::RenderWindow& window);
     //Гетерры
@@ -18,35 +18,32 @@ public:
     sf::Vector2f get_scale();
     sf::Vector2f get_position();
 
-    sf::Color get_background_color();
-    sf::Color get_outline_color();
-    sf::Color get_tile_color();
 
     //Сеттеры
+    void set_camera(Camera *cmr);
+    void set_world(World *world);
 
     void set_multiply(double value);
     void set_scale(sf::Vector2f value);
     void set_position(sf::Vector2f value);
 
-    void set_background_color(sf::Color color);
-    void set_outline_color(sf::Color color);
-    void set_tile_color(sf::Color color);
+
 
 private:
 
     void draw_background(sf::RenderWindow& window);
     void draw_outline(sf::RenderWindow& window);
 
-    sf::Color background_color;
-    sf::Color outline_color;
-    sf::Color tile_color;
+    sf::Color background_color {200,200,200};
+    sf::Color outline_color {100, 100, 100};
+    sf::Color tile_color{sf::Color::Black};
 
-    sf::Vector2f position;
-    sf::Vector2f scale;
-    double multiply;
+    sf::Vector2f position{0,0};
+    sf::Vector2f scale {200,200};
+    double multiply{0.1};
     
 
-    World& world;
-    Camera& camera;
+    World *world;
+    Camera *camera;
 
 };
