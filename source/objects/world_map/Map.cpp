@@ -53,6 +53,12 @@ void Map::move()
         position.x -= speed;
     }
 }
+    void Map::go_to_position(sf::RenderWindow& window, sf::Vector2f position)
+    {
+        this->position =
+            {-position.x*multiply + window.getSize().x/2,
+             -position.y*multiply + window.getSize().y/2};
+    }
 
 // Геттеры
 

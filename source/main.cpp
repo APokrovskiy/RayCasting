@@ -134,9 +134,7 @@ int main()
         {
             if(!is_map_open)
             {
-                map.set_position(
-                {-cmr.get_position().x*map.get_multiply()+window.getSize().x/2-cmr.get_side_square_size(),
-                -cmr.get_position().y*map.get_multiply()+window.getSize().y/2-cmr.get_side_square_size()});
+                map.go_to_position(window, cmr.get_position());
             }
             is_map_open = true; 
             map.move();

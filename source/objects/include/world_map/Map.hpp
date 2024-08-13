@@ -14,6 +14,9 @@ public:
     void draw(sf::RenderWindow &window);
 
     void move();
+    
+    //функция делает так что карта переместится в такую позицию, что точка координаты которой поместят в значение position окажется в центре
+    void go_to_position(sf::RenderWindow& window, sf::Vector2f position);
 
     // Геттеры
     double get_multiply();
