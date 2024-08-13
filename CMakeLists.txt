@@ -28,6 +28,7 @@ FetchContent_MakeAvailable(SFML)
 
 set(libsfml sfml-graphics sfml-window sfml-system)
 
+include_directories(source)
 add_subdirectory(source)
 
 include(scripts/cmake/GUI_PROGRAM.cmake)

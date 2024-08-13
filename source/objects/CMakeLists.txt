@@ -13,4 +13,4 @@ target_include_directories(objects
 
 ) # Указываем путь к заголовочным файлам
 
-target_link_libraries(objects ${libsfml} kernel)
+target_link_libraries(objects ${libsfml} kernel settings_manager)

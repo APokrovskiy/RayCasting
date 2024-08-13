@@ -3,6 +3,7 @@
 #include <set>
 #include <vector>
 #include <SFML/Graphics.hpp>
+
 #include "ray-cast.hpp"
 #include "Collider.hpp"
 

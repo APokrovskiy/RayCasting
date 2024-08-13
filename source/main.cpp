@@ -20,6 +20,8 @@
 #include "Button.hpp"
 #include "start_configurator.hpp"
 #include "Settings_Updater.hpp"
+#include "Settings_Observer.hpp"
+#include "settings.hpp"
 #include "Background.hpp"
 
 // TODO: Обновить список хедеров
@@ -51,32 +53,33 @@ int main()
 
     
 
-    // Обновление настроек
-    Settings_Updater setts_updater{settings_file_path};
-    ray_casting_settings settings = setts_updater.get_settings();
+    Settings_Observer<ray_casting_settings> file_observer{settings_file_path};
+    ray_casting_settings settings = file_observer.update_settings(load_settings);
+
+    
+    
 
     sf::VideoMode screen_res = sf::VideoMode::getDesktopMode();
 
-    // Инициализация объектов
+
     sf::RenderWindow window{{screen_res.width / 2, screen_res.height / 3 * 2}, title};
     World world{settings.world_map, '1', 100};
     Camera cmr{world, 50};
 
-    // TODO: Сделать здесь код по читабельнее, избавиться от большого количества параметров в конструкторах, сделать как в Классе Camera
     
     MiniMap mini_map{&world, &cmr};
     Map map{&world, &cmr};
-    map.set_multiply(0.5);
-    
-    // Map map{world, cmr, {100, 100}, 0.5, {20, 20, 20}, {100, 100, 100}, 10};
-    
-    Background background{window.getSize().x, window.getSize().y}; // TODO: Убрать зависимость от всей структуры настроек
+    map.set_multiply(0.5);   
+
+    Background background{window.getSize().x, window.getSize().y}; 
     Button menu_button{"./gui/ButtonsIcons/MenuButton.png"};
     int menu_button_shift{15};
     menu_button.set_scale({0.45, 0.45});
 
+    Settings_Updater settings_updater;
+    settings_updater.add_updater(std::unique_ptr<CameraSettingsUpdater>{new CameraSettingsUpdater{cmr}});
 
-    setts_updater.update(window, world, cmr, background, menu_button);
+    settings_updater.update(settings);
     menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
 
     FPSLabel fps{&window};
@@ -85,10 +88,13 @@ int main()
     bool is_map_open = false;
     while (window.isOpen())
     {
-        if (setts_updater.is_file_changed())
-            setts_updater.update(window, world, cmr, background, menu_button);
+        if (file_observer.is_file_changed())
+        {
+            settings = file_observer.update_settings(load_settings);
+            settings_updater.update(settings);
+        }
 
-        settings = setts_updater.get_settings();
+        
 
         sf::Event event;
         while (window.pollEvent(event))
