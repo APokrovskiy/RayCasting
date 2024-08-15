@@ -25,7 +25,7 @@
 #include "Background.hpp"
 
 // TODO: Обновить список хедеров
-class WindowSettingsUpdater: public ISettingsUpdater
+class WindowSettingsUpdater: public IConcreteSettingsUpdater
 {
     sf::RenderWindow& w;
 public:

@@ -39,7 +39,7 @@ private:
     void draw_out_line_background(sf::RenderWindow& win,float map_size,float tile_on_map);
 };
 
-class WorldSettingsUpdater: public ISettingsUpdater
+class WorldSettingsUpdater: public IConcreteSettingsUpdater
 {
     World &w;
 public:

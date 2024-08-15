@@ -79,7 +79,7 @@ private:
     void rendering_2d(sf::RenderWindow &win);
 };
 
-class CameraSettingsUpdater: public ISettingsUpdater
+class CameraSettingsUpdater: public IConcreteSettingsUpdater
 {
     Camera &cmr;
     
