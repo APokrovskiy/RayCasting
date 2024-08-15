@@ -25,6 +25,17 @@
 #include "Background.hpp"
 
 // TODO: Обновить список хедеров
+class WindowSettingsUpdater: public ISettingsUpdater
+{
+    sf::RenderWindow& w;
+public:
+    WindowSettingsUpdater(sf::RenderWindow& win): w(win) {}
+
+    void settings_update(const ray_casting_settings& s) override
+    {
+        w.setFramerateLimit(s.fps);
+    }
+};
 
 // main.cpp
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +89,8 @@ int main()
 
     Settings_Updater settings_updater;
     settings_updater.add_updater(std::unique_ptr<CameraSettingsUpdater>{new CameraSettingsUpdater{cmr}});
+    settings_updater.add_updater(std::unique_ptr<WorldSettingsUpdater>{new WorldSettingsUpdater{world}});
+    settings_updater.add_updater(std::unique_ptr<WindowSettingsUpdater>{new WindowSettingsUpdater{window}});
 
     settings_updater.update(settings);
     menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});

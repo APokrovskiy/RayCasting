@@ -1,12 +1,11 @@
 #pragma once
-#include "World.hpp"
 #include "nlochmann_json.hpp"
 
 struct ray_casting_settings
 {
     unsigned int fps;     // Максимальный FPS
 
-    World::World_String_Map world_map; // текстовая карта из строк
+    std::vector<std::string> world_map; // текстовая карта из строк
 
     struct vis_widgets
     {
