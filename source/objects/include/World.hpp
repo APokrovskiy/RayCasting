@@ -3,14 +3,15 @@
 #include <set>
 #include <vector>
 #include <SFML/Graphics.hpp>
+
 #include "ray-cast.hpp"
 #include "Collider.hpp"
+#include "settings_manager/Settings_Updater.hpp"
 
 class World
 {
 public:
     using World_Map = std::set<rc::Coords>;
-    using World_String_Map = std::vector<std::string>;
 
     // TODO: Реализовать конструкторы через перемещение
     World(World_Map &wm, unsigned int tile);
@@ -31,4 +32,16 @@ private:
     unsigned int tile;
 
     std::vector<Collider> wall_colliders;
+};
+
+class WorldSettingsUpdater: public IConcreteSettingsUpdater
+{
+    World &w;
+public:
+    WorldSettingsUpdater(World& cmr): w(cmr){}
+
+    void settings_update(const ray_casting_settings& s) override
+    {
+        w = World{s.world_map, '1', 100};
+    }
 };
