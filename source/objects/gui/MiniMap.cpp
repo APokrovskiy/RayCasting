@@ -1,4 +1,4 @@
-#include "world_map/MiniMap.hpp"
+#include "MiniMap.hpp"
 
 MiniMap::MiniMap(World *world, Camera *cmr)
     :world(world), camera(cmr)

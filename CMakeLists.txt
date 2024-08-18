@@ -37,5 +37,6 @@ GUI_PROGRAM(${PROJECT_NAME})
 message(STATUS " Копирование Configurator ")
 include(scripts/cmake/CP.cmake)
 CP(${CMAKE_CURRENT_SOURCE_DIR}/Configurator ${CMAKE_BINARY_DIR}/Configurator)
+CP(${CMAKE_CURRENT_SOURCE_DIR}/resource ${CMAKE_BINARY_DIR}/resource)
 
 message(STATUS " Компиляция проекта ")

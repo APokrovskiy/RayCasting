@@ -5,10 +5,10 @@
 #include <set>
 
 #include <SFML/Graphics.hpp>
-#include "settings_manager/Settings_Updater.hpp"
-#include "Collider.hpp"
-#include "ray-cast.hpp"
-#include "World.hpp"
+#include "algorithms/other/settings_manager/Settings_Updater.hpp"
+#include "objects/2d/phisic/include/Collider.hpp"
+#include "algorithms/2d/include/ray-cast.hpp"
+#include "objects/2d/any_functional/include/World.hpp"
 
 class Camera
 {

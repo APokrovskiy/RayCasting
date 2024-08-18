@@ -1,16 +1,14 @@
-# TODO: Заккоментировать
+add_subdirectory(2d)
+#add_subdirectory(3d)
+add_subdirectory(gui)
+add_subdirectory(other)
 
-add_library(objects
-    Button.cpp 
-    Camera.cpp 
-    World.cpp 
-    FPSLabel.cpp
-    world_map/Map.cpp
-    world_map/MiniMap.cpp
-) 
-target_include_directories(objects 
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include  ${sfml_SOURCE_DIR}/include
+add_library(objects INTERFACE)
 
-) # Указываем путь к заголовочным файлам
-
-target_link_libraries(objects ${libsfml} kernel)
+target_link_libraries(objects INTERFACE
+    2d
+#    3d
+    gui
+    other
+    ${libsfml}
+)

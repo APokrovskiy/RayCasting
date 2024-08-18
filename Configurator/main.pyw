@@ -91,7 +91,7 @@ if __name__ == "__main__":
     main_layout = FloatLayout()
 
 
-    BACKGROUND = Image(source='images/ConfiguratorBackground.png', 
+    BACKGROUND = Image(source='../resource/textures/gui/backgrounds/ConfiguratorBackground.png', 
                     allow_stretch=True, 
                     keep_ratio=False
     )

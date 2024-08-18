@@ -15,14 +15,14 @@
 #include "Camera.hpp"
 
 #include "FPSLabel.hpp"
-#include "world_map/Map.hpp" // TODO: Добавить один хедер который добавляет эти две карты
-#include "world_map/MiniMap.hpp"
+#include "Map.hpp" // TODO: Добавить один хедер который добавляет эти две карты
+#include "MiniMap.hpp"
 #include "Button.hpp"
 #include "start_configurator.hpp"
-#include "settings_manager/Settings_Updater.hpp"
-#include "settings_manager/Settings_Observer.hpp"
+#include "algorithms/other/settings_manager/Settings_Updater.hpp"
+#include "algorithms/other/settings_manager/Settings_Observer.hpp"
 #include "settings.hpp"
-#include "Background.hpp"
+#include "objects/Background.hpp"
 
 // TODO: Обновить список хедеров
 class WindowSettingsUpdater: public IConcreteSettingsUpdater
@@ -82,7 +82,7 @@ int main()
     map.set_multiply(0.5);
 
     Background background{window.getSize().x, window.getSize().y}; 
-    Button menu_button{"./gui/ButtonsIcons/MenuButton.png"};
+    Button menu_button{"../resource/textures/gui/buttons_icons/MenuButton.png"};
     int menu_button_shift{15};
     menu_button.set_scale({0.45, 0.45});
 

@@ -2,8 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Camera.hpp"
-#include "World.hpp"
+#include "objects/2d/any_functional/include/Camera.hpp"
+#include "objects/2d/any_functional/include/World.hpp"
 
 class Map
 {

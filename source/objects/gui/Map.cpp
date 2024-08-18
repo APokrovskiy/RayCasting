@@ -1,4 +1,4 @@
-#include "world_map/Map.hpp"
+#include "Map.hpp"
 
 Map::Map(World * w, Camera * c)
     :world(w), camera(c)

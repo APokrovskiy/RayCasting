@@ -1,13 +1,12 @@
 set(SOURCES PARENT_SCOPE)
 
-add_subdirectory(kernel)
+add_subdirectory(algorithms)
 add_subdirectory(objects)
-add_subdirectory(start_configurator)
 
 # Чтобы exe-шник появлялся в нужном месте для открытия конфигуратора
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_executable(${PROJECT_NAME} main.cpp settings.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
 
 # Подключение хедеров SFML
 target_include_directories(${PROJECT_NAME} PUBLIC ${sfml_SOURCE_DIR}/include) 
@@ -15,10 +14,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${sfml_SOURCE_DIR}/include)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     objects
-    start_configurator
-    kernel
+    algorithms
     ${libsfml}
 )
-
-include(../scripts/cmake/CP.cmake)
-CP(${CMAKE_CURRENT_SOURCE_DIR}/gui ${CMAKE_BINARY_DIR}/gui)
