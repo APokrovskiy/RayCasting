@@ -17,8 +17,6 @@
 #include "FPSLabel.hpp"
 #include "Map.hpp" // TODO: Добавить один хедер который добавляет эти две карты
 #include "MiniMap.hpp"
-#include "Button.hpp"
-#include "start_configurator.hpp"
 #include "algorithms/other/settings_manager/Settings_Updater.hpp"
 #include "algorithms/other/settings_manager/Settings_Observer.hpp"
 #include "settings.hpp"
@@ -37,6 +35,44 @@ public:
     }
 };
 
+// Временное решение
+void create_settings_file()
+{
+    std::ofstream file{"settings.json"};
+    std::string data{
+    R"({                      
+        "camera": {         
+            "position": [   
+                250,        
+                250         
+            ],              
+            "speed": 3,         
+            "n_rays": 100,          
+            "rot_speed": 0.01,      
+            "visual_range": 3000    
+        },                          
+        "vis_widgets": {            
+            "fps": false,           
+            "minimap": true         
+        },                          
+        "fps": 60,                  
+        "world_map": [              
+            "1111111111111111111111",   
+            "1000000000000000000001",   
+            "1000000000000000000001",   
+            "1000000000000000000001",   
+            "1000000000000000000001",   
+            "1000000000000000000001",   
+            "1000000000000000000001",   
+            "1000000000000000000001",   
+            "1000000000000000000001",   
+            "1000000000000000000001",   
+            "1111111111111111111111"    
+        ]                               
+    })"};
+    file << data;
+}
+
 // main.cpp
 /////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
@@ -46,32 +82,15 @@ int main()
     std::string title = "Ray-Casting";
     std::string settings_file_path = "settings.json";
 
-    // Создание файла, если его нет
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    std::ifstream settings_file(settings_file_path);
-    if (!settings_file)
+    if (!std::filesystem::exists(settings_file_path))
     {
-        start_configurator(is_configurator_opened);
-        while (!settings_file)
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            settings_file.clear();
-            settings_file.open(settings_file_path);
-        }
+        create_settings_file();
     }
-    settings_file.close();
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     
-
     Settings_Observer<ray_casting_settings> file_observer{settings_file_path};
     ray_casting_settings settings = file_observer.update_settings(load_settings);
 
-    
-    
-
     sf::VideoMode screen_res = sf::VideoMode::getDesktopMode();
-
 
     sf::RenderWindow window{{screen_res.width / 2, screen_res.height / 3 * 2}, title};
     World world{settings.world_map, '1', 100};
@@ -82,9 +101,6 @@ int main()
     map.set_multiply(0.5);
 
     Background background{window.getSize().x, window.getSize().y}; 
-    Button menu_button{"../resource/textures/gui/buttons_icons/MenuButton.png"};
-    int menu_button_shift{15};
-    menu_button.set_scale({0.45, 0.45});
 
     Settings_Updater settings_updater;
     settings_updater.add_updater(std::unique_ptr<CameraSettingsUpdater>{new CameraSettingsUpdater{cmr}});
@@ -92,7 +108,6 @@ int main()
     settings_updater.add_updater(std::unique_ptr<WindowSettingsUpdater>{new WindowSettingsUpdater{window}});
 
     settings_updater.update(settings);
-    menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
 
     FPSLabel fps{&window};
 
@@ -113,18 +128,12 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-
-            else if (event.type == sf::Event::MouseButtonReleased && menu_button.isClicked(window, event.mouseButton))
-                // Создание потока с конфигуратором
-                start_configurator(is_configurator_opened);
-
-                
+            
             else if (event.type == sf::Event::Resized)
             {
                 sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
                 window.setView(sf::View(visibleArea));
                 background.update(window.getSize().x, window.getSize().y);
-                menu_button.set_position({window.getSize().x - menu_button.get_texture().getSize().x * menu_button.get_scale().x - menu_button_shift, menu_button_shift});
             }
         }
 
@@ -145,8 +154,6 @@ int main()
             // отрисовка мини карты
             mini_map.draw(window);
 
-        // отрисовка кнопки меню настроек
-        menu_button.draw(window);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) 
         {

@@ -6,7 +6,7 @@ FPSLabel::FPSLabel(sf::RenderWindow *win)
     else throw std::runtime_error("win ptr has null");
 
     clock.restart();
-    font.loadFromFile("gui/Fonts/Ebbe.ttf");
+    font.loadFromFile("fonts/Ebbe.ttf");
     fpslabel.setFont(font);
     fpslabel.setFillColor(sf::Color::Red);
 }
