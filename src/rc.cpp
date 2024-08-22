@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "./ray-cast.hpp"
+#include "rc.hpp"
 
 #include <cmath>
 #include <iostream>

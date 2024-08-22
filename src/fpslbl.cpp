@@ -1,4 +1,4 @@
-#include "FPSLabel.hpp"
+#include "fpslbl.hpp"
 
 FPSLabel::FPSLabel(sf::RenderWindow *win)
 {

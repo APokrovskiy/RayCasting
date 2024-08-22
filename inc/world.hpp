@@ -4,9 +4,10 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
-#include "algorithms/2d/include/ray-cast.hpp"
-#include "objects/2d/phisic/include/Collider.hpp"
-#include "algorithms/other/settings_manager/Settings_Updater.hpp"
+#include "rc.hpp"
+#include "collider.hpp"
+#include "setts/manager/updater.hpp"
+
 
 class World
 {

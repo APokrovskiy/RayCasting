@@ -1,28 +1,13 @@
-#define _USE_MATH_DEFINES
-#include <iostream>
-#include <vector>
-#include <set>
-#include <cmath>
-#include <thread>
 #include <atomic>
-#include <fstream>
-#include <filesystem>
 
-#include <SFML/Graphics.hpp>
+#include "setts/manager/observer.hpp"
+#include "setts/manager/updater.hpp"
+#include "background.hpp"
+#include "minimap.hpp"
+#include "fpslbl.hpp"
+#include "map.hpp"
 
-#include "World.hpp"
 
-#include "Camera.hpp"
-
-#include "FPSLabel.hpp"
-#include "Map.hpp" // TODO: Добавить один хедер который добавляет эти две карты
-#include "MiniMap.hpp"
-#include "algorithms/other/settings_manager/Settings_Updater.hpp"
-#include "algorithms/other/settings_manager/Settings_Observer.hpp"
-#include "settings.hpp"
-#include "objects/Background.hpp"
-
-// TODO: Обновить список хедеров
 class WindowSettingsUpdater: public IConcreteSettingsUpdater
 {
     sf::RenderWindow& w;

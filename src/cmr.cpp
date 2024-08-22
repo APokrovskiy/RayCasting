@@ -1,4 +1,4 @@
-#include "Camera.hpp"
+#include "cmr.hpp"
 #include <iostream>
 #include <exception>
 

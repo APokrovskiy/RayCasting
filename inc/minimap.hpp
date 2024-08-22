@@ -2,8 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "objects/2d/any_functional/include/Camera.hpp"
-#include "objects/2d/any_functional/include/World.hpp"
+#include "cmr.hpp"
+#include "world.hpp"
 
 class MiniMap
 {

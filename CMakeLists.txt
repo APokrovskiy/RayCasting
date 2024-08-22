@@ -1,16 +1,15 @@
+###############################################
+# Ваш компилятор должен поддерживать C++17
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+###############################################
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+project( Ray-Casting LANGUAGES CXX )
 
-project(Ray-Casting
-        LANGUAGES CXX 
-        VERSION 1.4.0
-        DESCRIPTION "3D Лабиринт: Визуализация работы алгоритма ray-casting"
-)
-
+# Статическая линковка библиотек
 set(BUILD_SHARED_LIBS OFF)
 
+# SFML
+###################################################
 include(FetchContent)
 
 FetchContent_Declare(
@@ -20,14 +19,35 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(SFML)
+###################################################
 
-set(libsfml sfml-graphics sfml-window sfml-system)
+# Помещаем исходники в переменную SOURCES
+#########################################
+include_directories(inc)
+file(GLOB_RECURSE SOURCES
+    "source/*.cpp"
+    "inc/*.hpp"
+)
+#########################################
 
-include_directories(source)
-add_subdirectory(source)
+# Создание исполняемого файла
+##############################################
+add_executable(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    sfml-graphics
+    sfml-window 
+    sfml-system
+)
+##############################################
 
+# Убираем консоль
+#################################
 include(cmake/GUI_PROGRAM.cmake)
 GUI_PROGRAM(${PROJECT_NAME})
+#################################
 
+# Копируем папку ресурсов
+###############################################################
 include(cmake/CP.cmake)
 CP(${CMAKE_CURRENT_SOURCE_DIR}/fonts ${CMAKE_BINARY_DIR}/fonts)
+###############################################################

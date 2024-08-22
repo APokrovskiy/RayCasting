@@ -1,5 +1,5 @@
 #pragma once
-#include "algorithms/other/settings_manager/nlochmann_json.hpp"
+#include "manager/json.hpp"
 
 struct ray_casting_settings
 {

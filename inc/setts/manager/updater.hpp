@@ -1,7 +1,7 @@
 #pragma once
 #include <initializer_list>
 #include <memory>
-#include "objects/other/include/settings.hpp"
+#include "setts/setts.hpp"
 
 class IConcreteSettingsUpdater
 {

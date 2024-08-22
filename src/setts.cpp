@@ -1,4 +1,4 @@
-#include "settings.hpp"
+#include "setts/setts.hpp"
 
 ray_casting_settings load_settings(const nlohmann::json &settings_json)
 {
