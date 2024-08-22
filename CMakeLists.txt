@@ -25,7 +25,7 @@ FetchContent_MakeAvailable(SFML)
 #########################################
 include_directories(inc)
 file(GLOB_RECURSE SOURCES
-    "source/*.cpp"
+    "src/*.cpp"
     "inc/*.hpp"
 )
 #########################################

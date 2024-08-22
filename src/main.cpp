@@ -1,5 +1,6 @@
 #include <atomic>
 
+#include "setts/manager/concrete_updater.hpp"
 #include "setts/manager/observer.hpp"
 #include "setts/manager/updater.hpp"
 #include "background.hpp"
@@ -7,18 +8,6 @@
 #include "fpslbl.hpp"
 #include "map.hpp"
 
-
-class WindowSettingsUpdater: public IConcreteSettingsUpdater
-{
-    sf::RenderWindow& w;
-public:
-    WindowSettingsUpdater(sf::RenderWindow& win): w(win) {}
-
-    void settings_update(const ray_casting_settings& s) override
-    {
-        w.setFramerateLimit(s.fps);
-    }
-};
 
 // Временное решение
 void create_settings_file()

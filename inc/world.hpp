@@ -35,14 +35,3 @@ private:
     std::vector<Collider> wall_colliders;
 };
 
-class WorldSettingsUpdater: public IConcreteSettingsUpdater
-{
-    World &w;
-public:
-    WorldSettingsUpdater(World& cmr): w(cmr){}
-
-    void settings_update(const ray_casting_settings& s) override
-    {
-        w = World{s.world_map, '1', 100};
-    }
-};
