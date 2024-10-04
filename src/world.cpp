@@ -4,13 +4,35 @@
 World::World(World_Map &wm, unsigned int tile) : wm(wm), tile(tile)
 {
     for (auto crd : wm)
-        wall_colliders.push_back(Collider({crd.x * tile, crd.y * tile}, {(crd.x + 1) * tile, (crd.y + 1) * tile})); // TODO: Устранить повторения
+        wall_colliders.push_back(
+            Collider(
+                {
+                    static_cast<float>(crd.x * tile),
+                    static_cast<float>(crd.y * tile)
+                },
+                {
+                    static_cast<float>((crd.x + 1) * tile),
+                    static_cast<float>((crd.y + 1) * tile)
+                }
+            )
+        ); // TODO: Устранить повторения
 }
 
-World::World(std::vector<std::string> wm, char wall, unsigned int tile) : wm(rc::init_world_map(wm, wall)), tile(tile)
+World::World(std::vector<std::string> str_wm, char wall, unsigned int tile) : wm(rc::init_world_map(str_wm, wall)), tile(tile)
 {
-    for (auto crd : this->wm)
-        wall_colliders.push_back(Collider({crd.x * tile, crd.y * tile}, {(crd.x + 1) * tile, (crd.y + 1) * tile})); // TODO: Устранить повторения
+    for (auto crd : wm)
+        wall_colliders.push_back(
+            Collider(
+                {
+                    static_cast<float>(crd.x * tile),
+                    static_cast<float>(crd.y * tile)
+                },
+                {
+                    static_cast<float>((crd.x + 1) * tile),
+                    static_cast<float>((crd.y + 1) * tile)
+                }
+            )
+        ); // TODO: Устранить повторения
 
 } // TODO: передавать векторы по ссылке
 
@@ -35,8 +57,8 @@ void World::draw(sf::RenderWindow &win) const
 {
     for (rc::Coords crd : wm)
     {
-        sf::RectangleShape r{{tile, tile}};
-        r.setPosition({crd.x * tile, crd.y * tile});
+        sf::RectangleShape r{{static_cast<float>(tile), static_cast<float>(tile)}};
+        r.setPosition({ static_cast<float>(crd.x * tile), static_cast<float>(crd.y * tile)});
         r.setFillColor(sf::Color::Cyan);
         win.draw(r);
     }

@@ -214,7 +214,7 @@ void Camera::move()
 
 void Camera::rendering_3d(sf::RenderWindow &win)
 {
-    rays_buf = rc::ray_casting(world.get_walls_coords(), world.get_tile_size(), rc::Coords{pos.x, pos.y}, rot_a, visual_range, fov, n_rays);
+    rays_buf = rc::ray_casting(world.get_walls_coords(), static_cast<int>(world.get_tile_size()), rc::Coords{ static_cast<int>(pos.x), static_cast<int>(pos.y)}, rot_a, visual_range, fov, n_rays);
 
     const unsigned int raysSize = rays_buf.size();
     const sf::Vector2u windowSize = win.getSize();
@@ -248,7 +248,7 @@ void Camera::rendering_3d(sf::RenderWindow &win)
 static void draw_camera(sf::RenderWindow& w,const rc::Coords& cmr)
 {
     sf::CircleShape c{15};
-    c.setPosition({cmr.x - 15,cmr.y - 15});
+    c.setPosition({ static_cast<float>(cmr.x - 15),static_cast<float>(cmr.y - 15)});
     c.setFillColor(sf::Color::Blue);
     w.draw(c);
 }
@@ -280,8 +280,8 @@ void Camera::draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, sf::Vector2
 
     sf::VertexArray line{ sf::Lines, 2 };
 
-    line[0] = sf::Vector2f{cmr.x, cmr.y};
-    line[1] = sf::Vector2f{cmr.x + dist * cos(rot_angle), cmr.y - dist * sin(rot_angle)};
+    line[0] = sf::Vector2f{ static_cast<float>(cmr.x), static_cast<float>(cmr.y)};
+    line[1] = sf::Vector2f{ static_cast<float>(cmr.x + dist * cos(rot_angle)),static_cast<float>(cmr.y - dist * sin(rot_angle))};
     line[0].color = color;
     line[1].color = color;
     w.draw(line);
@@ -289,10 +289,10 @@ void Camera::draw_line(sf::RenderWindow& w,rc::Coords cmr, int dist, sf::Vector2
 
 void Camera::rendering_2d(sf::RenderWindow &win)
 {
-    rays_buf = rc::ray_casting(world.get_walls_coords(), world.get_tile_size(), rc::Coords{pos.x, pos.y},rot_a, visual_range, fov, n_rays);
+    rays_buf = rc::ray_casting(world.get_walls_coords(), world.get_tile_size(), rc::Coords{ static_cast<int>(pos.x), static_cast<int>(pos.y)},rot_a, visual_range, fov, n_rays);
     for (auto ray: rays_buf)
-        draw_line(win,{pos.x, pos.y}, ray.first,{0,0},{win.getSize().x,win.getSize().y}, ray.second, sf::Color::White,1);
-    draw_camera(win,{pos.x, pos.y}); // Отрисовка Камеры
+        draw_line(win,{ static_cast<int>(pos.x), static_cast<int>(pos.y)}, ray.first,{0.0f,0.0f},{ static_cast<float>(win.getSize().x),static_cast<float>(win.getSize().y)}, ray.second, sf::Color::White,1);
+    draw_camera(win,{ static_cast<int>(pos.x), static_cast<int>(pos.y)}); // Отрисовка Камеры
 }
 
 void Camera::draw(sf::RenderWindow &win, Rendering_Mode mode)

@@ -8,14 +8,14 @@ Map::Map(World * w, Camera * c)
 
 void Map::draw(sf::RenderWindow &window)
 {
-    unsigned int tile_size = world->get_tile_size() * multiply;
+    unsigned int tile_size = static_cast<unsigned int>(world->get_tile_size() * multiply);
 
-    sf::RectangleShape background{{window.getSize().x, window.getSize().y}};
+    sf::RectangleShape background{{static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)}};
     background.setFillColor(background_color);
     window.draw(background);
     for (rc::Coords crd : world->get_walls_coords())
     {
-        sf::RectangleShape r{{tile_size, tile_size}};
+        sf::RectangleShape r{{static_cast<float>(tile_size), static_cast<float>(tile_size)}};
 
         r.setPosition({(crd.x + 1) * tile_size + position.x,
                        (crd.y + 1) * tile_size + position.y});
@@ -29,8 +29,8 @@ void Map::draw(sf::RenderWindow &window)
 
     for (auto ray : camera->get_rays_buf())
     {
-        Camera::draw_line(window, {camera->get_position().x * multiply + position.x + tile_size, camera->get_position().y * multiply + position.y + tile_size},
-                        ray.first, {0, 0}, {window.getSize().x, window.getSize().y}, ray.second, sf::Color::White, multiply);
+        Camera::draw_line(window, { static_cast<int>(camera->get_position().x * multiply + position.x + tile_size), static_cast<int>(camera->get_position().y * multiply + position.y + tile_size)},
+                        ray.first, {0.0f, 0.0f}, { static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)}, ray.second, sf::Color::White, multiply);
     }
 }
 
@@ -38,26 +38,26 @@ void Map::move()
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        position.y += speed;
+        position.y += static_cast<float>(speed);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
-        position.x += speed;
+        position.x += static_cast<float>(speed);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
-        position.y -= speed;
+        position.y -= static_cast<float>(speed);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        position.x -= speed;
+        position.x -= static_cast<float>(speed);
     }
 }
     void Map::go_to_position(sf::RenderWindow& window, sf::Vector2f position)
     {
         this->position =
-            {-position.x*multiply + window.getSize().x/2,
-             -position.y*multiply + window.getSize().y/2};
+            {static_cast<float>(-position.x*multiply + window.getSize().x/2),
+             static_cast<float>(-position.y*multiply + window.getSize().y/2)};
     }
 
 // Геттеры

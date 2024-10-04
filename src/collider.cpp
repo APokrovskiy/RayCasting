@@ -60,11 +60,11 @@ void Collider::set_end(sf::Vector2f end)
 
 bool Collider::is_collised(Collider &col, double error)
 {
-    if (end.x < col.get_start().x - error or start.x > col.get_end().x + error)
+    if (end.x < col.get_start().x - error || start.x > col.get_end().x + error)
     {
         return false;
     }
-    if (end.y < col.get_start().y - error or start.y > col.get_end().y + error)
+    if (end.y < col.get_start().y - error || start.y > col.get_end().y + error)
     {
         return false;
     }

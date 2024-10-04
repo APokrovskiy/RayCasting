@@ -49,7 +49,11 @@ void create_settings_file()
 
 // main.cpp
 /////////////////////////////////////////////////////////////////////////////////////////////////
-int main()
+#ifdef _WIN32
+int WinMain() // Windows для графических программ требует другую точку входа
+#else
+int main() 
+#endif
 {
     std::atomic_bool is_configurator_opened{false};
 
@@ -105,7 +109,7 @@ int main()
             
             else if (event.type == sf::Event::Resized)
             {
-                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                sf::FloatRect visibleArea(0.0f, 0.0f, static_cast<float>(event.size.width), static_cast<float>(event.size.height));
                 window.setView(sf::View(visibleArea));
                 background.update(window.getSize().x, window.getSize().y);
             }

@@ -16,9 +16,9 @@ public:
 
     void settings_update(const ray_casting_settings& settings) override
     {
-        if (pos != sf::Vector2f{settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y})
+        if (pos != sf::Vector2f{static_cast<float>(settings.cmr.cmr_pos_x), static_cast<float>(settings.cmr.cmr_pos_y)})
         {
-            cmr.set_position(settings.cmr.cmr_pos_x, settings.cmr.cmr_pos_y);
+            cmr.set_position(static_cast<float>(settings.cmr.cmr_pos_x), static_cast<float>(settings.cmr.cmr_pos_y));
             pos = cmr.get_position();
         }
 

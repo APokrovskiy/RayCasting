@@ -1,3 +1,2 @@
-build/
-.vscode/
-buildcmd.txt
+out/
+.vs/

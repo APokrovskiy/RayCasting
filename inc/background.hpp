@@ -9,9 +9,9 @@ public:
     {
         clouds.setFillColor(sf::Color{0, 0, 100});
         floor.setFillColor(sf::Color{0, 100, 0});
-        clouds.setSize({w, h / 2});
-        floor.setSize({w, h / 2});
-        floor.setPosition({0, h / 2});
+        clouds.setSize({static_cast<float>(w),static_cast<float>(h / 2)});
+        floor.setSize({ static_cast<float>(w), static_cast<float>(h / 2)});
+        floor.setPosition({0.0f, static_cast<float>(h / 2)});
     }
 
     void draw(sf::RenderWindow &win)
@@ -22,9 +22,9 @@ public:
 
     void update(unsigned w, unsigned h)
     {
-        floor.setPosition({0, h / 2});
-        clouds.setSize({w, h / 2});
-        floor.setSize({w, h / 2});
+        floor.setPosition({0.0f, static_cast<float>(h / 2)});
+        clouds.setSize({ static_cast<float>(w), static_cast<float>(h / 2)});
+        floor.setSize({ static_cast<float>(w), static_cast<float>(h / 2)});
     }
 
 private:

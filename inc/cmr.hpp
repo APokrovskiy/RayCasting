@@ -1,5 +1,4 @@
 #pragma once
-#define _USE_MATH_DEFINES
 
 #include <cmath>
 #include <set>
@@ -9,6 +8,10 @@
 #include "world.hpp"
 #include "collider.hpp"
 #include "setts/setts.hpp"
+
+#ifndef M_PI
+    #define M_PI 3.14
+#endif
 
 class Camera
 {

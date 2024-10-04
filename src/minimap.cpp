@@ -9,16 +9,18 @@ MiniMap::MiniMap(World *world, Camera *cmr)
 void MiniMap::draw(sf::RenderWindow& window)
 {
 
-    unsigned int tile_size = world->get_tile_size()*multiply;
+    unsigned int tile_size = static_cast<unsigned int>(world->get_tile_size()*multiply);
 
     draw_background(window);
 
     for (rc::Coords crd: world->get_walls_coords())
     {
-        sf::RectangleShape r{{tile_size, tile_size }};
+        sf::RectangleShape r{{static_cast<float>(tile_size), static_cast<float>(tile_size) }};
 
-        r.setPosition({(crd.x) * tile_size - camera->get_position().x*multiply + scale.x/2+position.x,
-                        (crd.y) * tile_size - camera->get_position().y*multiply + scale.y/2+position.y});
+        r.setPosition({
+            static_cast<float>((crd.x) * tile_size - camera->get_position().x*multiply + scale.x/2+position.x),
+            static_cast<float>((crd.y) * tile_size - camera->get_position().y*multiply + scale.y/2+position.y)
+        });
 
         if ((r.getPosition().x+tile_size > position.x && r.getPosition().x < scale.x-tile_size+position.x)&&
             (r.getPosition().y+tile_size > position.y && r.getPosition().y < scale.y-tile_size+position.y))
@@ -31,8 +33,8 @@ void MiniMap::draw(sf::RenderWindow& window)
     draw_outline(window);
 
     for (auto ray: camera->get_rays_buf()){
-        Camera::draw_line(window,{scale.x/2+position.x, scale.y/2+position.y},ray.first,{tile_size+position.x,tile_size+position.y},
-        {scale.x-tile_size+position.x, scale.y-tile_size+position.y},ray.second, sf::Color::White,multiply);
+        Camera::draw_line(window,{static_cast<int>(scale.x/2+position.x), static_cast<int>(scale.y/2+position.y)},ray.first,{ static_cast<float>(tile_size+position.x),static_cast<float>(tile_size+position.y)},
+        { static_cast<float>(scale.x-tile_size+position.x), static_cast<float>(scale.y-tile_size+position.y)},ray.second, sf::Color::White,multiply);
     }
 }
 
@@ -70,21 +72,21 @@ void MiniMap::draw_outline(sf::RenderWindow& window)
 {
     double tile_size = world->get_tile_size()*multiply;
 
-    sf::RectangleShape side_out_line_background{{tile_size,scale.y}};
+    sf::RectangleShape side_out_line_background{{static_cast<float>(tile_size),static_cast<float>(scale.y)}};
     side_out_line_background.setFillColor(outline_color);
     side_out_line_background.setPosition(position);
 
-    sf::RectangleShape top_and_bottom_out_line_background{{scale.x,tile_size}};
+    sf::RectangleShape top_and_bottom_out_line_background{{static_cast<float>(scale.x),static_cast<float>(tile_size)}};
     top_and_bottom_out_line_background.setFillColor(outline_color);
     top_and_bottom_out_line_background.setPosition(position);
         
     window.draw(side_out_line_background);
 
-    side_out_line_background.setPosition(scale.x-tile_size+position.x, position.y);
+    side_out_line_background.setPosition(scale.x-static_cast<float>(tile_size)+position.x, position.y);
     window.draw(side_out_line_background);
 
     window.draw(top_and_bottom_out_line_background);
 
-    top_and_bottom_out_line_background.setPosition(position.x,scale.y-tile_size+position.y);
+    top_and_bottom_out_line_background.setPosition(position.x,scale.y- static_cast<float>(tile_size) +position.y);
     window.draw(top_and_bottom_out_line_background);
 }
